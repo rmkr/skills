@@ -1,0 +1,6 @@
+interface:
+  display_name: "Triage Investigate"
+  short_description: "Evidence-backed bug summary and investigation handoff"
+  default_prompt: "Use $triage-investigate to investigate this bug using logs and code, then render a concise HTML report with graphs from the Markdown evidence and handoff without implementing a fix."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Concise Write-up"
+  short_description: "Summarize findings, evidence, and optional next steps"
+  default_prompt: "Use $concise-writeup to summarize these findings with supporting evidence and any known next steps."
+
+policy:
+  allow_implicit_invocation: false

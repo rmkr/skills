@@ -1,0 +1,7 @@
+interface:
+  display_name: "Subagent Delegation"
+  short_description: "Coordinate useful subagents for any kind of task"
+  default_prompt: "Use $subagent-delegation to delegate useful parts of this task, choosing only the roles needed while the main agent coordinates and integrates the results."
+
+policy:
+  allow_implicit_invocation: true

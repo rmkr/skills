@@ -1,0 +1,7 @@
+interface:
+  display_name: "The Forge"
+  short_description: "Implement and review software engineering and architecture"
+  default_prompt: "Use $forge-review-loop with its delegation and adversarial-review dependencies to carry out this software engineering or software architecture request with workers and verify the combined result through independent review."
+
+policy:
+  allow_implicit_invocation: false

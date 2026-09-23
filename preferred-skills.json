@@ -1,0 +1,14 @@
+[
+  {
+    "id": "rmkr-workflows",
+    "repository": "rmkr/skills"
+  },
+  {
+    "id": "matt-pocock",
+    "repository": "mattpocock/skills"
+  },
+  {
+    "id": "archify",
+    "repository": "tt-a1i/archify"
+  }
+]

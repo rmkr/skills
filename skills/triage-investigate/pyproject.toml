@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rmkr-triage-render"
+version = "0.1.0"
+description = "Render evidence-backed triage Markdown as standalone HTML"
+requires-python = ">=3.11"
+dependencies = ["Markdown>=3.7,<4", "nh3>=0.2.21,<0.4", "Pygments>=2.18,<3"]
+
+[project.scripts]
+triage-render = "triage_render:main"
+
+[tool.setuptools]
+py-modules = ["triage_render"]
+package-dir = {"" = "scripts"}
+
+[tool.uv]
+cache-keys = [{file = "pyproject.toml"}, {file = "scripts/triage_render.py"}]
