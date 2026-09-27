@@ -1,6 +1,6 @@
 ---
 name: adversarial-review-loop
-description: Run any requested review loop, adversarial review, review with repair loops, or review until clean. Independently review substantial work across subjects, including software, research, plans, documents, presentations, and spreadsheets. Challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized improvements.
+description: Run any requested review loop (repair loops, review until clean) or adversarial review; a named Diff Skeptic review stays with Diff Skeptic. Independently review substantial work across subjects, including software, research, plans, documents, presentations, and spreadsheets. Challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized improvements.
 metadata:
   orchestration-contract: "1"
 ---
