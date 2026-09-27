@@ -41,6 +41,8 @@ Challenge both the underlying goal and assumptions and fulfillment of the agreed
 
 Record the snapshot's revision or content fingerprint. Collect the review result and confirm the current target still matches it before applying findings. If it changed concurrently, reconcile the new content and review that state before claiming completion.
 
+When the target includes code and a ponytail review skill is installed (`ponytail-review`, or `ponytail:ponytail-review` in Claude Code), add an independent complexity reviewer that applies it to the combined target each round and on the final state, beside the other reviewers. Verify its cuts like any finding, and have the other reviewers re-check each accepted cut, so a simplification keeps every correctness, security, data-loss, and accessibility fix.
+
 If independent review cannot run, disclose the gap. Continue authorized inspection and fixes when useful, but do not label self-review independent or the requested independent loop complete.
 
 ## Verify and update
