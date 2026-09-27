@@ -1,6 +1,6 @@
 ---
 name: adversarial-review-loop
-description: Independently review substantial work across subjects, including software, research, plans, documents, presentations, and spreadsheets. Challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized improvements.
+description: Run a review loop, which is what a request for a review loop means. Independently review substantial work across subjects, including software, research, plans, documents, presentations, and spreadsheets. Challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized improvements.
 metadata:
   orchestration-contract: "1"
 ---
@@ -41,7 +41,7 @@ Challenge both the underlying goal and assumptions and fulfillment of the agreed
 
 Record the snapshot's revision or content fingerprint. Collect the review result and confirm the current target still matches it before applying findings. If it changed concurrently, reconcile the new content and review that state before claiming completion.
 
-When the target includes code and a ponytail review skill is installed (`ponytail-review`, or `ponytail:ponytail-review` in Claude Code), add an independent complexity reviewer that applies it to the combined target each round and on the final state, beside the other reviewers. Verify its cuts like any finding, and have the other reviewers re-check each accepted cut, so a simplification keeps every correctness, security, data-loss, and accessibility fix.
+When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer that applies it to the combined target each round and reports its cuts in the finding format above. Verify each cut, and have the next re-review confirm, against the brief and the accepted fixes, that every accepted cut keeps all accepted fixes and requested behavior.
 
 If independent review cannot run, disclose the gap. Continue authorized inspection and fixes when useful, but do not label self-review independent or the requested independent loop complete.
 
@@ -53,7 +53,7 @@ Apply evidence-backed corrections within the authorized scope. Reject unsupporte
 
 For standalone review-and-improve work, the orchestrator can fix cohesive changes directly. When an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
 
-Run required validation using relevant existing domain skills and task requirements: source verification for research, capacity and dependency checks for plans, recalculation for spreadsheets, rendered inspection for documents or slides, and applicable software tests. Use only the checks the artifact needs, and add specialist reviewers only when distinct expertise is needed. For materially changed skills, forward-test realistic requests against raw fixtures in a temporary workspace. Give the evaluator the request and candidate skill without the intended answer or prior findings. Judge its behavior and output, not only its explanation of the instructions.
+Run required validation using relevant existing domain skills and task requirements: source verification for research, capacity and dependency checks for plans, recalculation for spreadsheets, rendered inspection for documents or slides, and applicable software tests. Use only the checks the artifact needs, and add other specialist reviewers only when distinct expertise is needed. For materially changed skills, forward-test realistic requests against raw fixtures in a temporary workspace. Give the evaluator the request and candidate skill without the intended answer or prior findings. Judge its behavior and output, not only its explanation of the instructions.
 
 ## Re-review and finish
 
