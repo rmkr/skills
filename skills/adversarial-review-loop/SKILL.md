@@ -1,6 +1,6 @@
 ---
 name: adversarial-review-loop
-description: Run a review loop, which is what a request for a review loop means. Independently review substantial work across subjects, including software, research, plans, documents, presentations, and spreadsheets. Challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized improvements.
+description: Run any requested review loop, adversarial review, review with repair loops, or review until clean. Independently review substantial work across subjects, including software, research, plans, documents, presentations, and spreadsheets. Challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized improvements.
 metadata:
   orchestration-contract: "1"
 ---
@@ -41,7 +41,7 @@ Challenge both the underlying goal and assumptions and fulfillment of the agreed
 
 Record the snapshot's revision or content fingerprint. Collect the review result and confirm the current target still matches it before applying findings. If it changed concurrently, reconcile the new content and review that state before claiming completion.
 
-When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer that applies it to the combined target each round and reports its cuts in the finding format above. Verify each cut, and have the next re-review confirm, against the brief and the accepted fixes, that every accepted cut keeps all accepted fixes and requested behavior.
+When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer that applies it to the combined target each round and reports its cuts in the finding format above. Verify each cut, and have the next re-review confirm each accepted cut against the brief and the accepted fixes.
 
 If independent review cannot run, disclose the gap. Continue authorized inspection and fixes when useful, but do not label self-review independent or the requested independent loop complete.
 
