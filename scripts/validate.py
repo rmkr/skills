@@ -22,6 +22,7 @@ AGENT_NAME = re.compile(r"^[a-z][a-z0-9_]*$")
 REQUIRED_SKILL_FIELDS = {"name", "description"}
 SUPPORTED_SKILL_FIELDS = REQUIRED_SKILL_FIELDS | {
     "allowed-tools",
+    "argument-hint",
     "compatibility",
     "disable-model-invocation",
     "license",
@@ -238,6 +239,10 @@ def validate_skill(skill_dir: Path) -> list[str]:
     allowed_tools = frontmatter.get("allowed-tools")
     if allowed_tools is not None and not nonempty_string(allowed_tools):
         errors.append(f"{skill_file}: allowed-tools must be a non-empty string")
+
+    argument_hint = frontmatter.get("argument-hint")
+    if argument_hint is not None and not nonempty_string(argument_hint):
+        errors.append(f"{skill_file}: argument-hint must be a non-empty string")
 
     disable_model_invocation = frontmatter.get("disable-model-invocation", False)
     if not isinstance(disable_model_invocation, bool):

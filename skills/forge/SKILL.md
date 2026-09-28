@@ -1,6 +1,7 @@
 ---
 name: forge
 description: Run any requested review loop (repair loops, review until clean) or adversarial review, and independently review substantial work, at three levels - review (verified findings only), fix (correct and re-review until clean), and build (on request, workers implement, then fix). Covers software, research, plans, documents, presentations, and spreadsheets. Add strict on request for a Git diff that needs a runtime-enforced read-only reviewer. Challenge assumptions and fulfillment of the brief, and verify every finding.
+argument-hint: "[review|fix|build] [strict]"
 metadata:
   orchestration-contract: "1"
 ---
