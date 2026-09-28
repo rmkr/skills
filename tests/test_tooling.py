@@ -388,6 +388,21 @@ class ToolingTests(unittest.TestCase):
                 "policy.allow_implicit_invocation must be a boolean", true_policy.stderr
             )
 
+    def test_validator_rejects_empty_argument_hint(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo_root = Path(temporary)
+            skill_file = write_minimal_skill(repo_root, "hinted") / "SKILL.md"
+            skill_file.write_text(
+                skill_file.read_text(encoding="utf-8").replace(
+                    "name: hinted\n", 'name: hinted\nargument-hint: ""\n'
+                ),
+                encoding="utf-8",
+            )
+
+            result = run_script("validate.py", "--repo-root", repo_root)
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("argument-hint must be a non-empty string", result.stderr)
+
     def test_validator_aligns_cross_runtime_invocation_policy(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo_root = Path(temporary)

@@ -16,6 +16,8 @@ The [installation guide](installation.md) lists the matching reviewer files and 
 
 Concise Write-up requires explicit invocation. Its entrypoint declares `disable-model-invocation: true`; OpenAI metadata also declares `allow_implicit_invocation: false`. These are client-specific policies, not universal Agent Skills guarantees. Other skills permit automatic selection when relevant.
 
+The Forge declares `argument-hint: "[review|fix|build] [strict]"`, which Claude Code shows beside `/forge` in slash-command autocomplete. It is a second deliberate client extension, display-only. Codex and OhMyPi ignore it; strict Agent Skills consumers such as claude.ai uploads and the Skills API may reject it. Removing it loses only the hint.
+
 Clients that do not enforce an explicit-invocation policy cannot satisfy that requirement merely by loading the Markdown. Historical OhMyPi behavior hides explicit-only skills from the model's catalog but still permits direct skill-path access; do not treat that as the same hard restriction. Strict Agent Skills consumers may reject the extension. Removing it changes behavior and is not a supported workaround for preserving explicit-only use.
 
 The Forge requires Subagent Delegation. Both declare orchestration contract version `1`; install compatible copies together and make them discoverable through the runtime's skill catalog. Missing or incompatible dependencies leave the integrated workflow unavailable.
