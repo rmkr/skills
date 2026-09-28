@@ -27,6 +27,6 @@ For installation changes, use a disposable project and the [documented installat
 
 Explain the problem, resulting behavior, checks performed, and remaining limitations in the pull request. Include dependency, invocation, installation, or migration implications when relevant. Preserve existing license notices and attribution; contributions must be material you are entitled to contribute under the project's [MIT license](LICENSE).
 
-Merges require passing validation and tooling tests plus maintainer approval. Substantial instruction changes also require independent behavioral review. Review findings need evidence; the author addresses accepted findings and reviewers check the resulting combined state. See [AGENTS.md](AGENTS.md) for the repository's independent-review requirement.
+Merges require maintainer approval and passing validation and tooling tests; run the commands above locally and report the results in the pull request. Substantial instruction changes also require independent behavioral review. Review findings need evidence; the author addresses accepted findings and reviewers check the resulting combined state. See [AGENTS.md](AGENTS.md) for the repository's independent-review requirement.
 
-The `Validate` workflow runs on pull requests, pushes to `main`, and manual dispatch. Repository-host protection settings are separate from this file; see [release and maintenance guidance](docs/maintenance.md) for enforcement and publication checks.
+The `Validate` workflow is disabled while GitHub Actions is unavailable for this private repository, so no check runs on pull requests; see [release and maintenance guidance](docs/maintenance.md) for enforcement and publication checks.
