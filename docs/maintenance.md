@@ -17,13 +17,15 @@ There is no fixed release schedule. Until the first tagged release exists, users
 
 ## Merge enforcement
 
-Require the `validate` status check on `main`, an up-to-date branch, and maintainer approval for contributed pull requests. The repository's code owner is `@rmkr`. Protect against force pushes and branch deletion. Keep existing protections when adjusting settings.
+Require maintainer approval for contributed pull requests, and require the `validate` status check on `main` with an up-to-date branch whenever the `Validate` workflow is enabled. The repository's code owner is `@rmkr`. Protect against force pushes and branch deletion. Keep existing protections when adjusting settings.
 
-GitHub code-owner review requires the ownership file on the target branch. Repository administrators can bypass classic branch protection unless administrator enforcement is enabled. A sole maintainer cannot approve their own pull request: for maintainer-authored work, use the independent-review process and passing checks before merging, and record that review. Do not claim this human decision is mechanically enforced by a self-approval rule.
+GitHub code-owner review requires the ownership file on the target branch. Repository administrators can bypass classic branch protection unless administrator enforcement is enabled. A sole maintainer cannot approve their own pull request: for maintainer-authored work, use the independent-review process and passing local checks before merging, and record both in the pull request. Do not claim this human decision is mechanically enforced by a self-approval rule.
 
 On 2026-09-16, the private repository's `main` protection was configured with the required `validate` check, up-to-date branches, one approving code-owner review, stale-review dismissal, and force-push/deletion protection. Administrator bypass remains enabled for maintainer-owned work as described above.
 
-CI configuration and ownership declarations take effect on GitHub after they are pushed. Verify the actual protection settings and check results before opening the repository to outside contributions; local validation cannot establish that GitHub ran a workflow.
+Since 2026-09-09, GitHub has not started `Validate` jobs for this private repository: the account's Actions billing blocks them. (The last runs on 2026-09-08 failed on a missing tooling dependency, which the workflow now installs.) On 2026-09-27 the workflow was disabled, and the required `validate` check and its up-to-date-branch requirement were removed, so pull requests no longer wait on CI; the review, force-push, and deletion protections are unchanged. Until CI is restored, validation and tooling tests run locally. To restore CI, resolve the Actions billing block (or point `runs-on` in `.github/workflows/validate.yml` at another runner provider), re-enable the workflow, confirm a pull-request run of `validate` passes, then require the `validate` check with up-to-date branches again and verify it with `gh api repos/rmkr/skills/branches/main/protection`.
+
+CI configuration and ownership declarations take effect on GitHub after they are pushed. Restore and verify CI before opening the repository to outside contributions; local validation cannot establish that GitHub ran a workflow.
 
 ## Public-readiness review
 
