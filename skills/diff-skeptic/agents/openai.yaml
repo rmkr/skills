@@ -1,7 +1,0 @@
-interface:
-  display_name: "Diff Skeptic"
-  short_description: "Adversarial diff review from a subagent"
-  default_prompt: "Use $diff-skeptic to have an independent subagent adversarially review the current diff and return verified findings."
-
-policy:
-  allow_implicit_invocation: false

@@ -40,22 +40,11 @@ SKILL_CONTRACTS = {
         "skill_dependencies": (),
         "orchestration_contract": "1",
     },
-    "adversarial-review-loop": {
+    "forge": {
+        "display_name": "The Forge",
         "allow_implicit_invocation": True,
         "disable_model_invocation": False,
         "skill_dependencies": ("subagent-delegation",),
-        "orchestration_contract": "1",
-    },
-    "diff-skeptic": {
-        "display_name": "Diff Skeptic",
-        "allow_implicit_invocation": False,
-        "disable_model_invocation": True,
-    },
-    "forge-review-loop": {
-        "display_name": "The Forge",
-        "allow_implicit_invocation": False,
-        "disable_model_invocation": True,
-        "skill_dependencies": ("subagent-delegation", "adversarial-review-loop"),
         "orchestration_contract": "1",
     },
     "unslop": {
@@ -70,7 +59,7 @@ CUSTOM_AGENT_CONTRACTS = {
         "portable_model": True,
         "agents_enabled": False,
     },
-    "diff_skeptic_reviewer": {
+    "forge_strict_reviewer": {
         "sandbox_mode": "read-only",
         "portable_model": True,
         "agents_enabled": False,
@@ -78,14 +67,14 @@ CUSTOM_AGENT_CONTRACTS = {
 }
 MARKDOWN_AGENT_CONTRACTS = {
     "claude": {
-        "diff-skeptic-reviewer": {
+        "forge-strict-reviewer": {
             "tools": {"Read", "Grep", "Glob"},
             "disallowed_tools": {"Agent"},
             "permission_mode": "plan",
         },
     },
     "omp": {
-        "diff-skeptic-reviewer": {
+        "forge-strict-reviewer": {
             "tools": {"read", "grep", "glob"},
         },
     },
@@ -607,7 +596,7 @@ def validate_repository(repo_root: Path) -> tuple[list[str], int, int]:
             agent_count += 1
             if target == "codex":
                 errors.extend(validate_custom_agent(entry))
-                if entry.stem == "diff_skeptic_reviewer":
+                if entry.stem == "forge_strict_reviewer":
                     try:
                         config = tomllib.loads(entry.read_text(encoding="utf-8"))
                     except tomllib.TOMLDecodeError:
@@ -618,7 +607,7 @@ def validate_repository(repo_root: Path) -> tuple[list[str], int, int]:
                             reviewer_instructions[target] = instructions.strip()
             else:
                 errors.extend(validate_markdown_agent(entry, target))
-                if entry.stem == "diff-skeptic-reviewer":
+                if entry.stem == "forge-strict-reviewer":
                     _, body, _ = load_frontmatter_document(
                         entry, f"{target} agent definition"
                     )
@@ -633,7 +622,7 @@ def validate_repository(repo_root: Path) -> tuple[list[str], int, int]:
         set(reviewer_instructions.values())
     ) != 1:
         errors.append(
-            "Diff Skeptic reviewer instructions must match across codex, claude, and omp"
+            "Forge strict reviewer instructions must match across codex, claude, and omp"
         )
 
     return errors, skill_count, agent_count

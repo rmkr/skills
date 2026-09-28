@@ -17,7 +17,7 @@ Treat this repository as the canonical editable source for Austin's custom Agent
 
 Add a reusable custom agent only when a stable role needs fixed instructions, tools, or sandbox behavior that a skill cannot express cleanly. Keep Codex definitions at `agents/<name>.toml`, Claude Code definitions at `agents/claude/<name>.md`, and OhMyPi definitions at `agents/omp/<name>.md`. Keep names aligned with each runtime's identifier rules and prefer runtime-selected models.
 
-Routine independent audits and The Forge use ordinary native subagents with explicit inspection-only reviewer assignments. Describe routine work as inspecting or reviewing; explain permission limits when asked or when they block a requirement. They do not require custom agent definitions. Diff Skeptic requires the platform's bundled reviewer definition because its read-only and no-delegation role cannot be enforced reliably by the skill prompt alone.
+Routine independent audits and The Forge use ordinary native subagents with explicit inspection-only reviewer assignments. Describe routine work as inspecting or reviewing; explain permission limits when asked or when they block a requirement. They do not require custom agent definitions. The Forge's `strict` mode requires the platform's bundled reviewer definition because its read-only and no-delegation role cannot be enforced reliably by the skill prompt alone.
 
 ## Safety and verification
 

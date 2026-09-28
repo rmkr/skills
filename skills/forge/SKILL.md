@@ -1,23 +1,35 @@
 ---
-name: adversarial-review-loop
-description: Run any requested review loop (repair loops, review until clean) or adversarial review; a named Diff Skeptic review stays with Diff Skeptic. Independently review substantial work across subjects, including software, research, plans, documents, presentations, and spreadsheets. Challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized improvements.
+name: forge
+description: Run any requested review loop (repair loops, review until clean) or adversarial review, and independently review substantial work, at three levels - review (verified findings only), fix (correct and re-review until clean), and build (on request, workers implement, then fix). Covers software, research, plans, documents, presentations, and spreadsheets. Add strict on request for a Git diff that needs a runtime-enforced read-only reviewer. Challenge assumptions and fulfillment of the brief, and verify every finding.
 metadata:
   orchestration-contract: "1"
 ---
 
-# Adversarial review loop
+# The Forge
 
 Use this loop for requested independent review or substantial review and improvement work across subjects. Handle small edits proportionately; automatic selection does not require independent review for every edit.
 
-Start from existing work. Keep the same main agent as orchestrator; it verifies findings and coordinates authorized corrections while an independent reviewer challenges each completed state. For a review-only request or an initial review-only phase assigned by an active workflow, stop after verified findings. A request to review and update authorizes in-scope corrections without asking again.
+Keep the same main agent as orchestrator; it verifies findings and coordinates authorized corrections while an independent reviewer challenges each completed state.
+
+## Choose the level
+
+| Level | Work | Finishes when |
+| --- | --- | --- |
+| `review` | One independent review; findings verified and reported, nothing changed | Every finding has a disposition |
+| `fix` | Review, correct, and re-review | The latest state has a clean independent review |
+| `build` | Workers implement, then the `fix` loop runs | Acceptance criteria pass and the latest state has a clean independent review |
+
+Select a level only from a level word the user attaches to The Forge, such as `$forge build`, `/forge fix`, or "forge this at review". Elsewhere in a request, "build", "fix", and "strict" describe the task. When a level word could also be the task's verb, choose from the request's intent and ask if it stays unclear. Without a named level, read the intent: a review request without an edit request runs at `review`; it never authorizes edits, even when it names The Forge. A request to review and update, or to repeat until clean, runs at `fix` and authorizes in-scope corrections without asking again. When the user invokes The Forge for implementation work, run `build` and read [build](references/build.md). A delegation request that does not invoke The Forge stays with `subagent-delegation`.
+
+`strict` adds a runtime-enforced read-only reviewer and a fingerprinted, immutable snapshot to any level with a Git target. Run it only when the user attaches `strict` to The Forge, and then read [strict](references/strict.md).
 
 ## Load the coordination contract
 
 Resolve `subagent-delegation` through the runtime's skill catalog and read its returned entrypoint. Require this skill and that dependency to declare `metadata.orchestration-contract: "1"`. Reuse a compatible copy already loaded for this request. Do not assume sibling directories or install dependencies automatically. If discovery, content, or the required marker is missing or incompatible, identify the exact dependency problem, continue only useful authorized local work, and leave this review workflow incomplete.
 
-Use delegation's authority, effective-permission, assignment, ownership, model-selection, lifecycle, and worker-recovery rules. Preflight a native reviewer before substantial work. An ordinary subagent with an inspection-only assignment is sufficient for this loop; apply stronger isolation only when explicitly required by the user or enclosing workflow. If no reviewer meets that boundary, follow delegation's local-inspection fallback and report the unmet independent-review requirement.
+Use delegation's authority, effective-permission, assignment, ownership, model-selection, lifecycle, and worker-recovery rules. Preflight a native reviewer before substantial work. An ordinary subagent with an inspection-only assignment is sufficient for this loop; apply stronger isolation only at `strict` or when explicitly required by the user or enclosing workflow. If no reviewer meets that boundary, follow delegation's local-inspection fallback and report the unmet independent-review requirement.
 
-Reuse the active task's acceptance criteria, ownership, baseline, and evidence. Add review records to the same task state instead of creating another orchestrator or re-entering the caller. Do not load The Forge from this workflow. A caller may supply a supported reviewer capability preference through delegation's selection rules; otherwise inherit runtime selection.
+Reuse the active task's acceptance criteria, ownership, baseline, and evidence. Add review records to the same task state instead of creating another orchestrator or re-entering the caller. A caller may supply a supported reviewer capability preference through delegation's selection rules; otherwise inherit runtime selection.
 
 ## Set the boundary
 
@@ -51,7 +63,7 @@ Verify each claim against the target and its requirements. Use the smallest rele
 
 Apply evidence-backed corrections within the authorized scope. Reject unsupported or preference-only suggestions. Investigate uncertainty before asking the user; ask when intent, missing information, or extra authority remains necessary. Correct factual errors within the agreed task, but bring proposed changes to the user's goal or intended position back to the user with evidence. Report material out-of-scope findings without silently expanding the work.
 
-For standalone review-and-improve work, the orchestrator can fix cohesive changes directly. When an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
+At `fix`, the orchestrator can fix cohesive changes directly. At `build`, or when an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
 
 Run required validation using relevant existing domain skills and task requirements: source verification for research, capacity and dependency checks for plans, recalculation for spreadsheets, rendered inspection for documents or slides, and applicable software tests. Use only the checks the artifact needs, and add other specialist reviewers only when distinct expertise is needed. For materially changed skills, forward-test realistic requests against raw fixtures in a temporary workspace. Give the evaluator the request and candidate skill without the intended answer or prior findings. Judge its behavior and output, not only its explanation of the instructions.
 
@@ -59,8 +71,8 @@ Run required validation using relevant existing domain skills and task requireme
 
 After each set of fixes, give the reviewer the current combined target and validation evidence. Reuse it for focused fixes; use fresh context after a substantial redesign. Check previous accepted findings and interactions across the full target. Track rejected findings and reopen them only with new evidence.
 
-For review-and-improve work, repeat until the latest state has an independent review, every finding has a disposition, no accepted issue or unresolved material finding remains, and acceptance criteria and required checks pass. A reviewer failure or unresolved requirement prevents a clean result. A user-accepted validation gap remains explicit and does not become a passing check. For review-only work, completion means the recorded target has been independently inspected and findings verified and reported; it does not require applying reported fixes.
+At `fix` and `build`, repeat until the latest state has an independent review, every finding has a disposition, no accepted issue or unresolved material finding remains, and acceptance criteria and required checks pass. A reviewer failure or unresolved requirement prevents a clean result. A user-accepted validation gap remains explicit and does not become a passing check.
 
 Honor user budgets without imposing an arbitrary round limit; report remaining findings and gaps when a budget ends. If the same issue survives two fixes or successive rounds make no material progress, diagnose it before trying another correction. Continue with a supported alternative when possible. Pause only when further progress needs unavailable information, authority, or a user decision; state what remains unresolved.
 
-Report what changed, review rounds, verification results, and residual limits. For review-only work, return verified findings without applying edits.
+Report the level, what changed, review rounds, verification results, and residual limits.

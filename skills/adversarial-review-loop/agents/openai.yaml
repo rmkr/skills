@@ -1,7 +1,0 @@
-interface:
-  display_name: "Adversarial Review Loop"
-  short_description: "Review and improve work across subjects"
-  default_prompt: "Use $adversarial-review-loop with the shared delegation contract to independently review this work, challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized corrections."
-
-policy:
-  allow_implicit_invocation: true

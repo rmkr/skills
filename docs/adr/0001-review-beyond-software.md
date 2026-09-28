@@ -2,6 +2,8 @@
 status: accepted
 ---
 
+Partly superseded by [ADR 0002](0002-one-forge-with-levels.md): this workflow is now The Forge's `review` and `fix` levels.
+
 # Extend adversarial review beyond software
 
 The previous review workflow excluded non-engineering work. The design interview on 2026-09-14 settled a broader subject scope, including plans and research, and review of both underlying goals and assumptions and fulfillment of the agreed brief. Retain the improvement loop: the independent reviewer inspects, and the main agent verifies findings and owns authorized corrections before re-review.
