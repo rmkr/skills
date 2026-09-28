@@ -29,31 +29,31 @@ bunx skills@latest add ./skills --global --agent codex --skill unslop
 
 `unslop` in the examples is a standalone skill. Replace it with the skill names you need, using the [README chooser](../README.md). Omit `--skill` to choose interactively.
 
-Adversarial Review Loop needs Subagent Delegation. For The Forge, install the complete integrated set from the same chosen release:
+The Forge needs Subagent Delegation. Install both from the same chosen release:
 
 ```bash
-bunx skills@latest add "https://github.com/rmkr/skills/tree/$release" --global --agent codex --skill subagent-delegation adversarial-review-loop forge-review-loop
+bunx skills@latest add "https://github.com/rmkr/skills/tree/$release" --global --agent codex --skill subagent-delegation forge
 ```
 
-For development, substitute `rmkr/skills` for the release URL. These three skills require matching orchestration contract version `1`; their presence in the runtime's skill catalog matters as well as their presence on disk.
+For development, substitute `rmkr/skills` for the release URL. Both skills require matching orchestration contract version `1`; their presence in the runtime's skill catalog matters as well as their presence on disk.
 
-Start a fresh session and confirm that the installed skills are available. In Codex, invoke `$unslop` or another `$skill-name`. The Forge, Diff Skeptic, and Concise Write-up require explicit invocation. See [compatibility](compatibility.md) for other runtimes and enforcement limitations.
+Start a fresh session and confirm that the installed skills are available. In Codex, invoke `$unslop` or another `$skill-name`. Concise Write-up requires explicit invocation. See [compatibility](compatibility.md) for other runtimes and enforcement limitations.
 
-## Configure Diff Skeptic
+## Configure the strict reviewer
 
-Installing the skill does not install its required custom reviewer. Copy the matching reviewer from a checkout of the same collection release or development revision. Compare existing configuration before replacing it, preserve local customizations, and use the configured directory if your runtime data has been relocated.
+Installing The Forge does not install the custom reviewer its `strict` mode requires. Copy the matching reviewer from a checkout of the same collection release or development revision. Compare existing configuration before replacing it, preserve local customizations, and use the configured directory if your runtime data has been relocated.
 
 | Runtime | Source in checkout | Default destination |
 | --- | --- | --- |
-| Codex | [Reviewer](../agents/diff_skeptic_reviewer.toml) | `~/.codex/agents/diff_skeptic_reviewer.toml` |
-| Claude Code | [Reviewer](../agents/claude/diff-skeptic-reviewer.md) | `~/.claude/agents/diff-skeptic-reviewer.md` |
-| OhMyPi | [Reviewer](../agents/omp/diff-skeptic-reviewer.md) | `~/.omp/agent/agents/diff-skeptic-reviewer.md` |
+| Codex | [Reviewer](../agents/forge_strict_reviewer.toml) | `~/.codex/agents/forge_strict_reviewer.toml` |
+| Claude Code | [Reviewer](../agents/claude/forge-strict-reviewer.md) | `~/.claude/agents/forge-strict-reviewer.md` |
+| OhMyPi | [Reviewer](../agents/omp/forge-strict-reviewer.md) | `~/.omp/agent/agents/forge-strict-reviewer.md` |
 
-Open a fresh runtime session after configuration. Diff Skeptic must confirm that effective controls prevent filesystem and external mutations and disable every delegation route. Copying the profile alone does not establish those controls. If the boundary cannot be verified, the workflow remains incomplete. Ordinary reviews in the other workflows do not require this custom agent.
+Open a fresh runtime session after configuration. Strict mode must confirm that effective controls prevent filesystem and external mutations and disable every delegation route. Copying the profile alone does not establish those controls. If the boundary cannot be verified, the strict review remains incomplete. Levels without `strict` do not require this custom agent.
 
 ## Update and remove
 
-Finish active workflow runs and preserve local customizations before updating. Read the selected release's notes for behavior changes, dependencies, renames, removals, and migration steps. For stable installations, select the next published tag and rerun the explicit tagged `add` command with the same skill set. Update the matching Diff Skeptic reviewer from that tag too. Do not use an unqualified update command as the stable upgrade path: it does not explicitly select your reviewed release.
+Finish active workflow runs and preserve local customizations before updating. Read the selected release's notes for behavior changes, dependencies, renames, removals, and migration steps. For stable installations, select the next published tag and rerun the explicit tagged `add` command with the same skill set. Update the matching strict reviewer from that tag too. Do not use an unqualified update command as the stable upgrade path: it does not explicitly select your reviewed release.
 
 For installations that intentionally track development or other upstream sources, the CLI provides:
 
@@ -61,7 +61,7 @@ For installations that intentionally track development or other upstream sources
 bunx skills@latest update --global
 ```
 
-That command can update other installed skills too. To remove a skill from all CLI-managed agents:
+That command can update other installed skills too. It does not remove skills merged into The Forge: remove `adversarial-review-loop`, `forge-review-loop`, and `diff-skeptic`, and the `diff_skeptic_reviewer.toml` or `diff-skeptic-reviewer.md` reviewer copy, then install `forge` and its strict reviewer. To remove a skill from all CLI-managed agents:
 
 ```bash
 bunx skills@latest remove --global --skill unslop

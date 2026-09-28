@@ -39,10 +39,10 @@ INSTALLATION_TARGETS = {
 }
 TARGET_ALIASES = {"ohmypi": "omp"}
 SKILL_AGENT_DEPENDENCIES = {
-    "diff-skeptic": {
-        "codex": ("diff_skeptic_reviewer",),
-        "claude": ("diff-skeptic-reviewer",),
-        "omp": ("diff-skeptic-reviewer",),
+    "forge": {
+        "codex": ("forge_strict_reviewer",),
+        "claude": ("forge-strict-reviewer",),
+        "omp": ("forge-strict-reviewer",),
     },
 }
 

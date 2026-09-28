@@ -1,0 +1,7 @@
+interface:
+  display_name: "The Forge"
+  short_description: "Review, fix, or build work with independent review"
+  default_prompt: "Use $forge with the shared delegation contract to independently review this work at the requested level, challenge assumptions and fulfillment of the brief, verify findings, and re-review authorized corrections."
+
+policy:
+  allow_implicit_invocation: true

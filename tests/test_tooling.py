@@ -67,28 +67,25 @@ def write_minimal_skill(repo_root: Path, name: str = "test-skill") -> Path:
 
 def write_orchestration_skills(
     repo_root: Path,
-    names: tuple[str, ...] = (
-        "subagent-delegation",
-        "adversarial-review-loop",
-        "forge-review-loop",
-    ),
+    names: tuple[str, ...] = ("subagent-delegation", "forge"),
 ) -> dict[str, Path]:
     fixtures = {
-        "subagent-delegation": ("Subagent Delegation", False),
-        "adversarial-review-loop": ("Adversarial Review Loop", False),
-        "forge-review-loop": ("The Forge", True),
+        "subagent-delegation": "Subagent Delegation",
+        "forge": "The Forge",
     }
+    if "forge" in names:
+        # The Forge requires its strict reviewer definitions.
+        (repo_root / "agents").symlink_to(REPO_ROOT / "agents", target_is_directory=True)
     skills: dict[str, Path] = {}
     for name in names:
-        display_name, explicit_only = fixtures[name]
+        display_name = fixtures[name]
         skill_dir = write_minimal_skill(repo_root, name)
         skill_file = skill_dir / "SKILL.md"
         text = skill_file.read_text(encoding="utf-8").replace(
             f"name: {name}\n",
             f'name: {name}\nmetadata:\n  orchestration-contract: "1"\n',
         )
-        if not explicit_only:
-            text = text.replace("disable-model-invocation: true\n", "")
+        text = text.replace("disable-model-invocation: true\n", "")
         skill_file.write_text(text, encoding="utf-8")
         metadata_file = skill_dir / "agents" / "openai.yaml"
         metadata_file.write_text(
@@ -96,7 +93,7 @@ def write_orchestration_skills(
             .replace('display_name: "Test Skill"', f'display_name: "{display_name}"')
             .replace(
                 "allow_implicit_invocation: false",
-                f"allow_implicit_invocation: {str(not explicit_only).lower()}",
+                "allow_implicit_invocation: true",
             ),
             encoding="utf-8",
         )
@@ -220,9 +217,9 @@ class ToolingTests(unittest.TestCase):
             skills_dir.mkdir()
             agents_dir.mkdir()
             links = {
-                skills_dir / "forge-review-loop": REPO_ROOT / "skills/forge-review-loop",
-                skills_dir / "diff-skeptic": REPO_ROOT / "skills/diff-skeptic",
-                agents_dir / "diff_skeptic_reviewer.toml": REPO_ROOT / "agents/diff_skeptic_reviewer.toml",
+                skills_dir / "unslop": REPO_ROOT / "skills/unslop",
+                skills_dir / "forge": REPO_ROOT / "skills/forge",
+                agents_dir / "forge_strict_reviewer.toml": REPO_ROOT / "agents/forge_strict_reviewer.toml",
             }
             for destination, source in links.items():
                 destination.symlink_to(source, target_is_directory=source.is_dir())
@@ -232,32 +229,32 @@ class ToolingTests(unittest.TestCase):
                 self.assertFalse(destination.exists())
                 self.assertFalse(destination.is_symlink())
 
-    def test_named_diff_skeptic_uninstall_includes_reviewer_agent(self) -> None:
+    def test_named_forge_uninstall_includes_reviewer_agent(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             skills_dir = Path(temporary) / "skills"
             agents_dir = Path(temporary) / "agents"
             skills_dir.mkdir()
             agents_dir.mkdir()
-            for name in ("diff-skeptic", "forge-review-loop"):
+            for name in ("forge", "unslop"):
                 (skills_dir / name).symlink_to(REPO_ROOT / "skills" / name, target_is_directory=True)
-            reviewer = agents_dir / "diff_skeptic_reviewer.toml"
-            reviewer.symlink_to(REPO_ROOT / "agents/diff_skeptic_reviewer.toml")
-            result = run_script("uninstall.py", "--skills-dir", skills_dir, "--agents-dir", agents_dir, "--skill", "diff-skeptic")
+            reviewer = agents_dir / "forge_strict_reviewer.toml"
+            reviewer.symlink_to(REPO_ROOT / "agents/forge_strict_reviewer.toml")
+            result = run_script("uninstall.py", "--skills-dir", skills_dir, "--agents-dir", agents_dir, "--skill", "forge")
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertFalse((skills_dir / "diff-skeptic").is_symlink())
+            self.assertFalse((skills_dir / "forge").is_symlink())
             self.assertFalse(reviewer.is_symlink())
-            self.assertTrue((skills_dir / "forge-review-loop").is_symlink())
+            self.assertTrue((skills_dir / "unslop").is_symlink())
 
     def test_all_targets_uninstall_matching_agent_definitions(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             temporary_home = Path(temporary)
             expected_links = {
-                temporary_home / ".agents/skills/diff-skeptic": REPO_ROOT / "skills/diff-skeptic",
-                temporary_home / ".claude/skills/diff-skeptic": REPO_ROOT / "skills/diff-skeptic",
-                temporary_home / ".omp/agent/skills/diff-skeptic": REPO_ROOT / "skills/diff-skeptic",
-                temporary_home / ".codex/agents/diff_skeptic_reviewer.toml": REPO_ROOT / "agents/diff_skeptic_reviewer.toml",
-                temporary_home / ".claude/agents/diff-skeptic-reviewer.md": REPO_ROOT / "agents/claude/diff-skeptic-reviewer.md",
-                temporary_home / ".omp/agent/agents/diff-skeptic-reviewer.md": REPO_ROOT / "agents/omp/diff-skeptic-reviewer.md",
+                temporary_home / ".agents/skills/forge": REPO_ROOT / "skills/forge",
+                temporary_home / ".claude/skills/forge": REPO_ROOT / "skills/forge",
+                temporary_home / ".omp/agent/skills/forge": REPO_ROOT / "skills/forge",
+                temporary_home / ".codex/agents/forge_strict_reviewer.toml": REPO_ROOT / "agents/forge_strict_reviewer.toml",
+                temporary_home / ".claude/agents/forge-strict-reviewer.md": REPO_ROOT / "agents/claude/forge-strict-reviewer.md",
+                temporary_home / ".omp/agent/agents/forge-strict-reviewer.md": REPO_ROOT / "agents/omp/forge-strict-reviewer.md",
             }
             for destination, source in expected_links.items():
                 destination.parent.mkdir(parents=True, exist_ok=True)
@@ -274,11 +271,11 @@ class ToolingTests(unittest.TestCase):
             agents_dir = Path(temporary) / "agents"
             skills_dir.mkdir()
             agents_dir.mkdir()
-            skill = skills_dir / "diff-skeptic"
-            skill.symlink_to(REPO_ROOT / "skills/diff-skeptic", target_is_directory=True)
-            reviewer = agents_dir / "diff-skeptic-reviewer.md"
-            reviewer.symlink_to(REPO_ROOT / "agents/omp/diff-skeptic-reviewer.md")
-            result = run_script("uninstall.py", "--target", "ohmypi", "--skills-dir", skills_dir, "--agents-dir", agents_dir, "--skill", "diff-skeptic")
+            skill = skills_dir / "forge"
+            skill.symlink_to(REPO_ROOT / "skills/forge", target_is_directory=True)
+            reviewer = agents_dir / "forge-strict-reviewer.md"
+            reviewer.symlink_to(REPO_ROOT / "agents/omp/forge-strict-reviewer.md")
+            result = run_script("uninstall.py", "--target", "ohmypi", "--skills-dir", skills_dir, "--agents-dir", agents_dir, "--skill", "forge")
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertFalse(skill.is_symlink())
             self.assertFalse(reviewer.is_symlink())
@@ -286,10 +283,10 @@ class ToolingTests(unittest.TestCase):
     def test_uninstall_rolls_back_when_second_unlink_fails(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             temporary_root = Path(temporary)
-            skill_destination = temporary_root / "diff-skeptic"
-            reviewer_destination = temporary_root / "diff_skeptic_reviewer.toml"
-            skill_source = REPO_ROOT / "skills" / "diff-skeptic"
-            reviewer_source = REPO_ROOT / "agents" / "diff_skeptic_reviewer.toml"
+            skill_destination = temporary_root / "forge"
+            reviewer_destination = temporary_root / "forge_strict_reviewer.toml"
+            skill_source = REPO_ROOT / "skills" / "forge"
+            reviewer_source = REPO_ROOT / "agents" / "forge_strict_reviewer.toml"
             skill_destination.symlink_to(skill_source, target_is_directory=True)
             reviewer_destination.symlink_to(reviewer_source)
 
@@ -316,16 +313,16 @@ class ToolingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             skills_dir = Path(temporary) / "skills"
             agents_dir = Path(temporary) / "agents"
-            destination = skills_dir / "forge-review-loop"
-            skeptic_destination = skills_dir / "diff-skeptic"
-            skeptic_source = REPO_ROOT / "skills" / "diff-skeptic"
-            reviewer_destination = agents_dir / "diff_skeptic_reviewer.toml"
-            reviewer_source = REPO_ROOT / "agents" / "diff_skeptic_reviewer.toml"
+            destination = skills_dir / "unslop"
+            forge_destination = skills_dir / "forge"
+            forge_source = REPO_ROOT / "skills" / "forge"
+            reviewer_destination = agents_dir / "forge_strict_reviewer.toml"
+            reviewer_source = REPO_ROOT / "agents" / "forge_strict_reviewer.toml"
             destination.mkdir(parents=True)
             marker = destination / "owned-by-user"
             marker.write_text("preserve", encoding="utf-8")
 
-            skeptic_destination.symlink_to(skeptic_source, target_is_directory=True)
+            forge_destination.symlink_to(forge_source, target_is_directory=True)
             agents_dir.mkdir(parents=True)
             reviewer_destination.symlink_to(reviewer_source)
             uninstall = run_script(
@@ -337,8 +334,8 @@ class ToolingTests(unittest.TestCase):
             )
             self.assertEqual(uninstall.returncode, 1)
             self.assertTrue(marker.exists())
-            self.assertTrue(skeptic_destination.is_symlink())
-            self.assertEqual(skeptic_destination.resolve(), skeptic_source.resolve())
+            self.assertTrue(forge_destination.is_symlink())
+            self.assertEqual(forge_destination.resolve(), forge_source.resolve())
             self.assertTrue(reviewer_destination.is_symlink())
             self.assertEqual(reviewer_destination.resolve(), reviewer_source.resolve())
             self.assertIn("no changes made", uninstall.stderr)
@@ -412,50 +409,21 @@ class ToolingTests(unittest.TestCase):
             )
 
     def test_validator_requires_orchestration_dependencies(self) -> None:
-        cases = (
-            (
-                ("adversarial-review-loop",),
-                (("adversarial-review-loop", "subagent-delegation"),),
-            ),
-            (
-                ("forge-review-loop",),
-                (
-                    ("forge-review-loop", "subagent-delegation"),
-                    ("forge-review-loop", "adversarial-review-loop"),
-                ),
-            ),
-            (
-                ("subagent-delegation", "forge-review-loop"),
-                (("forge-review-loop", "adversarial-review-loop"),),
-            ),
-            (
-                ("adversarial-review-loop", "forge-review-loop"),
-                (
-                    ("adversarial-review-loop", "subagent-delegation"),
-                    ("forge-review-loop", "subagent-delegation"),
-                ),
-            ),
-        )
-        for names, missing_dependencies in cases:
-            with self.subTest(names=names):
-                with tempfile.TemporaryDirectory() as temporary:
-                    repo_root = Path(temporary)
-                    write_orchestration_skills(repo_root, names)
+        with tempfile.TemporaryDirectory() as temporary:
+            repo_root = Path(temporary)
+            write_orchestration_skills(repo_root, ("forge",))
 
-                    result = run_script("validate.py", "--repo-root", repo_root)
+            result = run_script("validate.py", "--repo-root", repo_root)
 
-                    self.assertEqual(result.returncode, 1)
-                    for name, dependency in missing_dependencies:
-                        self.assertIn(
-                            f"{name} requires skill dependency {dependency}",
-                            result.stderr,
-                        )
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "forge requires skill dependency subagent-delegation", result.stderr
+            )
 
     def test_validator_accepts_complete_orchestration_dependency_sets(self) -> None:
         cases = (
             ("subagent-delegation",),
-            ("subagent-delegation", "adversarial-review-loop"),
-            ("subagent-delegation", "adversarial-review-loop", "forge-review-loop"),
+            ("subagent-delegation", "forge"),
         )
         for names in cases:
             with self.subTest(names=names):
@@ -476,11 +444,7 @@ class ToolingTests(unittest.TestCase):
             ("mismatched marker", 'metadata:\n  orchestration-contract: "2"\n'),
             ("numeric marker", "metadata:\n  orchestration-contract: 1\n"),
         )
-        for name in (
-            "subagent-delegation",
-            "adversarial-review-loop",
-            "forge-review-loop",
-        ):
+        for name in ("subagent-delegation", "forge"):
             for label, replacement in cases:
                 with self.subTest(name=name, marker=label):
                     with tempfile.TemporaryDirectory() as temporary:
@@ -522,16 +486,11 @@ class ToolingTests(unittest.TestCase):
                 result.stderr.count(
                     "metadata.orchestration-contract must be the string '1'"
                 ),
-                3,
+                2,
             )
 
     def test_validator_preserves_orchestration_invocation_policy(self) -> None:
-        cases = (
-            ("subagent-delegation", "false", "true"),
-            ("adversarial-review-loop", "false", "true"),
-            ("forge-review-loop", "true", "false"),
-        )
-        for name, expected_disabled, expected_implicit in cases:
+        for name in ("subagent-delegation", "forge"):
             for change_skill, change_policy in (
                 (True, False),
                 (False, True),
@@ -543,23 +502,19 @@ class ToolingTests(unittest.TestCase):
                         skill_dir = write_orchestration_skills(repo_root)[name]
                         if change_skill:
                             skill_file = skill_dir / "SKILL.md"
-                            text = skill_file.read_text(encoding="utf-8")
-                            if expected_disabled == "true":
-                                text = text.replace(
-                                    "disable-model-invocation: true\n", ""
-                                )
-                            else:
-                                text = text.replace(
+                            skill_file.write_text(
+                                skill_file.read_text(encoding="utf-8").replace(
                                     f"name: {name}\n",
                                     f"name: {name}\ndisable-model-invocation: true\n",
-                                )
-                            skill_file.write_text(text, encoding="utf-8")
+                                ),
+                                encoding="utf-8",
+                            )
                         if change_policy:
                             metadata_file = skill_dir / "agents" / "openai.yaml"
                             metadata_file.write_text(
                                 metadata_file.read_text(encoding="utf-8").replace(
-                                    f"allow_implicit_invocation: {expected_implicit}",
-                                    f"allow_implicit_invocation: {expected_disabled}",
+                                    "allow_implicit_invocation: true",
+                                    "allow_implicit_invocation: false",
                                 ),
                                 encoding="utf-8",
                             )
@@ -569,64 +524,39 @@ class ToolingTests(unittest.TestCase):
                         self.assertEqual(result.returncode, 1)
                         if change_skill:
                             self.assertIn(
-                                f"{name} disable-model-invocation "
-                                f"must be {expected_disabled}",
+                                f"{name} disable-model-invocation must be false",
                                 result.stderr,
                             )
                         if change_policy:
                             self.assertIn(
-                                f"{name} policy.allow_implicit_invocation "
-                                f"must be {expected_implicit}",
+                                f"{name} policy.allow_implicit_invocation must be true",
                                 result.stderr,
                             )
 
     def test_validator_enforces_forge_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo_root = Path(temporary)
-            skill_dir = write_orchestration_skills(repo_root)["forge-review-loop"]
+            skill_dir = write_orchestration_skills(repo_root)["forge"]
             valid = run_script("validate.py", "--repo-root", repo_root)
             self.assertEqual(valid.returncode, 0, valid.stderr)
             metadata_file = skill_dir / "agents" / "openai.yaml"
             metadata_file.write_text(
                 metadata_file.read_text(encoding="utf-8")
-                .replace('display_name: "The Forge"', 'display_name: "Old Forge"')
-                .replace(
-                    "allow_implicit_invocation: false",
-                    "allow_implicit_invocation: true",
-                ),
+                .replace('display_name: "The Forge"', 'display_name: "Old Forge"'),
                 encoding="utf-8",
             )
 
             result = run_script("validate.py", "--repo-root", repo_root)
             self.assertEqual(result.returncode, 1)
             self.assertIn("interface.display_name must be 'The Forge'", result.stderr)
-            self.assertIn(
-                "policy.allow_implicit_invocation must be false", result.stderr
-            )
 
-    def test_validator_enforces_diff_skeptic_identity(self) -> None:
+    def test_validator_requires_forge_strict_reviewer(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo_root = Path(temporary)
-            skill_dir = write_minimal_skill(repo_root, "diff-skeptic")
-            metadata_file = skill_dir / "agents" / "openai.yaml"
-            metadata_file.write_text(
-                metadata_file.read_text(encoding="utf-8")
-                .replace('display_name: "Test Skill"', 'display_name: "Passive Review"')
-                .replace(
-                    "allow_implicit_invocation: false",
-                    "allow_implicit_invocation: true",
-                ),
-                encoding="utf-8",
-            )
+            write_minimal_skill(repo_root, "forge")
 
             result = run_script("validate.py", "--repo-root", repo_root)
             self.assertEqual(result.returncode, 1)
-            self.assertIn(
-                "interface.display_name must be 'Diff Skeptic'", result.stderr
-            )
-            self.assertIn(
-                "policy.allow_implicit_invocation must be false", result.stderr
-            )
             self.assertIn("missing custom agent dependency", result.stderr)
 
     def test_validator_enforces_unslop_identity_and_implicit_invocation(self) -> None:
@@ -693,14 +623,14 @@ class ToolingTests(unittest.TestCase):
                 "unslop interface.display_name must be 'Unslop'", renamed.stderr
             )
 
-    def test_validator_enforces_diff_skeptic_reviewer_contract(self) -> None:
+    def test_validator_enforces_forge_strict_reviewer_contract(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo_root = Path(temporary)
             write_minimal_skill(repo_root)
             agents_dir = repo_root / "agents"
             agents_dir.mkdir()
-            (agents_dir / "diff_skeptic_reviewer.toml").write_text(
-                """name = "diff_skeptic_reviewer"
+            (agents_dir / "forge_strict_reviewer.toml").write_text(
+                """name = "forge_strict_reviewer"
 description = "Review immutable diff bundles."
 developer_instructions = "Return actionable findings."
 sandbox_mode = "workspace-write"
@@ -723,9 +653,9 @@ model_reasoning_effort = "high"
             write_minimal_skill(repo_root)
             claude_agents = repo_root / "agents" / "claude"
             claude_agents.mkdir(parents=True)
-            (claude_agents / "diff-skeptic-reviewer.md").write_text(
+            (claude_agents / "forge-strict-reviewer.md").write_text(
                 """---
-name: diff-skeptic-reviewer
+name: forge-strict-reviewer
 description: Review immutable diff bundles.
 tools: [Read, Grep, Glob, Agent]
 disallowedTools: []
@@ -739,9 +669,9 @@ Review the bundle.
             )
             omp_agents = repo_root / "agents" / "omp"
             omp_agents.mkdir(parents=True)
-            (omp_agents / "diff-skeptic-reviewer.md").write_text(
+            (omp_agents / "forge-strict-reviewer.md").write_text(
                 """---
-name: diff-skeptic-reviewer
+name: forge-strict-reviewer
 description: Review immutable diff bundles.
 tools: [read, grep, task]
 spawns: [task]
@@ -773,7 +703,7 @@ Review the bundle.
                 destination = repo_root / source.name
                 destination.symlink_to(source, target_is_directory=True)
 
-            claude_agent = REPO_ROOT / "agents/claude/diff-skeptic-reviewer.md"
+            claude_agent = REPO_ROOT / "agents/claude/forge-strict-reviewer.md"
             copied_agents = repo_root / "copied-claude"
             copied_agents.mkdir()
             copied_agent = copied_agents / claude_agent.name
@@ -787,8 +717,8 @@ Review the bundle.
             (repo_root / "agents").unlink()
             agents_root = repo_root / "agents"
             agents_root.mkdir()
-            (agents_root / "diff_skeptic_reviewer.toml").symlink_to(
-                REPO_ROOT / "agents/diff_skeptic_reviewer.toml"
+            (agents_root / "forge_strict_reviewer.toml").symlink_to(
+                REPO_ROOT / "agents/forge_strict_reviewer.toml"
             )
             (agents_root / "omp").symlink_to(
                 REPO_ROOT / "agents/omp", target_is_directory=True
