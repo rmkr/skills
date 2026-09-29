@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Run any requested review loop (repair loops, review until clean) or adversarial review, and independently review substantial work, at three levels - review (verified findings only), fix (correct and re-review until clean), and build (on request, workers implement, then fix). Covers software, research, plans, documents, presentations, and spreadsheets. Add strict on request for a Git diff that needs a runtime-enforced read-only reviewer. Challenge assumptions and fulfillment of the brief, and verify every finding.
-argument-hint: "[review|fix|build] [strict]"
+argument-hint: "[review|fix|build] [strict] [mid=<model>] [top=<model>] [reviewer=capped|top|inherit|<model>]"
 metadata:
   orchestration-contract: "1"
 ---
@@ -30,7 +30,19 @@ Resolve `subagent-delegation` through the runtime's skill catalog and read its r
 
 Use delegation's authority, effective-permission, assignment, ownership, model-selection, lifecycle, and worker-recovery rules. Preflight a native reviewer before substantial work. An ordinary subagent with an inspection-only assignment is sufficient for this loop; apply stronger isolation only at `strict` or when explicitly required by the user or enclosing workflow. If no reviewer meets that boundary, follow delegation's local-inspection fallback and report the unmet independent-review requirement.
 
-Reuse the active task's acceptance criteria, ownership, baseline, and evidence. Add review records to the same task state instead of creating another orchestrator or re-entering the caller. A caller may supply a supported reviewer capability preference through delegation's selection rules; otherwise inherit runtime selection.
+Reuse the active task's acceptance criteria, ownership, baseline, and evidence. Add review records to the same task state instead of creating another orchestrator or re-entering the caller.
+
+## Match models to roles
+
+Assign each agent a tier:
+
+- **Mid** for bounded, well-specified assignments: execution-capable implementation workers, accepted fixes, researchers, validation runs, and the complexity reviewer.
+- **Top** for ambiguous, architectural, or cross-cutting work, including research on it, and for an issue that survives two mid-tier fixes. These conditions override the mid-tier roles.
+- **Reviewer:** the adversarial reviewer and its re-reviews use the top tier, with high reasoning when supported, at `build` and whenever the target meets the top-tier conditions. Otherwise they use the session model, capped at the top tier; if the session model cannot be ranked against the top tier, use the top tier and report it. When the reviewer's tier changes during the loop, spawn a new reviewer on the new model. This is the reviewer setting's default, `capped`; `top` always uses the top tier, and `inherit` always uses the session model.
+
+Map tiers to models only from the user's request, settings, or supported caller preferences, and pass the result through delegation's model-selection rules. A tier set to `inherit` uses the session model. The user can override for one run with `mid=<model>`, `top=<model>`, or `reviewer=<policy or model>`, with or without a level, or in plain words that direct The Forge's agents. Model names that describe the task do not override. Read repository settings from `docs/agents/forge.md`, and global settings from a `### The Forge` block under `## Agent skills` in global instructions. Resolve each setting for the active runtime separately: the user's request, then repository settings, then global settings, then supported caller preferences. A caller preference cannot choose a model above the top tier as resolved without caller preferences, which is the session model when nothing else maps it, or lift the reviewer cap. When the target adds or changes these settings, read them from the recorded baseline, review the change as content, and report that the new settings apply once they are outside the reviewed change.
+
+When nothing maps a tier to a model, agents in that tier inherit the session model. A tier whose mapped model the runtime does not offer, or any tier when the runtime has no per-agent model choice, also inherits; report it. The top tier is the ceiling: if mid resolves to a model ranked above top's, mid uses top's model and the report says so, unless the user's request for this run set mid, including to `inherit`; then keep mid, report the inversion, and keep issues that survive two mid-tier fixes on mid's model. Leave models that cannot be ranked as resolved. When no settings cover the active runtime and the target does not add them, end the report with one line suggesting the runtime's explicit invocation of `setup-rmkr-skills`, such as `$setup-rmkr-skills` in Codex or `/setup-rmkr-skills` in Claude Code. Tiers do not change permissions.
 
 ## Set the boundary
 
@@ -64,7 +76,7 @@ Verify each claim against the target and its requirements. Use the smallest rele
 
 Apply evidence-backed corrections within the authorized scope. Reject unsupported or preference-only suggestions. Investigate uncertainty before asking the user; ask when intent, missing information, or extra authority remains necessary. Correct factual errors within the agreed task, but bring proposed changes to the user's goal or intended position back to the user with evidence. Report material out-of-scope findings without silently expanding the work.
 
-At `fix`, the orchestrator can fix cohesive changes directly. At `build`, or when an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
+At `fix`, the orchestrator can fix cohesive changes directly or assign them to a worker with explicit ownership. At `build`, or when an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
 
 Run required validation using relevant existing domain skills and task requirements: source verification for research, capacity and dependency checks for plans, recalculation for spreadsheets, rendered inspection for documents or slides, and applicable software tests. Use only the checks the artifact needs, and add other specialist reviewers only when distinct expertise is needed. For materially changed skills, forward-test realistic requests against raw fixtures in a temporary workspace. Give the evaluator the request and candidate skill without the intended answer or prior findings. Judge its behavior and output, not only its explanation of the instructions.
 
