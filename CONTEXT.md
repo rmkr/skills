@@ -21,3 +21,15 @@ How far The Forge carries a review improvement loop: `review` stops at verified 
 
 **Strict review**:
 A review on a Git target by a runtime-enforced read-only reviewer against an immutable, fingerprinted bundle. It is an option on any review level.
+
+**Model tier**:
+A capability level The Forge assigns to an agent by its role: mid for bounded, well-specified work, top for ambiguous, architectural, or cross-cutting work.
+_Avoid_: Model class, model level
+
+**Runtime**:
+The coding agent that runs skills and starts subagents, such as Claude Code, Codex, or OhMyPi. Forge settings map each model tier to a model id per runtime.
+_Avoid_: Client, harness, platform
+
+**Provider**:
+The service a runtime gets models from, such as Anthropic, OpenAI, or OpenRouter. A provider is part of a model id, not a separate setting.
+_Avoid_: Vendor, backend
