@@ -7,10 +7,11 @@ My agent skills for planning, execution, review, and communication across subjec
 | Skill | Use it when | Required companions | Invocation |
 | --- | --- | --- | --- |
 | [Subagent Delegation](skills/subagent-delegation/SKILL.md) | Parts of a task benefit from separate agents, with one main agent coordinating the results. No formal plan or implementation worker is required. | None | Automatic or explicit |
-| [The Forge](skills/forge/SKILL.md) | Work needs independent scrutiny of its assumptions and delivery, across software, research, plans, documents, and other subjects. Levels: `review` returns verified findings, `fix` corrects and re-reviews until clean, and `build` has workers implement software first. Add `strict` for a runtime-enforced read-only reviewer on a Git diff. | Subagent Delegation; the strict reviewer for `strict` | Automatic or explicit |
+| [The Forge](skills/forge/SKILL.md) | Work needs independent scrutiny of its assumptions and delivery, across software, research, plans, documents, and other subjects. Levels: `review` returns verified findings, `fix` corrects and re-reviews until clean, and `build` has workers implement software first. Add `strict` for a runtime-enforced read-only reviewer on a Git diff. | Subagent Delegation; the strict reviewer for `strict`; optionally Setup rmkr skills to configure model tiers | Automatic or explicit |
 | [Unslop](skills/unslop/SKILL.md) | Prose needs formulaic phrasing removed while preserving meaning and evidence. | None | Automatic or explicit |
 | [Triage Investigate](skills/triage-investigate/SKILL.md) | A reported bug needs investigation using logs and source, with an evidence-backed HTML report and Markdown handoff. | uv and Python 3.11+ for rendering | Automatic or explicit |
 | [Concise Write-up](skills/concise-writeup/SKILL.md) | Existing findings need a concise summary with evidence and known next steps. | None | Explicit only |
+| [Setup rmkr skills](skills/setup-rmkr-skills/SKILL.md) | You want global or per-repository settings for these skills, starting with The Forge's model tiers and reviewer policy. | None | Explicit only |
 
 A review request does not authorize edits. Reviewers inspect; the main agent verifies findings and owns any separately authorized corrections. The Forge's `strict` mode requires runtime-enforced read-only and no-delegation controls. Routine independent review uses ordinary native subagents with inspection-only assignments.
 

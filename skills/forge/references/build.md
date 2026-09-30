@@ -8,8 +8,6 @@ Establish the requested outcomes, checkable acceptance criteria, write authority
 
 Check implementation delegation alongside the reviewer preflight. If a required capability is unavailable, disclose the unmet workflow requirement; useful local work does not fulfill required delegation or independent review. Honor an explicit instruction to wait for that capability.
 
-Pass these preferences through delegation's model-selection rules: an appropriate execution-capable worker, and the highest-capability advertised reviewer with high reasoning when supported. Explicit user choices take precedence. If capability ranking or selection is unavailable, inherit runtime selection and disclose the limitation. These preferences do not change permissions or justify invented model rankings.
-
 ## Implement
 
 Workers normally perform their own task-specific research. Use a researcher only when shared unknowns, consequential choices, or task boundaries justify it under the delegation contract.

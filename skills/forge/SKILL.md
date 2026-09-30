@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Run any requested review loop (repair loops, review until clean) or adversarial review, and independently review substantial work, at three levels - review (verified findings only), fix (correct and re-review until clean), and build (on request, workers implement, then fix). Covers software, research, plans, documents, presentations, and spreadsheets. Add strict on request for a Git diff that needs a runtime-enforced read-only reviewer. Challenge assumptions and fulfillment of the brief, and verify every finding.
-argument-hint: "[review|fix|build] [strict]"
+argument-hint: "[review|fix|build] [strict] [mid=<model>[@effort]] [top=<model>[@effort]] [reviewer=capped|top|inherit|<model>[@effort]]"
 metadata:
   orchestration-contract: "1"
 ---
@@ -30,7 +30,23 @@ Resolve `subagent-delegation` through the runtime's skill catalog and read its r
 
 Use delegation's authority, effective-permission, assignment, ownership, model-selection, lifecycle, and worker-recovery rules. Preflight a native reviewer before substantial work. An ordinary subagent with an inspection-only assignment is sufficient for this loop; apply stronger isolation only at `strict` or when explicitly required by the user or enclosing workflow. If no reviewer meets that boundary, follow delegation's local-inspection fallback and report the unmet independent-review requirement.
 
-Reuse the active task's acceptance criteria, ownership, baseline, and evidence. Add review records to the same task state instead of creating another orchestrator or re-entering the caller. A caller may supply a supported reviewer capability preference through delegation's selection rules; otherwise inherit runtime selection.
+Reuse the active task's acceptance criteria, ownership, baseline, and evidence. Add review records to the same task state instead of creating another orchestrator or re-entering the caller.
+
+## Match models to roles
+
+Assign each agent a tier:
+
+- **Mid** for bounded, well-specified assignments: execution-capable implementation workers, accepted fixes, researchers, validation runs, and the complexity reviewer.
+- **Top** for ambiguous, architectural, or cross-cutting work, including research on it, and for an issue that survives two mid-tier fixes. These conditions override the mid-tier roles.
+- **Reviewer:** the adversarial reviewer and its re-reviews use the top tier at `build` and whenever the target meets the top-tier conditions. Otherwise they use the session model and effort, capped at the top tier; if the session model cannot be ranked against the top tier, use the top tier and report it. A reviewer on the top tier uses top's effort. When the reviewer's tier changes during the loop, spawn a new reviewer on the new tier. This is the reviewer setting's default, `capped`; `top` always uses the top tier, and `inherit` always uses the session model. A reviewer model the runtime does not offer falls back to the next settings scope, then to `capped`.
+
+Map tiers to models only from the user's request, settings, or supported caller preferences, and pass the result through delegation's model-selection rules. Write a tier as `model@effort`, with effort optional. Only the text after the last `@` is effort, and only when it is `low`, `medium`, `high`, `xhigh`, `max`, or `ultra`; otherwise the whole value is the model id, so `<model>@20250514` is a model and `<model>@20250514@high` adds high effort. A colon never separates them. A tier set to `inherit` uses the session model, and `inherit@high` uses it at high effort; a tier without effort uses the session effort. The user can override for one run with `mid=`, `top=`, or `reviewer=` (a policy, or a model with optional effort), with or without a review level, or in plain words that direct The Forge's agents. Plain words naming only an effort, such as "use high effort for the workers", keep the tier's resolved model. Model names that describe the task do not override. Read repository settings from `docs/agents/forge.md`, and global settings from a `### The Forge` block under `## Agent skills` in global instructions. Resolve each setting for the active runtime separately: the user's request, then repository settings, then global settings, then supported caller preferences, then the session model and effort. A caller preference cannot choose a model above the top tier as resolved without caller preferences, which is the session model when nothing else maps it, or lift the reviewer cap. When the target adds or changes these settings, read them from the recorded baseline, review the change as content, and report that the new settings apply once they are outside the reviewed change.
+
+When nothing maps a tier to a model, agents in that tier inherit the session model. A tier whose mapped model the runtime does not offer, or any tier when the runtime has no per-agent model choice, also inherits; report it. In Claude Code, map a full model id or versioned model name to the Agent-tool alias that currently resolves to that exact id, and report the mapping; any other id counts as not offered. The top tier is the ceiling for models; effort resolves separately per tier. If mid resolves to a model ranked above top's, mid uses top's model and the report says so, unless the user's request for this run set mid to an offered model or to `inherit`; then keep mid, report the inversion, and keep issues that survive two mid-tier fixes on mid's model. Leave models that cannot be ranked as resolved.
+
+Apply effort through the effort agents `setup-rmkr-skills` generates: `forge-<effort>` in Claude Code and `forge_<effort>` in Codex, such as `forge-medium`. For an explicit effort, start the matching one and pass the resolved model per spawn. Without explicit effort, start an ordinary agent with that model at the session effort. When no effort agent matches an explicit effort, or the runtime cannot set effort, start an ordinary agent with that model and report the unapplied effort; when an effort agent is missing, suggest rerunning setup to add that level. Do not pass undocumented per-spawn effort arguments. The strict reviewer keeps the session effort; report it. Report each tier's resolved model and effort.
+
+When no settings cover the active runtime and the target does not add them, end the report in Codex or Claude Code with one line suggesting `$setup-rmkr-skills` or `/setup-rmkr-skills` respectively; in other runtimes, report that The Forge uses the session model and effort. Tiers do not change permissions.
 
 ## Set the boundary
 
@@ -64,7 +80,7 @@ Verify each claim against the target and its requirements. Use the smallest rele
 
 Apply evidence-backed corrections within the authorized scope. Reject unsupported or preference-only suggestions. Investigate uncertainty before asking the user; ask when intent, missing information, or extra authority remains necessary. Correct factual errors within the agreed task, but bring proposed changes to the user's goal or intended position back to the user with evidence. Report material out-of-scope findings without silently expanding the work.
 
-At `fix`, the orchestrator can fix cohesive changes directly. At `build`, or when an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
+At `fix`, the orchestrator can fix cohesive changes directly or assign them to a worker with explicit ownership. At `build`, or when an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
 
 Run required validation using relevant existing domain skills and task requirements: source verification for research, capacity and dependency checks for plans, recalculation for spreadsheets, rendered inspection for documents or slides, and applicable software tests. Use only the checks the artifact needs, and add other specialist reviewers only when distinct expertise is needed. For materially changed skills, forward-test realistic requests against raw fixtures in a temporary workspace. Give the evaluator the request and candidate skill without the intended answer or prior findings. Judge its behavior and output, not only its explanation of the instructions.
 

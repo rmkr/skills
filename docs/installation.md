@@ -29,15 +29,15 @@ bunx skills@latest add ./skills --global --agent codex --skill unslop
 
 `unslop` in the examples is a standalone skill. Replace it with the skill names you need, using the [README chooser](../README.md). Omit `--skill` to choose interactively.
 
-The Forge needs Subagent Delegation. Install both from the same chosen release:
+The Forge needs Subagent Delegation; Setup rmkr skills is optional and configures its model tiers. Install them from the same chosen release:
 
 ```bash
-bunx skills@latest add "https://github.com/rmkr/skills/tree/$release" --global --agent codex --skill subagent-delegation forge
+bunx skills@latest add "https://github.com/rmkr/skills/tree/$release" --global --agent codex --skill subagent-delegation forge setup-rmkr-skills
 ```
 
-For development, substitute `rmkr/skills` for the release URL. Both skills require matching orchestration contract version `1`; their presence in the runtime's skill catalog matters as well as their presence on disk.
+For development, substitute `rmkr/skills` for the release URL. Subagent Delegation and The Forge require matching orchestration contract version `1`; their presence in the runtime's skill catalog matters as well as their presence on disk.
 
-Start a fresh session and confirm that the installed skills are available. In Codex, invoke `$unslop` or another `$skill-name`. Concise Write-up requires explicit invocation. See [compatibility](compatibility.md) for other runtimes and enforcement limitations.
+Start a fresh session and confirm that the installed skills are available. In Codex, invoke `$unslop` or another `$skill-name`. Concise Write-up and Setup rmkr skills require explicit invocation. See [compatibility](compatibility.md) for other runtimes and enforcement limitations.
 
 ## Configure the strict reviewer
 
