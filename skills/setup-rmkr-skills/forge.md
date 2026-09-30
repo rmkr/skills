@@ -2,7 +2,7 @@
 
 ## Suggested tiers
 
-These are suggestions; the user may choose any model the runtime offers, Fable included. The Claude Code values are benchmarked; the Codex values are taken from Artificial Analysis.
+These are suggestions; the user may choose any model the runtime offers, Fable included.
 
 | Runtime | Mid | Top |
 | --- | --- | --- |
