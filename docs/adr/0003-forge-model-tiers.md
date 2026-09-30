@@ -4,7 +4,7 @@ status: accepted
 
 # Model tiers in The Forge, configured by settings
 
-The Forge previously left model choice to the runtime, apart from asking for the highest-capability reviewer at `build`. On 2026-09-29 the maintainer asked for bounded work to go to mid-tier models such as Sonnet or Sol, for the proposed top tier to be Opus or Astra rather than a higher model such as Fable, while leaving any offered model, Fable included, available to users who choose it, and for The Forge to use the session model when nothing is configured.
+The Forge previously left model choice to the runtime, apart from asking for the highest-capability reviewer at `build`. On 2026-09-29 the maintainer asked for bounded work to go to mid-tier models such as Sonnet or Sol, for the proposed top tier to be Opus or Astra, while leaving any offered model available to users who choose it, and for The Forge to use the session model when nothing is configured.
 
 Later that day (#9), Artificial Analysis benchmarks showed effort level matters as much as model choice: Opus 5.5 at medium effort beats Sonnet 5.5 at high, and GPT-6.1 Sol at xhigh matches GPT-6 Astra at high for about a quarter of the cost, and comes close at medium. Setup also configured every runtime from whichever one ran it, guessing other runtimes' ids, and pinned versioned ids that go stale.
 

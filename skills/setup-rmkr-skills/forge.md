@@ -2,7 +2,7 @@
 
 ## Suggested tiers
 
-These are suggestions; the user may choose any model the runtime offers, Fable included.
+These are suggestions; the user may choose any model the runtime offers.
 
 | Runtime | Mid | Top |
 | --- | --- | --- |
