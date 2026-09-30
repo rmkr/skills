@@ -27,3 +27,17 @@ Routine independent audits and The Forge use ordinary native subagents with expl
 - Reject absolute user-specific paths from portable agent definitions.
 - Run `uv run python scripts/validate.py` and `uv run python -m unittest discover -s tests -v` after repository changes.
 - Review the final combined state with an independent subagent created through the active coding tool's native subagent facility, and apply accepted findings before declaring completion. Keep the review in that tool; do not launch another coding agent CLI or external review service. If a suitable native reviewer is unavailable, report the unmet review requirement and continue authorized local checks.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub Issues in `rmkr/skills`, using `gh`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default labels, unchanged. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `CONTEXT.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
