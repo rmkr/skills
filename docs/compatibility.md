@@ -16,7 +16,7 @@ The [installation guide](installation.md) lists the matching reviewer files and 
 
 Concise Write-up and Setup rmkr skills require explicit invocation. Their entrypoints declare `disable-model-invocation: true`; OpenAI metadata also declares `allow_implicit_invocation: false`. These are client-specific policies, not universal Agent Skills guarantees. Other skills permit automatic selection when relevant.
 
-The Forge declares `argument-hint: "[review|fix|build] [strict] [mid=<model>] [top=<model>] [reviewer=capped|top|inherit|<model>]"`, which Claude Code shows beside `/forge` in slash-command autocomplete. It is a second deliberate client extension, display-only. Codex and OhMyPi ignore it; strict Agent Skills consumers such as claude.ai uploads and the Skills API may reject it. Removing it loses only the hint.
+The Forge declares `argument-hint: "[review|fix|build] [strict] [mid=<model>[@effort]] [top=<model>[@effort]] [reviewer=capped|top|inherit|<model>[@effort]]"`, which Claude Code shows beside `/forge` in slash-command autocomplete. It is a second deliberate client extension, display-only. Codex and OhMyPi ignore it; strict Agent Skills consumers such as claude.ai uploads and the Skills API may reject it. Removing it loses only the hint.
 
 Clients that do not enforce an explicit-invocation policy cannot satisfy that requirement merely by loading the Markdown. Historical OhMyPi behavior hides explicit-only skills from the model's catalog but still permits direct skill-path access; do not treat that as the same hard restriction. Strict Agent Skills consumers may reject the extension. Removing it changes behavior and is not a supported workaround for preserving explicit-only use.
 

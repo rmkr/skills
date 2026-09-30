@@ -26,8 +26,12 @@ A review on a Git target by a runtime-enforced read-only reviewer against an imm
 A capability level The Forge assigns to an agent by its role: mid for bounded, well-specified work, top for ambiguous, architectural, or cross-cutting work.
 _Avoid_: Model class, model level
 
+**Effort level**:
+The reasoning depth a model applies, set per model tier and distinct from the model. Forge settings write a tier as `model@effort`.
+_Avoid_: Reasoning level, thinking budget
+
 **Runtime**:
-The coding agent that runs skills and starts subagents, such as Claude Code, Codex, or OhMyPi. Forge settings map each model tier to a model id per runtime.
+The coding agent that runs skills and starts subagents, such as Claude Code, Codex, or OhMyPi. Forge settings map each model tier to a model and optional effort per runtime.
 _Avoid_: Client, harness, platform
 
 **Provider**:
