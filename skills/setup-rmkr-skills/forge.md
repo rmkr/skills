@@ -2,14 +2,14 @@
 
 ## Suggested tiers
 
-These are suggestions; the user may choose any model the runtime offers, Fable included.
+These are suggestions; the user may choose any model the runtime offers.
 
 | Runtime | Mid | Top |
 | --- | --- | --- |
 | Claude Code | `opus@medium` | `opus@high` |
 | Codex | latest Sol `@medium` | latest Sol `@xhigh` |
 
-In Claude Code, write tier models only as the Agent tool's per-call aliases, `sonnet`, `opus`, `haiku`, or `fable`, or as `inherit`. Resolve "latest Sol" to the newest plain Sol release in Codex's live model list, such as `gpt-6.1-sol`, ignoring variants such as `-mini`, and write that exact id.
+In Claude Code, write tier models only as the Agent tool's per-call aliases or as `inherit`. Resolve "latest Sol" to the newest plain Sol release in Codex's live model list, such as `gpt-6.1-sol`, ignoring variants such as `-mini`, and write that exact id.
 
 ## Repository settings
 

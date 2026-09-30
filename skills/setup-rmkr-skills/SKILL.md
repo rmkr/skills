@@ -24,7 +24,7 @@ Read what exists instead of assuming:
 Summarise what exists and what is missing. Ask one question at a time and lead with the recommended answer.
 
 1. **Scope:** global, recommended when no global settings exist, or this repository. Repository settings override global ones, so use them for exceptions.
-2. **Tiers:** propose the active runtime's suggested tiers from [forge.md](forge.md), resolved against its live model list, or `inherit` for every tier to follow the session model. Present only the suggested values and that they are suggestions: the user may choose any model and effort the runtime offers, including a model above the proposal, such as Fable. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
+2. **Tiers:** propose the active runtime's suggested tiers from [forge.md](forge.md), resolved against its live model list, or `inherit` for every tier to follow the session model. Present only the suggested values and that they are suggestions: the user may choose any model and effort the runtime offers. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
 3. **Reviewer:** `capped` (recommended): the top tier at `build` and when the target is ambiguous, architectural, or cross-cutting, or an issue survives two mid-tier fixes; otherwise the session model capped at the top tier. `top` always uses the top tier, and `inherit` always uses the session model.
 
 ## 3. Confirm and write
