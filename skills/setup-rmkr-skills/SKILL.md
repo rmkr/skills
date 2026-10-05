@@ -24,8 +24,8 @@ Read what exists instead of assuming:
 Summarise what exists and what is missing. Ask one question at a time and lead with the recommended answer.
 
 1. **Scope:** global, recommended when no global settings exist, or this repository. Repository settings override global ones, so use them for exceptions.
-2. **Tiers:** propose the active runtime's suggested tiers from [forge.md](forge.md), resolved against its live model list, or `inherit` for every tier to follow the session model. Present only the suggested values and that they are suggestions: the user may choose any model and effort the runtime offers. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
-3. **Reviewer:** `capped` (recommended): the top tier at `build` and when the target is ambiguous, architectural, or cross-cutting, or an issue survives two mid-tier fixes; otherwise the session model capped at the top tier. `top` always uses the top tier, and `inherit` always uses the session model.
+2. **Tiers:** offer the active runtime's suggested tiers from [forge.md](forge.md), resolved against its live model list (recommended), and **Inherit session** (`Mid=inherit`, `Top=inherit`). Explain that `inherit` follows the session model and effort on each Forge run. Either tier may use `inherit` independently, `inherit@<effort>` for a fixed effort, or any model and effort the runtime offers. Write `inherit` literally, preserving any chosen effort suffix. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
+3. **Reviewer:** offer `capped` (recommended), `top`, and `inherit`. `capped` uses the top tier at `build` and when the target is ambiguous, architectural, or cross-cutting, or an issue survives two mid-tier fixes; otherwise the session model capped at the top tier. `top` always uses the top tier, and `inherit` always uses the session model.
 
 ## 3. Confirm and write
 
@@ -42,7 +42,7 @@ Show the draft and let the user edit it. Then write:
 
   Edit `CLAUDE.md` if it exists, else `AGENTS.md`. If neither exists, ask which to create.
 
-- **Effort agents:** at either scope, write the [effort agents](forge.md#effort-agents) for each effort level these settings use, plus any level the user asks for unprompted, to the active runtime's agent folder, confirming the path before creating a missing folder. Generate only known effort levels the runtime offers for the chosen model, and report any others.
+- **Effort agents:** at either scope, write the [effort agents](forge.md#effort-agents) for each explicit effort level these settings use, plus any level the user asks for unprompted, to the active runtime's agent folder, confirming the path before creating a missing folder. Plain `inherit` needs no effort agent. Generate only known effort levels the runtime offers for the chosen model, and report any others.
 
 Update existing blocks and effort agents in place. Preserve surrounding content, including sub-blocks other setup skills wrote under `## Agent skills`.
 
