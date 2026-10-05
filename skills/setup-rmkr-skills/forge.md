@@ -18,7 +18,7 @@ Write this as `docs/agents/forge.md` with the active runtime's column only. In a
 ```markdown
 # The Forge settings
 
-Model and effort for The Forge's tiers, one column per runtime. Write each tier as `model@effort`, with effort optional, and the reviewer as `capped`, `top`, `inherit`, or a model; `inherit` follows the session model, and a missing column or entry falls back to the next settings scope.
+Model and effort for The Forge's tiers, one column per runtime. Write each tier as `model@effort`, with effort optional, and the reviewer as `capped`, `top`, `inherit`, or a model; `inherit` follows the session model and effort on each run, `inherit@<effort>` fixes only the effort, and a missing column or entry falls back to the next settings scope.
 
 | Tier | <runtime> |
 | --- | --- |
