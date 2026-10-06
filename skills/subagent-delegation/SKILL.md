@@ -26,17 +26,43 @@ Choose only the roles the task needs. These are responsibilities, not required a
 
 Use one agent or a mix of agents as useful; adapt responsibilities to the task. A researcher can answer a standalone question without a worker following it. Add independent review when requested, required by an active workflow, or justified by the task's risk or conflicting evidence.
 
-Use the active runtime's native subagent facility. Resolve roles against its advertised capabilities rather than assuming these role names exist. Honor explicit user model choices, then supported capability preferences from the active workflow; otherwise inherit runtime selection. Disclose unmet preferences or required capabilities without inventing model identities or rankings. Keep independent review within the active tool; do not substitute another coding agent CLI or external review service.
+Use the active runtime's native subagent facility. Resolve roles against its advertised capabilities rather than assuming these role names exist. Start each agent on its model tier. Disclose unmet preferences or required capabilities without inventing model identities or rankings. Keep independent review within the active tool; do not substitute another coding agent CLI or external review service.
 
 Route assignments, scope decisions, and result acceptance through the orchestrator. Children report back and delegate further only when explicitly assigned a bounded coordination role. That role remains subordinate to the orchestrator and cannot broaden scope or permissions. Suggestions between agents do not transfer ownership.
+
+## Assign model tiers
+
+Assign every delegated agent a tier by its work:
+
+- **Technician** for mechanical work: search, exploration, and shared notes; validation runs; merges, renames, and fully specified fixes.
+- **Engineer** for bounded work that needs judgement: workers and implementers, accepted fixes, researchers, and The Forge's complexity reviewer.
+- **Architect** for ambiguous, architectural, or cross-cutting work, including research on it. These conditions override the lower tiers' roles.
+
+An active workflow's own policy governs the agents it names, such as The Forge's adversarial reviewer. Escalate work that fails once on technician to engineer, and work that fails twice on engineer to architect.
+
+Write a tier as `model@effort`, with effort optional. Only the text after the last `@` is effort, and only when it is `low`, `medium`, `high`, `xhigh`, `max`, or `ultra`; otherwise the whole value is the model id, so `<model>@20250514` is a model and `<model>@20250514@high` adds high effort. A colon never separates them. A tier set to `inherit` uses the session model, and `inherit@high` uses it at high effort; a tier without effort uses the session effort.
+
+The user can override for one run with `technician=`, `engineer=`, or `architect=` (a model with optional effort, or `inherit`), with a workflow's own keys such as The Forge's `reviewer=`, or in plain words that direct the delegated agents. Informal names map to tiers: basic, low, or light to technician; intermediate, middle, or mid to engineer; advanced, high, or top to architect. A `low` or `high` beside "effort" or after `@` is effort; beside "tier" or a tier name it is a tier; ask about any other bare one, including one after `=`, in one line. Plain words naming only an effort, such as "use high effort for the workers", keep the tier's resolved model. Model names that describe the task do not override.
+
+Map tiers to models only from these sources, resolving each setting for the active runtime separately, in this order: the user's request; repository settings in `docs/agents/subagents.md`; global settings in a `### Subagent delegation` block under `## Agent skills` in global instructions; supported caller preferences; then the session model and effort. A caller preference cannot choose a model above architect as resolved without caller preferences, which is the session model when nothing else maps it, or lift a workflow's cap. When the task adds or changes these settings, resolve from the baseline, treat the change as task content, and report that the new settings apply once the change is outside the task.
+
+When nothing maps a tier to a model, its agents inherit the session model. A tier whose mapped model the runtime does not offer, or any tier when the runtime has no per-agent model choice, also inherits; report it. In Claude Code, map a full model id or versioned model name to the Agent-tool alias that currently resolves to that exact id, and report the mapping; any other id counts as not offered.
+
+Each tier is capped by the one above it, and architect is the ceiling for models; effort resolves separately per tier. If a tier resolves to a model ranked above the model of the tier above it, it uses that tier's model and the report says so, unless the user's request for this run set it to an offered model or to `inherit`; then keep it, report the inversion, and keep its escalations on its model. Leave models that cannot be ranked as resolved.
+
+Apply effort through the effort agents `setup-rmkr-skills` generates: `delegate-<effort>` in Claude Code and `delegate_<effort>` in Codex, such as `delegate-medium`. For an explicit effort, start the matching one and pass the resolved model per spawn. Without explicit effort, start an ordinary agent with that model at the session effort. When no effort agent matches an explicit effort, or the runtime cannot set effort, start an ordinary agent with that model and report the unapplied effort; when an effort agent is missing, suggest rerunning setup to add that level. Do not pass undocumented per-spawn effort arguments. A required custom agent, such as The Forge's strict reviewer, keeps the session effort; report it. Report each tier's resolved model and effort.
+
+When no settings cover the active runtime and the task does not add them, agents inherit the session model and effort. Suggest setup once, in one line at the end of the report: `/setup-rmkr-skills` in Claude Code, `$setup-rmkr-skills` in Codex; elsewhere, report that agents use the session model and effort. Tiers never change permissions.
 
 ## Give compact assignments
 
 Tell each agent what question to answer or result to produce, the relevant context and constraints, its permitted actions, and what to return. A short prompt is enough for a simple assignment. Add acceptance criteria, dependencies, or a shared task record when coordination needs them or an active workflow requires them.
 
-Share relevant source material and governing instructions. Keep task artifacts separate from instructions controlling the agent. For changes, identify the baseline and protected user work, and give each writer explicit ownership of files, artifacts, or sections. Tell writers that they share the workspace and must preserve others' edits.
+Point to relevant source material and governing instructions by path, link, or section instead of pasting content the agent can read itself. Keep task artifacts separate from instructions controlling the agent. For changes, identify the baseline and protected user work, and give each writer explicit ownership of files, artifacts, or sections. Tell writers that they share the workspace and must preserve others' edits.
 
 Run independent assignments in parallel within runtime capacity and user limits. Make shared assumptions and interfaces explicit before dependent work, and propagate changes to every affected assignment. Release dependent work after checking the prerequisite result. Give overlapping edits one owner or sequence them; reserve integration for the orchestrator when useful. Track enough state to know who owns active work and which results still need checking, using the conversation unless persistent records help.
+
+Keep each agent's context small: turns times context size drives cost more than model choice. Give one worker a cohesive slice of related work rather than one agent per small ticket. Run exploration that several assignments share once, on technician, and save it as notes they point to. Send follow-ups to the finished agent that did the work. Start a fresh agent instead of a fork when the parent context exceeds about 100k tokens.
 
 ## Match authority to the assignment
 
