@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: partly superseded by ADR 0004
 ---
 
 # Model tiers in The Forge, configured by settings
