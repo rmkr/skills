@@ -25,8 +25,8 @@ Read what exists instead of assuming:
 Summarise what exists and what is missing. Ask one question at a time and lead with the recommended answer.
 
 1. **Scope:** global, recommended when no global settings exist, or this repository. Repository settings override global ones, so use them for exceptions.
-2. **Tiers:** propose the active runtime's suggested technician, engineer, and architect tiers from [subagents.md](subagents.md), resolved against its live model list, or `inherit` for every tier to follow the session model. Present only the suggested values and that they are suggestions: the user may choose any model and effort the runtime offers. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
-3. **Reviewer**, when The Forge is installed: `capped` (recommended), `architect`, or `inherit`, explained from The Forge's "Match models to roles".
+2. **Tiers:** offer the active runtime's suggested technician, engineer, and architect tiers from [subagents.md](subagents.md), resolved against its live model list (recommended), and **Inherit session** (`inherit` for every tier). Explain that `inherit` follows the session model and effort on each run. Any tier may use `inherit` independently, `inherit@<effort>` for a fixed effort, or any model and effort the runtime offers. Write `inherit` literally, preserving any chosen effort suffix. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
+3. **Reviewer**, when The Forge is installed: offer `capped` (recommended), `architect`, and `inherit`, explained from The Forge's "Match models to roles".
 
 ## 3. Confirm and write
 
@@ -43,7 +43,7 @@ Show the draft and let the user edit it. Then write:
 
   Edit `CLAUDE.md` if it exists, else `AGENTS.md`. If neither exists, ask which to create.
 
-- **Effort agents:** at either scope, write the [effort agents](subagents.md#effort-agents) for each effort level these settings use, plus any level the user asks for unprompted, to the active runtime's agent folder, confirming the path before creating a missing folder. Generate only known effort levels the runtime offers for the chosen model, and report any others.
+- **Effort agents:** at either scope, write the [effort agents](subagents.md#effort-agents) for each explicit effort level these settings use, plus any level the user asks for unprompted, to the active runtime's agent folder, confirming the path before creating a missing folder. Plain `inherit` needs no effort agent. Generate only known effort levels the runtime offers for the chosen model, and report any others.
 - **Subagent model default**, Claude Code only: set `env.CLAUDE_CODE_SUBAGENT_MODEL` in the scope's settings file, the user settings file for global scope or the repository's `.claude/settings.json` for repository scope, to the engineer tier's model alias, the part before `@`, so an agent started without delegation's tiers gets the engineer model rather than the session model. Skip it when the engineer model is `inherit`. Leave `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` unset: it overrides every tier. Include the change in the draft, and edit the JSON in place, keeping every other key, or create the file.
 
 Update existing blocks and effort agents in place. Preserve surrounding content, including sub-blocks other setup skills wrote under `## Agent skills`.

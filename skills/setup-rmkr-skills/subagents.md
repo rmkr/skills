@@ -18,7 +18,7 @@ Write this as `docs/agents/subagents.md` with the active runtime's column only, 
 ```markdown
 # Subagent delegation settings
 
-Model and effort for subagent delegation's model tiers and The Forge's reviewer, one column per runtime. Write each tier as `model@effort`, with effort optional, and the reviewer as `capped`, `architect`, `inherit`, or a model; `inherit` follows the session model, and a missing column or entry falls back to the next settings scope.
+Model and effort for subagent delegation's model tiers and The Forge's reviewer, one column per runtime. Write each tier as `model@effort`, with effort optional, and the reviewer as `capped`, `architect`, `inherit`, or a model; `inherit` follows the session model and effort on each run, `inherit@<effort>` fixes only the effort, and a missing column or entry falls back to the next settings scope.
 
 | Tier | <runtime> |
 | --- | --- |
