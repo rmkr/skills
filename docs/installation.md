@@ -29,7 +29,7 @@ bunx skills@latest add ./skills --global --agent codex --skill unslop
 
 `unslop` in the examples is a standalone skill. Replace it with the skill names you need, using the [README chooser](../README.md). Omit `--skill` to choose interactively.
 
-The Forge needs Subagent Delegation; Setup rmkr skills is optional and configures its model tiers. Install them from the same chosen release:
+The Forge needs Subagent Delegation; Setup rmkr skills is optional and configures delegation's model tiers and The Forge's reviewer policy. Install them from the same chosen release:
 
 ```bash
 bunx skills@latest add "https://github.com/rmkr/skills/tree/$release" --global --agent codex --skill subagent-delegation forge setup-rmkr-skills

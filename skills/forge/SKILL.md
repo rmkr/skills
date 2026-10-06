@@ -34,11 +34,11 @@ Reuse the active task's acceptance criteria, ownership, baseline, and evidence. 
 
 ## Match models to roles
 
-Take model tiers, their settings, and effort agents from delegation's "Assign model tiers". The Forge adds its reviewer policy:
+Take model tiers, their settings, and effort agents from delegation's "Assign model tiers". Under its workflow-policy rule, this reviewer policy governs the adversarial reviewer; under its custom-agent rule, the strict reviewer keeps the session effort:
 
 - The adversarial reviewer and its re-reviews use architect at `build` and whenever the target meets delegation's architect conditions. Otherwise they use the session model and effort, capped at architect; if the session model cannot be ranked against architect, use architect and report it. A reviewer on architect uses architect's effort. When the reviewer's tier changes during the loop, spawn a new reviewer on the new tier.
 - That is the reviewer setting's default, `capped`. `architect` always uses architect, `inherit` always uses the session model, and a model, with optional effort, uses that model. A reviewer model the runtime does not offer falls back to the next settings scope, then to `capped`.
-- Set it in the Reviewer row of delegation's settings, resolved like a tier, or for one run with `reviewer=`, with or without a review level. Delegation's caller-preference limit applies to the reviewer cap, and its custom-agent effort rule covers the strict reviewer.
+- Set it in the Reviewer row of delegation's settings, resolved like a tier, or for one run with `reviewer=`, with or without a review level. Delegation's caller-preference limit applies to the reviewer cap.
 - Report the reviewer's resolved model and effort with the tiers.
 
 ## Set the boundary
@@ -63,7 +63,7 @@ Challenge both the underlying goal and assumptions and fulfillment of the agreed
 
 Record the snapshot's revision or content fingerprint. Collect the review result and confirm the current target still matches it before applying findings. If it changed concurrently, reconcile the new content and review that state before claiming completion.
 
-When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer that applies it to the combined target once, after the first clean adversarial review, and again only when later fixes change the source substantially. It reports its cuts in the finding format above. Verify each cut, and have the next adversarial re-review confirm each accepted cut against the brief and the accepted fixes.
+When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer on engineer that applies it to the combined target once, after the first clean adversarial review, and again only when later fixes change the source substantially. It reports its cuts in the finding format above. Verify each cut, and have the next adversarial re-review confirm each accepted cut against the brief and the accepted fixes.
 
 If independent review cannot run, disclose the gap. Continue authorized inspection and fixes when useful, but do not label self-review independent or the requested independent loop complete.
 

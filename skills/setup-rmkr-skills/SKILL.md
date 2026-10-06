@@ -14,9 +14,9 @@ Write the settings the rmkr skills read from instruction files. Configure only t
 Read what exists instead of assuming:
 
 - The active runtime's global instruction file and agent folder: `~/.claude/CLAUDE.md` and `~/.claude/agents/` for Claude Code, `~/.codex/AGENTS.md` and `~/.codex/agents/` for Codex. Use the configured directory when one is relocated, such as by `CLAUDE_CONFIG_DIR` or `CODEX_HOME`.
-- In Claude Code, the `env` block of the user settings file, `settings.json` in that same directory: the current `CLAUDE_CODE_SUBAGENT_MODEL`, and whether `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set.
+- In Claude Code, the `env` block of the user settings file (`settings.json` in that same directory) and, in a repository, of `.claude/settings.json`: the current `CLAUDE_CODE_SUBAGENT_MODEL`, and whether `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set.
 - In a repository: root `CLAUDE.md` and `AGENTS.md`, and `docs/agents/subagents.md`.
-- Existing `## Agent skills` blocks and `### Subagent delegation` sub-blocks in all of these, and existing effort agents. Only a `delegate-<effort>` or `delegate_<effort>` name whose suffix is a known effort level, one delegation accepts (`low`, `medium`, `high`, `xhigh`, `max`, or `ultra`), is an effort agent.
+- Existing `## Agent skills` blocks and `### Subagent delegation` sub-blocks in all of these, and existing effort agents. Only a `delegate-<effort>` or `delegate_<effort>` name whose suffix is an effort level delegation's "Assign model tiers" accepts is an effort agent.
 - Which rmkr skills are installed. Configure only installed skills: subagent delegation has the tiers, and The Forge adds the reviewer policy.
 - The model ids and effort levels the active runtime offers, from its live model list rather than a local cache.
 
@@ -26,7 +26,7 @@ Summarise what exists and what is missing. Ask one question at a time and lead w
 
 1. **Scope:** global, recommended when no global settings exist, or this repository. Repository settings override global ones, so use them for exceptions.
 2. **Tiers:** propose the active runtime's suggested technician, engineer, and architect tiers from [subagents.md](subagents.md), resolved against its live model list, or `inherit` for every tier to follow the session model. Present only the suggested values and that they are suggestions: the user may choose any model and effort the runtime offers. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
-3. **Reviewer**, when The Forge is installed: `capped` (recommended): the architect tier at `build` and when the target is ambiguous, architectural, or cross-cutting, or an issue survives two engineer-tier fixes; otherwise the session model capped at the architect tier. `architect` always uses the architect tier, and `inherit` always uses the session model.
+3. **Reviewer**, when The Forge is installed: `capped` (recommended), `architect`, or `inherit`, explained from The Forge's "Match models to roles".
 
 ## 3. Confirm and write
 
@@ -44,7 +44,7 @@ Show the draft and let the user edit it. Then write:
   Edit `CLAUDE.md` if it exists, else `AGENTS.md`. If neither exists, ask which to create.
 
 - **Effort agents:** at either scope, write the [effort agents](subagents.md#effort-agents) for each effort level these settings use, plus any level the user asks for unprompted, to the active runtime's agent folder, confirming the path before creating a missing folder. Generate only known effort levels the runtime offers for the chosen model, and report any others.
-- **Subagent model default**, Claude Code only: set `env.CLAUDE_CODE_SUBAGENT_MODEL` in the user settings file to the engineer tier's model alias, the part before `@`, so an agent started without delegation's tiers gets the engineer model rather than the session model. Skip it when the engineer model is `inherit`. Leave `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` unset: it overrides every tier. Include the change in the draft, and edit the JSON in place, keeping every other key.
+- **Subagent model default**, Claude Code only: set `env.CLAUDE_CODE_SUBAGENT_MODEL` in the scope's settings file, the user settings file for global scope or the repository's `.claude/settings.json` for repository scope, to the engineer tier's model alias, the part before `@`, so an agent started without delegation's tiers gets the engineer model rather than the session model. Skip it when the engineer model is `inherit`. Leave `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` unset: it overrides every tier. Include the change in the draft, and edit the JSON in place, keeping every other key, or create the file.
 
 Update existing blocks and effort agents in place. Preserve surrounding content, including sub-blocks other setup skills wrote under `## Agent skills`.
 
