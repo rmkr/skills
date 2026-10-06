@@ -28,7 +28,3 @@ The agent menu and `--target all` include detected installations: commands on `P
 Repeat `--item` and `--target` to bypass the menus. Explicit agent IDs bypass detection for custom installations; `claude` aliases `claude-code`. Remove `--dry-run` to install. Commands run sequentially; if one fails, earlier installs may have completed.
 
 The picker uses the sources in its manifest, including this collection's default branch. For a stable tagged version of this collection, use the [release installation instructions](installation.md) instead.
-
-## Optional GitButler setup
-
-[GitButler configuration](agents/gitbutler.md) provides shared worktree-isolation instructions for Codex and Claude Code. It is separate from skill installation.
