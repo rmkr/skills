@@ -81,4 +81,4 @@ The helper removes only repository-managed links. Inspect the preview before rer
 
 ## Optional setup
 
-The [recommendations page](recommendations.md) includes the optional collection picker and third-party setup links. It is not required to install an individual skill. For worktree-isolation instructions, see [GitButler configuration](agents/gitbutler.md).
+The [recommendations page](recommendations.md) includes the optional collection picker and third-party setup links. It is not required to install an individual skill.

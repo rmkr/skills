@@ -34,7 +34,7 @@ Repository validation and tooling tests check file structure, invocation metadat
 
 Compatibility claims for a release should name the client version, collection revision, environment, and exercised behavior: skill discovery and invocation, companion resolution, native delegation, and reviewer controls where relevant. Record missing coverage explicitly. Substantial instruction changes also require representative fresh-session trials and independent behavioral review, as described in [contributing](../CONTRIBUTING.md).
 
-The [platform research note](archive/platform-compatibility-research.md) records investigation from August 2026. It is historical evidence, not a current support matrix; its inventory and installation recommendations may predate the present collection. For optional worktree setup, see [GitButler configuration](agents/gitbutler.md).
+The [platform research note](archive/platform-compatibility-research.md) records investigation from August 2026. It is historical evidence, not a current support matrix; its inventory and installation recommendations may predate the present collection.
 
 ## Installation check, 2026-09-16
 
