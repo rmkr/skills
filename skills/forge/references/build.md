@@ -24,4 +24,4 @@ Run the `fix` loop against the complete integrated snapshot with the original re
 
 ## Finish
 
-Finish when the `fix` loop finishes and all assigned agents have finished or are confirmed stopped. Report the implemented outcomes alongside the loop's report, including any reviewer capability or model-selection limitation.
+Finish when the `fix` loop finishes and all assigned agents have finished or are confirmed stopped. Report the implemented outcomes alongside the loop's report, including any reviewer capability or model-tier limitation.
