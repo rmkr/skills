@@ -34,7 +34,7 @@ Route assignments, scope decisions, and result acceptance through the orchestrat
 
 Assign every delegated agent a tier by its work:
 
-- **Technician** for mechanical work: search, exploration, and shared notes; validation runs; branch merges, renames, and fully specified fixes.
+- **Technician** for mechanical work: search, exploration, and shared notes; validation runs; renames and fully specified fixes.
 - **Engineer** for bounded work that needs judgement: workers and implementers, accepted fixes that need judgement, and researchers.
 - **Architect** for ambiguous, architectural, or cross-cutting work, including research on it, and for an issue that survives two engineer-tier fixes. These conditions override the lower tiers' roles.
 
@@ -66,13 +66,13 @@ Keep each agent's context small. Give one worker a cohesive slice of related wor
 
 ## Isolate writers in worker worktrees
 
-In a Git repository, every writer gets its own worker worktree, a sole writer included. Researchers and reviewers work without one. The staging branch is the task branch, such as `feature/37-recipes`; delegated changes integrate there.
+In a Git repository, every writer gets its own worker worktree, a sole writer included. Researchers and reviewers work without one. The staging branch is the task branch, such as `feature/37-recipes`; delegated changes integrate there. If there is none, create one under the project's branch rules, or ask, before step 1.
 
 1. Commit your own prerequisite work on the staging branch first, since a worktree starts from a commit. When a writer needs the user's uncommitted changes, ask the user; leave those changes uncommitted.
-2. Run `git worktree add -b <staging>--<worker> ../<repo>--<worker> <staging>`. The `--` separator is required: Git cannot create a branch under an existing branch name.
-3. Assign the writer that worktree only. It runs the project's setup command there, commits its work, and hands back its branch and tip commit.
-4. Squash-merge each accepted branch into staging, naming the worker branch and tip commit in the commit message. Resolve small conflicts yourself; for a larger one, have the owning writer update its branch from staging and hand back a new tip.
-5. Right after the squash, remove the worktree and branch only when the branch still points at the recorded tip; `git branch -d` does not treat squashed branches as merged. Keep and report anything else.
+2. Run `git worktree add -b <staging>--<worker> <path> <staging>`. The `--` separator is required: Git cannot create a branch under an existing branch name; add a numeric suffix if that branch still exists. `<path>` is `<root>/../<repo>--<worker>`, where `<root>` is the main repository root (the parent of `git rev-parse --path-format=absolute --git-common-dir`), not your own worktree. If you or the writer cannot write there, do not raise permissions: use a writable location the repository ignores, or else report it and fall back to the shared workspace.
+3. Assign the writer that worktree only, by absolute path. It uses absolute paths or `git -C <path>` for every edit and command, since a runtime may reset its working directory. It runs any project setup the task needs there, commits its work, and hands back its branch and tip commit. Record that tip, and confirm the staging checkout has no edits from the writer.
+4. Squash-merge each accepted branch into staging with `git merge --squash` and a commit naming the worker branch and tip. If the squash would touch the user's uncommitted changes, stop and ask; never stash or commit them. Resolve small conflicts yourself; for a larger one, have the owning writer update its branch from staging and hand back a new tip.
+5. Once the squash commit exists, remove the worktree, then delete the branch with `git branch -D` only when it still points at the recorded tip; `git branch -d` does not treat squashed branches as merged. Keep and report anything else.
 6. Send later fixes, such as accepted review findings, to the same agent in a new worker worktree from the current staging branch.
 
 ## Match authority to the assignment

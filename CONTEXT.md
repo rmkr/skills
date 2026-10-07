@@ -40,7 +40,7 @@ The task branch that delegated changes integrate into. Each worker worktree bran
 _Avoid_: Integration branch, base branch
 
 **Worker worktree**:
-A disposable Git worktree and branch that the orchestrator creates from the staging branch for one writer. It holds only that writer's changes and goes away once they merge.
+A disposable Git worktree and branch that the orchestrator creates from the staging branch for one writer. It holds only that writer's changes and is removed after they merge, unless it has moved on since.
 
 **Effort level**:
 The reasoning depth a model applies, set per model tier and distinct from the model. Delegation settings write a tier as `model@effort`.
