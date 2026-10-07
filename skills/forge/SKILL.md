@@ -63,7 +63,7 @@ Challenge both the underlying goal and assumptions and fulfillment of the agreed
 
 Record the snapshot's revision or content fingerprint. Collect the review result and confirm the current target still matches it before applying findings. If it changed concurrently, reconcile the new content and review that state before claiming completion.
 
-When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer on engineer that applies it to the combined target once, after the first clean adversarial review, and again only when later fixes change the source substantially. It reports its cuts in the finding format above. Verify each cut, and have the next adversarial re-review confirm each accepted cut against the brief and the accepted fixes.
+When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer on engineer that applies it to the combined target once, after the first clean adversarial review, and again only when later fixes change the source substantially. It reports its cuts in the finding format above. Verify each cut. After applying any accepted cut, always run an adversarial re-review that confirms each cut against the brief and the accepted fixes; a complexity review never counts as the clean adversarial review.
 
 If independent review cannot run, disclose the gap. Continue authorized inspection and fixes when useful, but do not label self-review independent or the requested independent loop complete.
 
@@ -81,7 +81,7 @@ Run required validation using relevant existing domain skills and task requireme
 
 After each set of fixes, give the reviewer the current combined target and validation evidence. Reuse it for focused fixes; use fresh context after a substantial redesign. Check previous accepted findings and interactions across the full target. Track rejected findings and reopen them only with new evidence.
 
-At `fix` and `build`, repeat until the latest state has an independent review, every finding has a disposition, no accepted issue or unresolved material finding remains, and acceptance criteria and required checks pass. A reviewer failure or unresolved requirement prevents a clean result. A user-accepted validation gap remains explicit and does not become a passing check.
+At `fix` and `build`, repeat until the latest state has a clean independent adversarial review, every finding has a disposition, no accepted issue or unresolved material finding remains, and acceptance criteria and required checks pass. A reviewer failure or unresolved requirement prevents a clean result. A user-accepted validation gap remains explicit and does not become a passing check.
 
 Honor user budgets without imposing an arbitrary round limit; report remaining findings and gaps when a budget ends. If the same issue survives two fixes or successive rounds make no material progress, diagnose it before trying another correction. Continue with a supported alternative when possible. Pause only when further progress needs unavailable information, authority, or a user decision; state what remains unresolved.
 
