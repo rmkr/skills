@@ -58,11 +58,22 @@ When no settings cover the active runtime and the task does not add them, agents
 
 Tell each agent what question to answer or result to produce, the relevant context and constraints, its permitted actions, and what to return. A short prompt is enough for a simple assignment. Add acceptance criteria, dependencies, or a shared task record when coordination needs them or an active workflow requires them.
 
-Point to relevant source material and governing instructions by path, link, or section instead of pasting content the agent can read itself. Keep task artifacts separate from instructions controlling the agent. For changes, identify the baseline and protected user work, and give each writer explicit ownership of files, artifacts, or sections. Tell writers that they share the workspace and must preserve others' edits.
+Point to relevant source material and governing instructions by path, link, or section instead of pasting content the agent can read itself. Keep task artifacts separate from instructions controlling the agent. For changes, identify the baseline and protected user work, and give each writer explicit ownership of files, artifacts, or sections. In a Git repository, give each writer a worker worktree; elsewhere, tell writers that they share the workspace and must preserve others' edits.
 
-Run independent assignments in parallel within runtime capacity and user limits. Make shared assumptions and interfaces explicit before dependent work, and propagate changes to every affected assignment. Release dependent work after checking the prerequisite result. Give overlapping edits one owner or sequence them; reserve integration for the orchestrator when useful. Track enough state to know who owns active work and which results still need checking, using the conversation unless persistent records help.
+Run independent assignments in parallel within runtime capacity and user limits. Make shared assumptions and interfaces explicit before dependent work, and propagate changes to every affected assignment. Release dependent work after checking the prerequisite result. Give overlapping edits one owner or sequence them; reserve integration for the orchestrator. Track enough state to know who owns active work and which results still need checking, using the conversation unless persistent records help.
 
 Keep each agent's context small. Give one worker a cohesive slice of related work rather than one agent per small ticket. Run exploration that several assignments share once, on technician, and save it as notes they point to. Send follow-ups to the finished agent that did the work. Where the runtime offers forks, start a fresh agent instead of a fork when the parent context exceeds about 100k tokens.
+
+## Isolate writers in worker worktrees
+
+In a Git repository, every writer gets its own worker worktree, a sole writer included. Researchers and reviewers work without one. The staging branch is the task branch, such as `feature/37-recipes`; delegated changes integrate there.
+
+1. Commit your own prerequisite work on the staging branch first, since a worktree starts from a commit. When a writer needs the user's uncommitted changes, ask the user; leave those changes uncommitted.
+2. Run `git worktree add -b <staging>--<worker> ../<repo>--<worker> <staging>`. The `--` separator is required: Git cannot create a branch under an existing branch name.
+3. Assign the writer that worktree only. It runs the project's setup command there, commits its work, and hands back its branch and tip commit.
+4. Squash-merge each accepted branch into staging, naming the worker branch and tip commit in the commit message. Resolve small conflicts yourself; for a larger one, have the owning writer update its branch from staging and hand back a new tip.
+5. Right after the squash, remove the worktree and branch only when the branch still points at the recorded tip; `git branch -d` does not treat squashed branches as merged. Keep and report anything else.
+6. Send later fixes, such as accepted review findings, to the same agent in a new worker worktree from the current staging branch.
 
 ## Match authority to the assignment
 
@@ -84,7 +95,7 @@ Have agents report blockers, conflicting assumptions, and needed scope changes p
 
 Propagate user corrections and cancellations to affected agents. Before replacing an assignment or transferring write ownership, stop affected work and confirm it has stopped. Reconcile partial results with the baseline while preserving other contributors' work. If stopping cannot be confirmed, keep overlapping work blocked. Recheck results produced under superseded requirements before using them.
 
-Ask for a concise handoff: the result or artifact location, supporting sources or actual checks, and unresolved questions or blockers. Scale evidence to the task, such as source citations for research, reconciled totals for analysis, or relevant tests for code. Distinguish observations from recommendations and checks performed from checks merely suggested.
+Ask for a concise handoff: the result or artifact location (a writer's branch and tip commit), supporting sources or actual checks, and unresolved questions or blockers. Scale evidence to the task, such as source citations for research, reconciled totals for analysis, or relevant tests for code. Distinguish observations from recommendations and checks performed from checks merely suggested.
 
 Collect results before relying on them. Check consequential claims against sources or proportionate validation, resolve disagreements, and inspect changes against ownership and the baseline. A child's completion message starts acceptance by the orchestrator; it does not prove the whole request is complete. Stop agents that exceed their assignment and reconcile affected changes without discarding others' work.
 
