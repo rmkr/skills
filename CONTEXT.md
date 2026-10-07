@@ -35,6 +35,13 @@ The middle model tier, for bounded, well-specified work that needs judgement, su
 **Architect**:
 The highest model tier, for ambiguous, architectural, or cross-cutting work and for work that has failed at the engineer tier. Informally the advanced, high, or top tier.
 
+**Staging branch**:
+The task branch that delegated changes integrate into. Each worker worktree branches from it and merges back into it.
+_Avoid_: Integration branch, base branch
+
+**Worker worktree**:
+A disposable Git worktree and branch that the orchestrator creates from the staging branch for one writer. It holds only that writer's changes and goes away once they merge.
+
 **Effort level**:
 The reasoning depth a model applies, set per model tier and distinct from the model. Delegation settings write a tier as `model@effort`.
 _Avoid_: Reasoning level, thinking budget
