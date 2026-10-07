@@ -19,6 +19,7 @@ One rule that the orchestrator runs with plain `git worktree add` behaves the sa
 - `subagent-delegation` owns the rule; The Forge uses it like the other delegation rules.
 - The staging branch is the task branch, such as `feature/37-recipes`. There is no separate integration branch.
 - Every writer in a Git repository gets a worker worktree, including a sole writer. Researchers and reviewers do not. Work outside Git keeps the shared-workspace rule.
+- So delegated edits in a Git repository always arrive as commits on the staging branch, outside The Forge too. Limiting worktrees to parallel writers, so a sole writer left an uncommitted diff, was rejected to keep one rule.
 - Worker branches are `<staging>--<worker>`, because Git cannot create `feature/37-recipes/api` while `feature/37-recipes` exists. Worktree folders are siblings of the repository, `../<repo>--<worker>`.
 - Worktrees start from a commit, so the orchestrator commits its own prerequisite work on staging first. It never commits the user's uncommitted changes to make them visible; it asks.
 - Workers run the project's setup command in their worktree, commit their own work, and hand back the branch and commit.
