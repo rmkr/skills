@@ -18,7 +18,7 @@ Assign one worker for a cohesive implementation, including a small task that exp
 
 ## Integrate and review
 
-Collect worker results, audit actual changes against ownership and the protected baseline, integrate the combined result, and run acceptance checks. A worker's completion message is evidence for verification, not acceptance by itself.
+Collect worker results, audit actual changes against ownership and the protected baseline, integrate the combined result into the staging branch through the delegation contract's worker worktrees, and run acceptance checks. A worker's completion message is evidence for verification, not acceptance by itself.
 
 Run the `fix` loop against the complete integrated snapshot with the original requirements and raw validation evidence. Route accepted corrections to the existing implementation owner unless ownership has been explicitly reassigned under the delegation contract.
 
