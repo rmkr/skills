@@ -23,17 +23,24 @@ How far The Forge carries a review improvement loop: `review` stops at verified 
 A review on a Git target by a runtime-enforced read-only reviewer against an immutable, fingerprinted bundle. It is an option on any review level.
 
 **Model tier**:
-One of three ordered capability levels that subagent delegation assigns to every delegated agent by its role: technician, engineer, or architect. Each level is capped by the one above it.
+One of the ordered capability levels that subagent delegation assigns to every delegated agent by how complex its work is, choosing the lowest tier that can do it well: technician, engineer, and architect, plus apprentice and any tier the user adds. Each level is capped by the one above it.
 _Avoid_: Model class, model level
 
+**Apprentice**:
+A model tier below technician, for trying things: quick attempts whose working results are kept and reviewed.
+
+**Added tier**:
+A model tier the user defines, with its place in the order and the work it takes.
+_Avoid_: Custom tier, extra tier
+
 **Technician**:
-The lowest model tier, for mechanical work: searching and exploring, running validation, and changes already fully specified. Informally the basic, low, or light tier.
+The model tier below engineer, for mechanical work: searching and exploring, running validation, and changes already fully specified. Informally the basic, low, or light tier.
 
 **Engineer**:
-The middle model tier, for bounded, well-specified work that needs judgement, such as implementation and research. Informally the intermediate, middle, or mid tier.
+The model tier below architect, for bounded, well-specified work that needs judgement, such as implementation and research. Informally the intermediate, middle, or mid tier.
 
 **Architect**:
-The highest model tier, for ambiguous, architectural, or cross-cutting work and for work that has failed at the engineer tier. Informally the advanced, high, or top tier.
+The top built-in model tier, for ambiguous, architectural, or cross-cutting work. It is the model ceiling unless an added tier sits above it. Informally the advanced, high, or top tier.
 
 **Staging branch**:
 The task branch that delegated changes integrate into. Each worker worktree branches from it and merges back into it.
