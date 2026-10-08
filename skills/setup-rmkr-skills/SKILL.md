@@ -22,11 +22,14 @@ Read what exists instead of assuming:
 
 ## 2. Ask
 
-Summarise what exists and what is missing. Ask one question at a time and lead with the recommended answer.
+Summarise what exists and what is missing. Then ask these questions in order, one at a time, skipping any that exploration already settled.
+
+Ask through the runtime's multiple-choice question tool when it has one, such as `AskUserQuestion` in Claude Code or `request_user_input` in Codex: put the recommended option first, marked "(Recommended)", and give each option a one-line description. Without such a tool, lead with the recommended answer so the user can accept it in a word, and add a one-line explainer only when the choice genuinely branches.
 
 1. **Scope:** global, recommended when no global settings exist, or this repository. Repository settings override global ones, so use them for exceptions.
-2. **Tiers:** offer the active runtime's suggested technician, engineer, and architect tiers from [subagents.md](subagents.md), resolved against its live model list (recommended), and **Inherit session** (`inherit` for every tier). Explain that `inherit` follows the session model and effort on each run. Any tier may use `inherit` independently, `inherit@<effort>` for a fixed effort, or any model and effort the runtime offers. Write `inherit` literally, preserving any chosen effort suffix. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
-3. **Reviewer**, when The Forge is installed: offer `capped` (recommended), `architect`, and `inherit`, explained from The Forge's "Match models to roles".
+2. **Tiers:** offer the active runtime's suggested apprentice, technician, engineer, and architect tiers from [subagents.md](subagents.md), resolved against its live model list (recommended), and **Inherit session** (`inherit` for every tier). Explain that `inherit` follows the session model and effort on each run. Any tier may use `inherit` independently, `inherit@<effort>` for a fixed effort, or any model and effort the runtime offers. Write `inherit` literally, preserving any chosen effort suffix. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
+3. **Added tiers:** ask whether to add a tier, recommending no. For each added tier, ask its name, its place relative to the current tiers, including tiers already added, the work it takes in one line, and its model and effort. Its name must be one lowercase word that is not another tier's name, `reviewer`, `inherit`, `capped`, an effort level, or an informal tier name from delegation's "Assign model tiers". Ask again until the user is done.
+4. **Reviewer**, when The Forge is installed: offer `capped` (recommended), `architect`, and `inherit`, explained from The Forge's "Match models to roles".
 
 ## 3. Confirm and write
 
@@ -50,4 +53,4 @@ Update existing blocks and effort agents in place. Preserve surrounding content,
 
 ## 4. Done
 
-Report the files written, the settings in effect, and the `CLAUDE_CODE_SUBAGENT_MODEL` value set or skipped. If `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is already set, report that it overrides the tiers until the user removes it. Repository settings govern delegation once written, and Forge runs once they are in the baseline of the reviewed change, for example committed to the base branch; global settings, effort agents, and `CLAUDE_CODE_SUBAGENT_MODEL` apply in new sessions. Mention that `technician=`, `engineer=`, `architect=`, and The Forge's `reviewer=`, such as `engineer=opus@high`, override them for one run. Edit settings directly in `docs/agents/subagents.md` or the global block later; rerun this skill to add a scope or a newly installed skill, or when a newer model ships.
+Report the files written, the settings in effect, and the `CLAUDE_CODE_SUBAGENT_MODEL` value set or skipped. If `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is already set, report that it overrides the tiers until the user removes it. Repository settings govern delegation once written, and Forge runs once they are in the baseline of the reviewed change, for example committed to the base branch; global settings, effort agents, and `CLAUDE_CODE_SUBAGENT_MODEL` apply in new sessions. Mention that `<tier>=` for any tier, such as `engineer=opus@high`, and The Forge's `reviewer=` override them for one run. Edit settings directly in `docs/agents/subagents.md` or the global block later; rerun this skill to add a scope or a newly installed skill, or when a newer model ships.

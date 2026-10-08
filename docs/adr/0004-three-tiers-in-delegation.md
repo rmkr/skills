@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: partly superseded by ADR 0006
 ---
 
 # Three model tiers, owned by subagent delegation

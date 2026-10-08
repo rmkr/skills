@@ -4,16 +4,16 @@
 
 These are suggestions; the user may choose any model the runtime offers.
 
-| Runtime | Technician | Engineer | Architect |
-| --- | --- | --- | --- |
-| Claude Code | `sonnet@medium` | `opus@medium` | `opus@high` |
-| Codex | latest Sol `@low` | latest Sol `@medium` | latest Sol `@xhigh` |
+| Runtime | Apprentice | Technician | Engineer | Architect |
+| --- | --- | --- | --- | --- |
+| Claude Code | `haiku@high` | `sonnet@medium` | `opus@medium` | `opus@high` |
+| Codex | latest Luna `@high` | latest Sol `@low` | latest Sol `@medium` | latest Sol `@xhigh` |
 
-In Claude Code, write tier models only as the Agent tool's per-call aliases, `sonnet`, `opus`, `haiku`, or `fable`, or as `inherit`. Resolve "latest Sol" to the newest plain Sol release in Codex's live model list, such as `gpt-6.1-sol`, ignoring variants such as `-mini`, and write that exact id.
+In Claude Code, write tier models only as the Agent tool's per-call aliases, `sonnet`, `opus`, `haiku`, or `fable`, or as `inherit`. Resolve "latest Sol" and "latest Luna" to the newest plain release of that family in Codex's live model list, such as `gpt-6.1-sol`, ignoring variants such as `-mini`, and write that exact id. Offer `haiku@xhigh` too when the live model list shows Haiku supports it.
 
 ## Repository settings
 
-Write this as `docs/agents/subagents.md` with the active runtime's column only, and the Reviewer row only when The Forge is installed. In an existing file, add or update that column and keep the others. The global `### Subagent delegation` block uses the same table.
+Write this as `docs/agents/subagents.md` with the active runtime's column only, and the Reviewer row only when The Forge is installed. List tiers lowest first, with each added tier's row in its chosen place, and include the added tiers list only when the user added a tier. In an existing file, add or update that column and keep the others. The global `### Subagent delegation` block uses the same format.
 
 ```markdown
 # Subagent delegation settings
@@ -22,10 +22,15 @@ Model and effort for subagent delegation's model tiers and The Forge's reviewer,
 
 | Tier | <runtime> |
 | --- | --- |
+| Apprentice | <apprentice> |
 | Technician | <technician> |
 | Engineer | <engineer> |
 | Architect | <architect> |
 | Reviewer | <reviewer> |
+
+Added tiers:
+
+- **<name>**: <the work it takes>
 ```
 
 ## Effort agents
