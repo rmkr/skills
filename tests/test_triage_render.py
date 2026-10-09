@@ -56,8 +56,8 @@ class TriageRenderTests(unittest.TestCase):
 <img src="https://example.com/tracker">
 <svg onload="alert(1)"><rect fill="url(https://example.com/x)"/></svg>
 '''
-        output = render(source, 'a & b.md', 'triage-render example.md')
-        self.assertEqual(output, render(source, 'a & b.md', 'triage-render example.md'))
+        output = render(source, 'a & b.md')
+        self.assertEqual(output, render(source, 'a & b.md'))
         tags = Elements(output).tags
         self.assertTrue({'table', 'details', 'summary', 'svg', 'figcaption', 'strong'} <= {t for t, _ in tags})
         self.assertIn(('svg', {'viewbox': '0 0 600 100', 'role': 'img', 'aria-labelledby': 'graph-title'}), tags)
@@ -99,7 +99,7 @@ Next check.
 
 </details>
 """
-        output = render(source, 'report.md', 'triage-render report.md')
+        output = render(source, 'report.md')
         tags = Elements(output).tags
         self.assertTrue(any(t == 'span' and a.get('class') == 'k' for t, a in tags))
         self.assertIn('&lt;unsafe&gt; &amp; plain', output)
@@ -164,7 +164,7 @@ body
 
 </details>
 """
-        output = render(source, 'r.md', 'cmd')
+        output = render(source, 'r.md')
         tags = Elements(output).tags
         classes = [a.get('class') for _, a in tags]
         self.assertIn(('dt', {}), tags)
@@ -195,7 +195,6 @@ body
                 main()
             output = source.with_suffix('.html')
             self.assertIn('<h1 id="first">First</h1>', output.read_text())
-            self.assertIn('uvx --from', output.read_text())
             self.assertEqual(source.read_text(), '# First\n\nEvidence.')
             source.write_text('# Revised\n\nNew evidence.', encoding='utf-8')
             with patch('sys.argv', ['triage-render', str(source)]), contextlib.redirect_stdout(io.StringIO()):

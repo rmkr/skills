@@ -39,7 +39,7 @@ Write timelines as a `Time` table and decisive excerpts as exhibits (see the tem
 uvx --from <skill-directory> triage-render <issue-or-short-name>-triage.md
 ```
 
-This writes a sibling `.html` file with inline styling and a source/rebuild link. Python dependencies are declared in `pyproject.toml`; no package publication is needed. For authoring syntax, read [references/rendering.md](references/rendering.md). Run the command to produce the delivered HTML and confirm that rebuilding preserves the report and graphs. A separately authored HTML page checked against Markdown does not satisfy this requirement.
+This writes a sibling `.html` file with inline styling and a link to the Markdown source. Python dependencies are declared in `pyproject.toml`; no package publication is needed. For authoring syntax, read [references/rendering.md](references/rendering.md). Run the command to produce the delivered HTML and confirm that rebuilding preserves the report and graphs. A separately authored HTML page checked against Markdown does not satisfy this requirement.
 
 ````markdown
 # [<Issue>](<verified-ticket-url>): <plain-language symptom>

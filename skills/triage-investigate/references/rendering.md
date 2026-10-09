@@ -6,9 +6,9 @@ Keep all report content in the `.md` file. Render with:
 uvx --from /path/to/triage-investigate triage-render /path/to/report.md
 ```
 
-The command replaces only the sibling `report.html`. Relative evidence links remain relative to the report directory. The case sheet links to the Markdown and the footer records the rebuild command. The package requires Python 3.11 or newer; `uvx` installs the declared Python dependencies into its tool environment. The generated page needs no network or JavaScript.
+The command replaces only the sibling `report.html`. Relative evidence links remain relative to the report directory. The case sheet links to the Markdown source. The package requires Python 3.11 or newer; `uvx` installs the declared Python dependencies into its tool environment. The generated page needs no network or JavaScript.
 
-The page is laid out as a case file: the title under a double rule, a case sheet column (facts, section index, exhibit index, line-style key) that stacks above the report on narrow screens, and §-numbered sections. A Light / System / Dark switch sits at the upper right; System follows the browser preference.
+The page is laid out as a case file: the title under a double rule, a case sheet column (facts, section index, exhibit index) that stacks above the report on narrow screens, and §-numbered sections. A Light / System / Dark switch sits at the upper right; System follows the browser preference.
 
 ## Conventions
 
@@ -18,8 +18,8 @@ All are optional and stay readable as plain Markdown; a report that uses none st
 - **Next action:** a blockquote starting `**Next:**` becomes the next-action panel.
 - **Sections:** every top-level `##` heading is numbered and indexed by its plain text.
 - **Timeline:** a table whose first header starts with the word `Time` or `Timestamp` (`Time (UTC)`, `Timestamp`; not `Timeout`) becomes a vertical timeline (time, event, source). An event starting `Inferred:` gets a hollow ring and dashed line; `Unknown:` or `Gap:` gets a dashed no-data segment; anything else is logged. Put the time basis in the header, such as `Time (UTC)`.
-- **Evidence:** list items starting `**Observed:**`, `**Supported explanation:**` / `**Inferred:**`, or `**Unresolved:**` / `**Unknown:**` get solid, dashed, or dotted rules beside the visible label.
-- **Exhibits:** `### Exhibit A: Title`, optionally ending `(observed)` or `(inferred)`, plus everything up to the next heading becomes a framed exhibit (solid or dashed border with a text label). End an exhibit with a heading. Exhibits work at top level and inside `<details markdown="1">`. Plain text "Exhibit A" elsewhere links to it, except inside code, links, or raw HTML.
+- **Evidence:** list items starting `**Observed:**`, `**Supported explanation:**` / `**Inferred:**`, or `**Unresolved:**` / `**Unknown:**` are set as a two-column list: the label beside the claim.
+- **Exhibits:** `### Exhibit A: Title`, optionally ending `(observed)` or `(inferred)`, plus everything up to the next heading becomes a framed exhibit; the kind appears as a label in its header (solid for observed, dashed for inferred). End an exhibit with a heading. Exhibits work at top level and inside `<details markdown="1">`. Plain text "Exhibit A" elsewhere links to it, except inside code, links, or raw HTML.
 - **Hypotheses:** in a table with a `Status` column, cells `Supported`, `Contradicted`, or `Unresolved` get status labels; contradicted rows are struck through.
 - **Logs:** ```` ```text hl_lines="1" ```` marks decisive lines with ▶ and an outline.
 - **Handoff:** the first bullet list under `## Handoff` is numbered.

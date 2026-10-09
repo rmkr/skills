@@ -2,14 +2,11 @@
 
 import argparse
 import html
-from importlib.metadata import distribution
-import json
 import os
 from pathlib import Path
 import re
-import shlex
 import tempfile
-from urllib.parse import quote, unquote, urlsplit
+from urllib.parse import quote
 from xml.etree import ElementTree as etree
 
 import markdown
@@ -133,20 +130,16 @@ h1 { margin: 0; font-size: clamp(1.7rem, 4.5vw, 2.6rem); line-height: 1.12; lett
 .facts dt:first-of-type, .facts dd:first-of-type { border-top: 0; }
 .facts dt { color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
 .facts dd { padding-left: 0; }
-.case nav, .case .key { border-top: 1px solid var(--line); }
+.facts .tag { white-space: normal; }
+.case nav { border-top: 1px solid var(--line); }
 .case ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .case nav a { text-decoration: none; }
 .case nav a:hover { text-decoration: underline; }
 .sec-no { font-family: var(--mono); color: var(--muted); }
 .case .sec-no { display: inline-block; min-width: 2.4em; }
-.key { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
-.key span::before { content: ""; display: inline-block; width: 28px; margin-right: 8px; vertical-align: middle;
-  border-top: 2px solid var(--line); }
-.key .k-inferred::before { border-top-style: dashed; border-color: var(--accent); }
-.key .k-unknown::before { border-top-style: dotted; border-color: var(--open); }
 .source { margin: 0; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--muted); }
 .tag { display: inline-block; padding: 0 6px; border: 1px solid currentColor; font: 700 11px/1.6 var(--sans);
-  letter-spacing: .1em; text-transform: uppercase; font-style: normal; text-decoration: none; }
+  letter-spacing: .1em; text-transform: uppercase; font-style: normal; text-decoration: none; white-space: nowrap; }
 .tag.open { border-style: dashed; color: var(--open); }
 .section { margin-bottom: 40px; }
 h2 { margin: 0 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font: 700 14px/1.4 var(--sans);
@@ -157,12 +150,12 @@ h3, h4 { margin: 1.4em 0 .4em; font: 700 15px/1.4 var(--sans); }
 p, ul, ol, dl { margin: 0 0 1em; }
 li { margin-bottom: .35em; }
 ul.evidence { list-style: none; padding: 0; }
-.ev { margin-bottom: 12px; padding: 2px 0 2px 14px; border-left: 2px solid var(--line); }
-.ev .tag { margin-right: 6px; }
-.ev-inferred { border-left-style: dashed; border-color: var(--accent); font-style: italic; }
-.ev-inferred .tag { border-style: dashed; color: var(--accent); }
-.ev-unknown { border-left-style: dotted; border-color: var(--open); }
-.ev-unknown .tag { border-style: dotted; color: var(--open); }
+.ev { position: relative; margin: 0; padding: 10px 0 10px 214px; }
+.ev + .ev { border-top: 1px solid var(--rule); }
+.ev .tag { position: absolute; left: 0; top: 10px; width: 198px; padding: 0; border: 0; line-height: 27px;
+  font-size: 13px; letter-spacing: .08em; text-transform: lowercase; font-variant: small-caps; }
+.ev-inferred .tag { color: var(--accent); }
+.ev-unknown .tag { color: var(--open); }
 blockquote { margin: 0 0 1em; padding-left: 1rem; border-left: 3px solid var(--rule); color: var(--ink2); }
 blockquote.next { padding: 16px 20px; background: var(--panel); border: 2px solid var(--accent);
   color: var(--ink); font-size: 20px; line-height: 1.45; }
@@ -176,7 +169,6 @@ blockquote.next > :last-child { margin-bottom: 0; }
 .exhibit-head .tag { margin-left: auto; }
 .exhibit > :not(figcaption) { margin: 14px 16px; }
 .exhibit > .codehilite { margin: 0; border: 0; }
-.exhibit.inferred, .exhibit.inferred .exhibit-head { border-style: dashed; border-color: var(--accent); }
 .exhibit.inferred .tag { border-style: dashed; color: var(--accent); }
 .tl-key { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0 0 8px; font: 12px/1.5 var(--sans); color: var(--muted); }
 .tl-basis { margin-right: auto; font-weight: 700; color: var(--ink); }
@@ -205,7 +197,7 @@ ol.timeline li:last-child .tl-body { padding-bottom: 0; }
 ol.timeline li.tl-gap .tl-mark::after { display: block; min-height: 64px; border-left: 2px dashed var(--open); }
 table { display: block; max-width: 100%; overflow-x: auto; margin: 0 0 1em; border-collapse: collapse;
   background: var(--panel); font: 15px/1.45 var(--sans); }
-th, td { padding: 8px 12px; border: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th, td { padding: 8px 12px; border: 1px solid var(--rule); text-align: left; vertical-align: top; overflow-wrap: normal; }
 th { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .status-supported .tag { border-width: 2px; color: var(--accent); }
 .status-unresolved .tag { border-style: dashed; color: var(--open); }
@@ -228,9 +220,7 @@ figure { margin: 0 0 1em; overflow-x: auto; }
 svg { display: block; width: 100%; height: auto; color: var(--ink); }
 svg:not([fill]) { fill: currentColor; }
 svg text { font-family: var(--sans); }
-figcaption, footer { color: var(--muted); font: 13px/1.5 var(--sans); }
-footer { margin-top: 40px; padding-top: 12px; border-top: 1px solid var(--rule); }
-footer pre { margin-top: 6px; background: var(--panel); border: 1px solid var(--rule); }
+figcaption { color: var(--muted); font: 13px/1.5 var(--sans); }
 .theme-picker { position: relative; display: flex; margin: 0; padding: 2px; min-inline-size: 0;
   border: 1px solid var(--line); background: var(--panel); }
 .theme-picker::before { content: ""; position: absolute; left: 2px; top: 2px; width: 28px; height: 28px;
@@ -257,6 +247,8 @@ svg.lucide { display: inline-block; width: 15px; height: 15px; color: inherit; }
   .layout { gap: 28px; }
   ol.timeline { padding: 14px 10px 14px 4px; }
   ol.timeline li { grid-template-columns: 5.6em 14px minmax(0, 1fr); gap: 0 8px; }
+  .ev { padding-left: 0; }
+  .ev .tag { position: static; display: block; width: auto; line-height: 1.6; }
   figure svg { min-width: 600px; }
 }
 @media print {
@@ -326,7 +318,7 @@ class Dossier(Treeprocessor):
         nodes = list(root)
         for node in nodes:
             root.remove(node)
-        self.marked, self.exhibits, self.depth = False, {}, 0
+        self.exhibits, self.depth = {}, 0
         while nodes and self.is_comment(nodes[0]):
             root.append(nodes.pop(0))
         header = facts = None
@@ -408,7 +400,6 @@ class Dossier(Treeprocessor):
         heading.attrib.pop("id", None)
         caption.append(heading)
         if kind:
-            self.marked = True
             suffix = f"({match[3]})"
             holder = heading[-1] if len(heading) else None
             last = (holder.tail if holder is not None else heading.text) or ""
@@ -430,7 +421,6 @@ class Dossier(Treeprocessor):
             label = lead(li)
             kind = label is not None and EVIDENCE.get(self.text(label).casefold())
             if kind:
-                self.marked = True
                 add_class(li, f"ev ev-{kind}")
                 label.set("class", "tag")
                 if "evidence" not in parents[li].get("class", ""):
@@ -444,7 +434,6 @@ class Dossier(Treeprocessor):
             heads = [self.text(th) for th in table.iter("th")]
             rows = [tr for tr in table.iter("tr") if tr.find("td") is not None]
             if heads and re.match(r"time(stamp)?\b", heads[0], re.I):
-                self.marked = True
                 parent = parents[table]
                 index = list(parent).index(table)
                 parent.remove(table)
@@ -560,11 +549,6 @@ class Dossier(Treeprocessor):
             for letter, title in sorted(self.exhibits.items()):
                 link = sub(sub(items, "li"), "a", href=f"#exhibit-{letter}")
                 sub(link, "strong", letter.upper()).tail = f" · {title}"
-        if self.marked:
-            key = sub(aside, "div", class_="key")
-            sub(key, "p", "Key", class_="label")
-            for kind, label in (("observed", "Observed"), ("inferred", "Inferred"), ("unknown", "Unknown / open")):
-                sub(key, "span", label, class_=f"k-{kind}")
         source = sub(aside, "p", "Generated from ", class_="source")
         sub(source, "a", self.source_name, href=quote(self.source_name)).tail = "."
         return aside
@@ -578,7 +562,7 @@ def filter_attribute(tag: str, name: str, value: str) -> str | None:
     return value
 
 
-def render(source: str, source_name: str, command: str) -> str:
+def render(source: str, source_name: str) -> str:
     md = markdown.Markdown(
         extensions=["tables", "fenced_code", "codehilite", "md_in_html", "sane_lists", "toc"],
         extension_configs={"codehilite": {"guess_lang": False, "linenums": False}},
@@ -620,7 +604,6 @@ def render(source: str, source_name: str, command: str) -> str:
 <label title="Dark"><input type="radio" name="theme" id="theme-dark" aria-label="Dark">{ICONS["moon"]}</label>
 </fieldset></div>
 {body}
-<footer>Edit the Markdown and rebuild:<pre><code>{html.escape(command)}</code></pre></footer>
 </div></body></html>
 """
 
@@ -633,15 +616,9 @@ def main() -> None:
     if source.suffix.lower() != ".md":
         parser.error("source must be a .md file")
     destination = source.with_suffix(".html")
-    package = distribution("rmkr-triage-render")
-    origin = json.loads(package.read_text("direct_url.json") or "{}")
-    location = origin.get("url", "rmkr-triage-render==" + package.version)
-    if location.startswith("file:"):
-        location = unquote(urlsplit(location).path)
-    command = shlex.join(["uvx", "--from", location, "triage-render", str(source)])
     temporary = None
     try:
-        output = render(source.read_text(encoding="utf-8"), source.name, command)
+        output = render(source.read_text(encoding="utf-8"), source.name)
         if destination.is_symlink():
             raise ValueError("refusing to replace an output symlink")
         with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=source.parent, delete=False) as stream:
