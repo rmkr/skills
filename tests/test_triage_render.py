@@ -125,8 +125,13 @@ Next check.
 
 ## Finding
 See Exhibit A; `Exhibit A` in code stays plain.
+Raw <kbd>Exhibit A</kbd> and <a href="https://x.example">Exhibit A</a> stay plain too.
 
 > **Next:** Replay traffic.
+
+| Timeout (ms) | Count |
+| --- | --- |
+| 30 | 2 |
 
 ## Timeline
 
@@ -158,10 +163,12 @@ ERROR reset
         self.assertIn('next', classes)
         self.assertEqual([c for c in classes if c and c.startswith('tl-') and c[3:] in {'logged', 'inferred', 'gap'}],
                          ['tl-logged', 'tl-inferred', 'tl-gap'])
-        self.assertNotIn('<table>\n<thead>\n<tr>\n<th>Time', output)
+        self.assertNotIn('<th>Time (UTC)</th>', output)
         self.assertIn(('figure', {'class': 'exhibit observed', 'id': 'exhibit-a'}), tags)
         self.assertEqual(sum(1 for t, a in tags if t == 'a' and a.get('href') == '#exhibit-a'), 2)  # body text + index
         self.assertIn('<code>Exhibit A</code>', output)
+        self.assertIn('<kbd>Exhibit A</kbd> and <a href="https://x.example" rel="noopener noreferrer">Exhibit A</a>', output)
+        self.assertIn('<th>Timeout (ms)</th>', output)  # only a whole-word "Time" header makes a timeline
         self.assertIn('hll', classes)
         self.assertIn('status-contradicted', classes)
 

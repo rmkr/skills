@@ -14,6 +14,7 @@ from xml.etree import ElementTree as etree
 
 import markdown
 from markdown.treeprocessors import Treeprocessor
+from markdown.util import HTML_PLACEHOLDER, HTML_PLACEHOLDER_RE
 import nh3
 from pygments.formatters import HtmlFormatter
 
@@ -123,7 +124,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outli
 h1 { margin: 0; font-size: clamp(1.7rem, 4.5vw, 2.6rem); line-height: 1.12; letter-spacing: -.01em; max-width: 30ch; }
 .layout { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; margin-top: 28px; }
 .case { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 24px; font: 14px/1.45 var(--sans); }
-main { flex: 999 1 600px; min-width: 0; }
+.main { flex: 999 1 600px; min-width: 0; }
 .panel { background: var(--panel); border: 1px solid var(--line); }
 .case .label { margin: 0; padding: 10px 0 6px; font: 700 11px/1.4 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
 .panel .label { padding: 8px 12px; background: var(--ink); color: var(--panel); }
@@ -147,11 +148,11 @@ main { flex: 999 1 600px; min-width: 0; }
 .tag { display: inline-block; padding: 0 6px; border: 1px solid currentColor; font: 700 11px/1.6 var(--sans);
   letter-spacing: .1em; text-transform: uppercase; font-style: normal; text-decoration: none; }
 .tag.open { border-style: dashed; color: var(--open); }
-section { margin-bottom: 40px; }
+.section { margin-bottom: 40px; }
 h2 { margin: 0 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font: 700 14px/1.4 var(--sans);
   letter-spacing: .12em; text-transform: lowercase; font-variant: small-caps; }
 h2 .sec-no { margin-right: 12px; font-size: 14px; letter-spacing: 0; font-variant: normal; }
-main > section:first-of-type > h2 + p { font-size: 19px; line-height: 1.55; }
+.lead > h2 + p { font-size: 19px; line-height: 1.55; }
 h3, h4 { margin: 1.4em 0 .4em; font: 700 15px/1.4 var(--sans); }
 p, ul, ol, dl { margin: 0 0 1em; }
 li { margin-bottom: .35em; }
@@ -262,26 +263,42 @@ svg.lucide { display: inline-block; width: 15px; height: 15px; color: inherit; }
   .page { max-width: none; padding: 0; }
   .theme-picker { display: none; }
   .exhibit, ol.timeline li, blockquote.next, .panel, details, .codehilite, tr { break-inside: avoid; }
+  details::details-content { content-visibility: visible; height: auto; }
 }
-@media print { details::details-content { content-visibility: visible; height: auto; } }
 """
 EVIDENCE = {"observed:": "observed", "supported explanation:": "inferred", "inferred:": "inferred",
             "unresolved:": "unknown", "unknown:": "unknown"}
+NOT_FACTS = re.compile(r"(observed|supported explanation|inferred|unresolved|unknown|reproduce|inspect|resolve|verify|next)\b", re.I)
+OPEN = re.compile(r"(no|low|unknown|unresolved|proposed|not yet)\b", re.I)
 STATUSES = {"supported", "contradicted", "unresolved"}
 EXHIBIT_HEADING = re.compile(r"Exhibit ([A-Z])\b[\s:.–—-]*(.*?)\s*(?:\(((?i:observed|inferred))\))?\s*$")
-KIND = re.compile(r"\s*\((?i:observed|inferred)\)\s*$")
 EXHIBIT_REF = re.compile(r"\b(Exhibit ([A-Z]))\b")
+RAW_TAG = re.compile(r"<(/?)([a-zA-Z][\w-]*)[^>]*?(/?)>\s*$")
+VOID = {"br", "hr", "wbr", "img", "input", "col", "area", "source", "embed", "meta", "link"}
 HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
 
 
 def text(element) -> str:
-    return "".join(element.itertext()).strip()
+    """Plain text of an element, without stashed raw-HTML placeholders."""
+    return HTML_PLACEHOLDER_RE.sub("", "".join(element.itertext())).strip()
 
 
 def sub(parent, tag: str, content: str | None = None, **attributes):
     child = etree.SubElement(parent, tag, {key.rstrip("_").replace("_", "-"): value for key, value in attributes.items()})
     child.text = content
     return child
+
+
+def add_class(element, name: str) -> None:
+    element.set("class", f"{element.get('class', '')} {name}".strip())
+
+
+def wrap(element, tag: str, name: str):
+    """Move an element's content into a new child wrapper."""
+    wrapper = etree.Element(tag, {"class": name})
+    wrapper.text, wrapper[:] = element.text, list(element)
+    element.text, element[:] = None, [wrapper]
+    return wrapper
 
 
 def lead(element):
@@ -304,45 +321,38 @@ class Dossier(Treeprocessor):
         nodes = list(root)
         for node in nodes:
             root.remove(node)
-        self.marked = False
+        self.marked, self.exhibits, self.depth = False, {}, 0
+        while nodes and self.is_comment(nodes[0]):
+            root.append(nodes.pop(0))
         header = facts = None
         if nodes and nodes[0].tag == "h1":
             header = etree.Element("header", {"class": "masthead"})
             header.append(nodes.pop(0))
-            if nodes and nodes[0].tag == "ul" and len(nodes[0]) and all(
-                (label := lead(li)) is not None and text(label).endswith(":") for li in nodes[0]
-            ):
+            labels = [lead(li) for li in nodes[0]] if nodes and nodes[0].tag == "ul" else []
+            if labels and all(label is not None and text(label).endswith(":")
+                              and not NOT_FACTS.match(text(label)) for label in labels):
                 facts = self.facts(nodes.pop(0))
-        self.exhibits = {}
-        main = etree.Element("main")
+        nodes = self.group_exhibits(nodes)
+        for details in [d for node in nodes for d in node.iter("details")]:
+            details[:] = self.group_exhibits(list(details))
+        main = etree.Element("div", {"class": "main", "role": "main"})
         sections = []
-        current, figure = main, None
+        current = main
         for node in nodes:
-            match = node.tag == "h3" and EXHIBIT_HEADING.match(text(node))
-            if match and match[1].lower() not in self.exhibits:
-                figure = self.exhibit(node, match)
-                current.append(figure)
-            elif node.tag == "h2":
-                figure = None
+            if node.tag == "h2":
                 number = len(sections) + 1
-                node.set("id", node.get("id") or f"section-{number}")
-                sections.append((node.get("id"), number, text(node)))
-                current = sub(main, "section", aria_labelledby=node.get("id"))
+                current = sub(main, "div", class_="section lead" if number == 1 else "section",
+                              role="region", aria_labelledby=node.get("id"))
+                sections.append((current, node.get("id"), number, text(node)))
                 marker = etree.Element("span", {"class": "sec-no"})
                 marker.text, marker.tail, node.text = f"§{number}", node.text, None
                 node.insert(0, marker)
-                current.append(node)
-            elif figure is not None and node.tag not in HEADINGS:
-                figure.append(node)
-            else:
-                figure = None
-                current.append(node)
-        for section, (_, _, title) in zip(main.iter("section"), sections):
-            if title.casefold().startswith("handoff"):
-                handoff = section.find("ul")
-                if handoff is not None:
-                    handoff.tag = "ol"
-                    handoff.set("class", "handoff")
+            current.append(node)
+        for section, _, _, title in sections:
+            handoff = section.find("ul")
+            if title.casefold().startswith("handoff") and handoff is not None:
+                handoff.tag = "ol"
+                add_class(handoff, "handoff")
         self.annotate(main)
         if self.exhibits:
             self.link(main)
@@ -352,6 +362,26 @@ class Dossier(Treeprocessor):
         layout.append(self.case_sheet(facts, sections))
         layout.append(main)
 
+    def is_comment(self, node) -> bool:
+        match = node.tag == "p" and not len(node) and HTML_PLACEHOLDER_RE.fullmatch((node.text or "").strip())
+        raw = match and self.md.htmlStash.rawHtmlBlocks[int(match[1])]
+        return isinstance(raw, str) and (not raw.strip() or raw.lstrip().startswith("<!--"))
+
+    def group_exhibits(self, nodes):
+        """Fold each `### Exhibit X` heading and the content up to the next heading into a figure."""
+        grouped, figure = [], None
+        for node in nodes:
+            match = node.tag == "h3" and EXHIBIT_HEADING.match(text(node))
+            if match and match[1].lower() not in self.exhibits:
+                figure = self.exhibit(node, match)
+                grouped.append(figure)
+            elif figure is not None and node.tag not in HEADINGS:
+                figure.append(node)
+            else:
+                figure = None
+                grouped.append(node)
+        return grouped
+
     def facts(self, items):
         sheet = etree.Element("dl", {"class": "facts"})
         for li in items:
@@ -359,13 +389,10 @@ class Dossier(Treeprocessor):
             container = li if len(li) and li[0] is label else li[0]
             key = text(label).rstrip(":").strip()
             sub(sheet, "dt", key)
-            value = sub(sheet, "dd")
-            rest = list(container)[1:] + (list(li)[1:] if container is not li else [])
+            value = sub(sheet, "dd", (label.tail or "").lstrip())
+            value.extend(list(container)[1:] + (list(li)[1:] if container is not li else []))
             if key.casefold() in {"reproduced", "confidence"}:
-                flag = (label.tail or "").strip().casefold().startswith(("no", "low", "unknown", "unresolved"))
-                value = sub(value, "span", class_="tag open" if flag else "tag")
-            value.text = (label.tail or "").lstrip()
-            value.extend(rest)
+                wrap(value, "span", "tag open" if OPEN.match(text(value)) else "tag")
         return sheet
 
     def exhibit(self, heading, match):
@@ -377,10 +404,18 @@ class Dossier(Treeprocessor):
         caption.append(heading)
         if kind:
             self.marked = True
-            if len(heading):
-                heading[-1].tail = KIND.sub("", heading[-1].tail or "")
-            else:
-                heading.text = KIND.sub("", heading.text or "")
+            suffix = f"({match[3]})"
+            holder = heading[-1] if len(heading) else None
+            last = (holder.tail if holder is not None else heading.text) or ""
+            if last.rstrip().endswith(suffix):
+                last = last.rstrip()[:-len(suffix)].rstrip()
+                if holder is not None:
+                    holder.tail = last
+                else:
+                    heading.text = last
+            else:  # the kind is wrapped in inline markup; fall back to the plain heading text
+                heading.text = f"Exhibit {match[1]}" + (f": {match[2]}" if match[2] else "")
+                heading[:] = []
             sub(caption, "span", kind.title(), class_="tag")
         return figure
 
@@ -391,9 +426,10 @@ class Dossier(Treeprocessor):
             kind = label is not None and EVIDENCE.get(text(label).casefold())
             if kind:
                 self.marked = True
-                li.set("class", f"ev ev-{kind}")
+                add_class(li, f"ev ev-{kind}")
                 label.set("class", "tag")
-                parents[li].set("class", "evidence")
+                if "evidence" not in parents[li].get("class", ""):
+                    add_class(parents[li], "evidence")
         for quote_ in main.iter("blockquote"):
             label = lead(quote_)
             if label is not None and text(label).casefold() == "next:":
@@ -402,7 +438,7 @@ class Dossier(Treeprocessor):
         for table in list(main.iter("table")):
             heads = [text(th) for th in table.iter("th")]
             rows = [tr for tr in table.iter("tr") if tr.find("td") is not None]
-            if heads and heads[0].startswith("Time"):
+            if heads and re.match(r"time\b", heads[0], re.I):
                 self.marked = True
                 parent = parents[table]
                 index = list(parent).index(table)
@@ -415,23 +451,18 @@ class Dossier(Treeprocessor):
                     cells = tr.findall("td")
                     if column < len(cells) and (status := text(cells[column]).casefold()) in STATUSES:
                         tr.set("class", f"status-{status}")
-                        cell = cells[column]
-                        cell.set("class", "status")
-                        tag = etree.Element("span", {"class": "tag"})
-                        tag.text, tag[:] = cell.text, list(cell)
-                        cell.text, cell[:] = None, [tag]
+                        cells[column].set("class", "status")
+                        wrap(cells[column], "span", "tag")
 
     def timeline(self, basis, rows):
-        key = etree.Element("p", {"class": "tl-key"})
-        sub(key, "span", basis, class_="tl-basis")
-        for kind, label in (("logged", "logged"), ("inferred", "inferred"), ("gap", "no data")):
-            sub(key, "span", label, class_=f"k-{kind}")
         spine = etree.Element("ol", {"class": "timeline"})
+        kinds = set()
         for tr in rows:
             cells = tr.findall("td")
             event = text(cells[1]) if len(cells) > 1 else ""
             kind = ("inferred" if event.startswith("Inferred:")
                     else "gap" if event.startswith(("Unknown:", "Gap:")) else "logged")
+            kinds.add(kind)
             li = sub(spine, "li", class_=f"tl-{kind}")
             moved = []
             for index, cell in enumerate(cells):
@@ -441,39 +472,62 @@ class Dossier(Treeprocessor):
             li.append(moved[0])
             sub(li, "span", class_="tl-mark")
             sub(li, "div", class_="tl-body").extend(moved[1:])
+        key = etree.Element("p", {"class": "tl-key"})
+        sub(key, "span", basis, class_="tl-basis")
+        for kind, label in (("logged", "logged"), ("inferred", "inferred"), ("gap", "no data")):
+            if kind in kinds:
+                sub(key, "span", label, class_=f"k-{kind}")
         return [key, spine]
 
     def link(self, element):
-        """Turn plain-text "Exhibit X" references into links to existing exhibits."""
+        """Turn plain-text "Exhibit X" references into links, in document order.
+
+        Inline raw HTML is stashed as one placeholder per tag; self.depth counts open raw
+        tags so text inside author markup such as <code> or <a> is never linked.
+        """
+        if element.tag in {"code", "pre", "a"} or element.get("class") == "exhibit-head":
+            return
+        element.text, anchors = self.anchors(element.text)
+        for offset, anchor in enumerate(anchors):
+            element.insert(offset, anchor)
         for child in list(element):
-            if child.tag not in {"code", "pre", "a"} and child.get("class") != "exhibit-head":
-                self.link(child)
-            lead_text, anchors = self.anchors(child.tail)
-            if anchors:
-                child.tail = lead_text
-                index = list(element).index(child)
-                for offset, anchor in enumerate(anchors, 1):
-                    element.insert(index + offset, anchor)
-        if element.tag not in {"code", "pre", "a"}:
-            lead_text, anchors = self.anchors(element.text)
-            if anchors:
-                element.text = lead_text
-                for offset, anchor in enumerate(anchors):
-                    element.insert(offset, anchor)
+            self.link(child)
+            child.tail, anchors = self.anchors(child.tail)
+            index = list(element).index(child)
+            for offset, anchor in enumerate(anchors, 1):
+                element.insert(index + offset, anchor)
 
     def anchors(self, value):
-        pieces = EXHIBIT_REF.split(value or "")
-        lead_text, anchors = pieces[0], []
-        for index in range(1, len(pieces), 3):
-            phrase, letter, after = pieces[index:index + 3]
-            if letter.lower() in self.exhibits:
-                anchor = etree.Element("a", {"href": f"#exhibit-{letter.lower()}"})
-                anchor.text, anchor.tail = phrase, after
-                anchors.append(anchor)
-            elif anchors:
-                anchors[-1].tail += phrase + after
+        lead_text, anchors = "", []
+
+        def emit(piece):
+            nonlocal lead_text
+            if anchors:
+                anchors[-1].tail += piece
             else:
-                lead_text += phrase + after
+                lead_text += piece
+
+        for position, piece in enumerate(HTML_PLACEHOLDER_RE.split(value or "")):
+            if position % 2:
+                raw = self.md.htmlStash.rawHtmlBlocks[int(piece)]
+                tag = isinstance(raw, str) and RAW_TAG.match(raw)
+                if tag and not tag[3] and tag[2].lower() not in VOID:
+                    self.depth = max(0, self.depth + (-1 if tag[1] else 1))
+                emit(HTML_PLACEHOLDER % piece)
+                continue
+            if self.depth:
+                emit(piece)
+                continue
+            parts = EXHIBIT_REF.split(piece)
+            emit(parts[0])
+            for index in range(1, len(parts), 3):
+                phrase, letter, after = parts[index:index + 3]
+                if letter.lower() in self.exhibits:
+                    anchor = etree.Element("a", {"href": f"#exhibit-{letter.lower()}"})
+                    anchor.text, anchor.tail = phrase, after
+                    anchors.append(anchor)
+                else:
+                    emit(phrase + after)
         return lead_text, anchors
 
     def case_sheet(self, facts, sections):
@@ -486,14 +540,14 @@ class Dossier(Treeprocessor):
             nav = sub(aside, "nav", aria_label="Sections")
             sub(nav, "p", "Index", class_="label")
             items = sub(nav, "ol")
-            for anchor_id, number, title in sections:
+            for _, anchor_id, number, title in sections:
                 link = sub(sub(items, "li"), "a", href=f"#{anchor_id}")
                 sub(link, "span", f"§{number}", class_="sec-no").tail = title
         if self.exhibits:
             nav = sub(aside, "nav", aria_label="Exhibits")
             sub(nav, "p", "Exhibits", class_="label")
             items = sub(nav, "ol")
-            for letter, title in self.exhibits.items():
+            for letter, title in sorted(self.exhibits.items()):
                 link = sub(sub(items, "li"), "a", href=f"#exhibit-{letter}")
                 sub(link, "strong", letter.upper()).tail = f" · {title}"
         if self.marked:
@@ -527,10 +581,9 @@ def render(source: str, source_name: str, command: str) -> str:
     attributes.update({tag: SVG_ATTRIBUTES for tag in SVG_TAGS})
     attributes["details"] = {"open"}
     # Inline SVG is the supported image format; no remote or file image loading.
-    # main and section carry the generated layout; nh3 does not allow them by default.
     body = nh3.clean(
         body,
-        tags=(nh3.ALLOWED_TAGS - {"img"}) | SVG_TAGS | {"details", "summary", "figure", "figcaption", "main", "section"},
+        tags=(nh3.ALLOWED_TAGS - {"img"}) | SVG_TAGS | {"details", "summary", "figure", "figcaption"},
         attributes=attributes,
         attribute_filter=filter_attribute,
         url_schemes={"http", "https", "mailto"},
