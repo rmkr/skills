@@ -33,37 +33,53 @@ Link the ticket ID in the report title to its verified URL from the supplied tic
 
 Write `<issue-or-short-name>-triage.md` beside the investigation artifacts or in the user's chosen output location. Make Markdown the canonical report and handoff, and generate the self-contained HTML from it with a repeatable rendering command. Revise the source and re-render rather than editing report content separately in HTML. Honor a request for Markdown only. Place a TL;DR directly below the report title: one plain-language paragraph of roughly 80–120 words that someone can reuse to explain the issue to a mixed technical/nontechnical audience. Cover the problem, supported impact, known or suspected cause, and next step with its actual status. Preserve material uncertainty; define essential jargon and leave detailed citations and excerpts in the evidence section. Put only decision-relevant evidence below it, linking to raw artifacts instead of copying dumps.
 
-Keep graphs as inline SVG in the Markdown, with a nearby text equivalent or data table for coding tools. Use the bundled renderer, resolving `<skill-directory>` to this skill's installed directory:
+Write timelines as a `Time` table and decisive excerpts as exhibits (see the template); keep other graphs as inline SVG with a nearby text equivalent or data table for coding tools. Use the bundled renderer, resolving `<skill-directory>` to this skill's installed directory:
 
 ```bash
 uvx --from <skill-directory> triage-render <issue-or-short-name>-triage.md
 ```
 
-This writes a sibling `.html` file with inline styling and a source/rebuild link. Python dependencies are declared in `pyproject.toml`; no package publication is needed. For authoring syntax, read [references/rendering.md](references/rendering.md). Run the command to produce the delivered HTML and confirm that rebuilding preserves the report and graphs. A separately authored HTML page checked against Markdown does not satisfy this requirement.
+This writes a sibling `.html` file with inline styling and a link to the Markdown source. Python dependencies are declared in `pyproject.toml`; no package publication is needed. For authoring syntax, read [references/rendering.md](references/rendering.md). Run the command to produce the delivered HTML and confirm that rebuilding preserves the report and graphs. A separately authored HTML page checked against Markdown does not satisfy this requirement.
 
-```markdown
+````markdown
 # [<Issue>](<verified-ticket-url>): <plain-language symptom>
+
+- **Build:** <affected build>
+- **Window:** <incident window with timezone>
+- **Reproduced:** <Yes / No / proposed>
 
 ## TL;DR
 <One shareable paragraph: problem, supported impact, assessment with uncertainty, and next step. Distinguish reported behavior from verification and proposed actions from completed work.>
 
+> **Next:** <the smallest discriminating check and its status>
+
+## Timeline
+| Time (<timezone>) | Event | Source |
+| --- | --- | --- |
+| <time> | <event; prefix `Inferred:` or `Gap:` when not logged> | <log citation> |
+
 ## Evidence
-The shortest causal sequence the artifacts support, with log and code citations beside each claim. Mark inferred links and contradictions explicitly.
+- **Observed:** / **Supported explanation:** / **Unresolved:** <the shortest causal sequence, a citation beside each claim; cite exhibits as "Exhibit A">
+
+### Exhibit A: <decisive excerpt> (observed)
+```text hl_lines="<decisive line numbers>"
+<quoted lines only>
+```
 
 ## Handoff
 - **Reproduce:** inputs, environment and steps; distinguish reported steps from attempts performed and their results.
 - **Inspect:** relevant source locations and revision, linked evidence artifacts, and access requirements or missing sources.
 - **Resolve:** the remaining question and the smallest discriminating check, including what each outcome would mean.
 - **Verify a future fix:** observable expected behavior and relevant regression checks; mark these as proposed until run.
-```
+````
 
 The handoff must stand alone without chat history and preserve the assessment's uncertainty. Direct the fixing tool to verify the hypothesis before editing; identify candidate change locations only when supported by inspected code. Omit empty or redundant bullets. Keep this in the same report unless the user requests a separate handoff; if split, link the evidence report and retain its limitations instead of duplicating the investigation.
 
 
 ## Make the HTML easy to scan
 
-Keep the summary, assessment, material uncertainty, and next action visible at the top. Follow with one useful graph when the evidence supports it: a timeline for ordering, a duration chart for measured delays, or a small sequence diagram connecting logs to code. Skip graphs that add no information.
+Keep the summary, assessment, material uncertainty, and next action visible at the top. Follow with one useful graph when the evidence supports it: the timeline table for ordering, or an SVG duration chart for measured delays or small sequence diagram connecting logs to code. Skip graphs that add no information.
 
 Use inline SVG and CSS without remote scripts, fonts, or dependencies. Label units, time basis, builds, and data sources. Distinguish observed steps from inferred links with text and line style, not color alone; retain gaps and contradictory evidence. Never invent timings, imply causation with an unlabeled arrow, or turn unmatched comparisons into a regression chart. Include a short text equivalent and evidence links near the graphic.
 
-Keep detailed excerpts and the handoff in clearly labeled expandable sections. Avoid dashboards, repeated verdicts, and full log dumps. Make the page readable on narrow screens and with keyboard navigation. Escape artifact text before embedding it as HTML. Check that HTML and Markdown agree on conclusions, limitations, values, and citations, then open the HTML to check readability, graph labels, and links before delivery. If visual inspection is unavailable, disclose that limitation.
+Put each decisive excerpt in an exhibit and longer supporting detail in clearly labeled expandable sections. Avoid dashboards, repeated verdicts, and full log dumps. Make the page readable on narrow screens and with keyboard navigation. Escape artifact text before embedding it as HTML. Check that HTML and Markdown agree on conclusions, limitations, values, and citations, then open the HTML to check readability, graph labels, and links before delivery. If visual inspection is unavailable, disclose that limitation.

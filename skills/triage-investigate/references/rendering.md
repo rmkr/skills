@@ -6,9 +6,53 @@ Keep all report content in the `.md` file. Render with:
 uvx --from /path/to/triage-investigate triage-render /path/to/report.md
 ```
 
-The command replaces only the sibling `report.html`. Relative evidence links remain relative to the report directory. The footer links to the Markdown and records the rebuild command. The package requires Python 3.11 or newer; `uvx` installs the declared Python dependencies into its tool environment. The generated page needs no network or JavaScript.
+The command replaces only the sibling `report.html`. Relative evidence links remain relative to the report directory. The case sheet links to the Markdown source. The package requires Python 3.11 or newer; `uvx` installs the declared Python dependencies into its tool environment. The generated page needs no network or JavaScript.
 
-A three-position switch at the upper right offers Light / System / Dark with Lucide icons and a sliding colored thumb. System is selected initially and follows the browser preference. Click an icon, or focus the switch and use arrow keys to select a mode. Theme colors and the thumb animate unless reduced motion is requested. Section headings and expandable evidence also receive decorative inline Lucide icons; report authors do not need to add them.
+The page is laid out as a case file: the title under a double rule, a case sheet column (facts, section index, exhibit index) that stacks above the report on narrow screens, and §-numbered sections. A Light / System / Dark switch sits at the upper right; System follows the browser preference.
+
+## Conventions
+
+All are optional and stay readable as plain Markdown; a report that uses none still renders.
+
+- **Facts:** a list directly after the title whose every item starts with `**Key:**` moves into the case sheet; a list using an evidence or handoff label (`Observed:`, `Reproduce:`, `Next:`, …) stays in place. A `Reproduced` or `Confidence` value whose first word is No, Not, None, Low, Unknown, Unresolved, or Proposed is boxed as open.
+- **Next action:** a blockquote starting `**Next:**` becomes the next-action panel.
+- **Sections:** every top-level `##` heading is numbered and indexed by its plain text.
+- **Timeline:** a table whose first header starts with the word `Time` or `Timestamp` (`Time (UTC)`, `Timestamp`; not `Timeout`) becomes a vertical timeline (time, event, source). An event starting `Inferred:` gets a hollow ring and dashed line; `Unknown:` or `Gap:` gets a dashed no-data segment; anything else is logged. Put the time basis in the header, such as `Time (UTC)`.
+- **Evidence:** list items starting `**Observed:**`, `**Supported explanation:**` / `**Inferred:**`, or `**Unresolved:**` / `**Unknown:**` are set as a two-column list: the label beside the claim.
+- **Exhibits:** `### Exhibit A: Title`, optionally ending `(observed)` or `(inferred)`, plus everything up to the next heading becomes a framed exhibit; the kind appears as a label in its header (solid for observed, dashed for inferred). End an exhibit with a heading. Exhibits work at top level and inside `<details markdown="1">`. Plain text "Exhibit A" elsewhere links to it, except inside code, links, or raw HTML.
+- **Hypotheses:** in a table with a `Status` column, cells `Supported`, `Contradicted`, or `Unresolved` get status labels; contradicted rows are struck through.
+- **Logs:** ```` ```text hl_lines="1" ```` marks decisive lines with ▶ and an outline.
+- **Handoff:** the first bullet list under `## Handoff` is numbered.
+
+````markdown
+# [ISSUE-123](https://tickets.example/ISSUE-123): Symptom
+
+- **Build:** 2.41.0
+- **Reproduced:** No, proposed
+
+## TL;DR
+One paragraph; the first failure is Exhibit A.
+
+> **Next:** The smallest discriminating check.
+
+## Timeline
+
+| Time (UTC) | Event | Source |
+| --- | --- | --- |
+| 14:05:02 | Deploy begins | [deploy.log L12](logs/deploy.log#L12) |
+| 14:06–14:52 | Inferred: new pods fail until warm | [lb.log L412](logs/lb.log#L412) |
+| 14:20–14:35 | Gap: no app logs | app.log |
+
+## Evidence
+
+- **Observed:** cited fact.
+
+### Exhibit A: First failure (observed)
+
+```text hl_lines="1"
+14:06:11 ERROR decisive line
+```
+````
 
 After editing the renderer itself, add `--no-cache` to the next `uvx` invocation to avoid an older cached tool environment. Ordinary Markdown edits need only the normal command.
 
@@ -23,7 +67,7 @@ Use a Markdown link for the ticket ID in the title, such as `# [ISSUE-123](https
 </details>
 ```
 
-Put SVG directly in Markdown, outside code fences. Give each graph a unique title/description ID, `viewBox`, axis labels, and text or tabular equivalent. Use explicit `fill`, `stroke`, and font attributes; style attributes and scripts are removed. Supported SVG elements are `svg`, `g`, `title`, `desc`, `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `path`, `text`, `tspan`, `defs`, `marker`, and `pattern`. Paint references such as `url(#pattern-id)` must refer to this document. Image files and remote resources are not embedded; link to screenshots as evidence instead.
+Use the timeline table rather than drawing a timeline. For other graphs, put SVG directly in Markdown, outside code fences. Give each graph a unique title/description ID, `viewBox`, axis labels, and text or tabular equivalent. Use explicit `fill`, `stroke`, and font attributes; style attributes and scripts are removed. Supported SVG elements are `svg`, `g`, `title`, `desc`, `rect`, `circle`, `ellipse`, `line`, `polyline`, `polygon`, `path`, `text`, `tspan`, `defs`, `marker`, and `pattern`. Paint references such as `url(#pattern-id)` must refer to this document. Image files and remote resources are not embedded; link to screenshots as evidence instead.
 
 For example, this is illustrative syntax, not measured incident data:
 

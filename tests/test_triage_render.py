@@ -56,8 +56,8 @@ class TriageRenderTests(unittest.TestCase):
 <img src="https://example.com/tracker">
 <svg onload="alert(1)"><rect fill="url(https://example.com/x)"/></svg>
 '''
-        output = render(source, 'a & b.md', 'triage-render example.md')
-        self.assertEqual(output, render(source, 'a & b.md', 'triage-render example.md'))
+        output = render(source, 'a & b.md')
+        self.assertEqual(output, render(source, 'a & b.md'))
         tags = Elements(output).tags
         self.assertTrue({'table', 'details', 'summary', 'svg', 'figcaption', 'strong'} <= {t for t, _ in tags})
         self.assertIn(('svg', {'viewbox': '0 0 600 100', 'role': 'img', 'aria-labelledby': 'graph-title'}), tags)
@@ -99,7 +99,7 @@ Next check.
 
 </details>
 """
-        output = render(source, 'report.md', 'triage-render report.md')
+        output = render(source, 'report.md')
         tags = Elements(output).tags
         self.assertTrue(any(t == 'span' and a.get('class') == 'k' for t, a in tags))
         self.assertIn('&lt;unsafe&gt; &amp; plain', output)
@@ -107,7 +107,7 @@ Next check.
         self.assertIn('A short explanation with uncertainty.', output)
         self.assertTrue(any(t == 'a' and a.get('href') == 'https://tickets.example/ISSUE-123' for t, a in tags))
         icons = [a for t, a in tags if t == 'svg' and a.get('class') == 'lucide']
-        self.assertEqual(len(icons), 6)
+        self.assertEqual(len(icons), 3)  # theme switch only; headings use section numbers
         self.assertTrue(all(a.get('aria-hidden') == 'true' and a.get('focusable') == 'false' for a in icons))
         radios = [a for t, a in tags if t == 'input' and a.get('type') == 'radio']
         self.assertEqual([a['aria-label'] for a in radios], ['Light', 'System', 'Dark'])
@@ -117,6 +117,76 @@ Next check.
         self.assertFalse(any(t == 'link' for t, _ in tags))
         self.assertNotIn('<script>', output)
 
+    def test_case_file_conventions(self):
+        source = """# Checkout 502s
+
+- **Build:** 2.41.0
+- **Reproduced:** No
+
+## Finding
+See Exhibit A; `Exhibit A` in code stays plain.
+Raw <kbd>Exhibit A</kbd> and <a href="https://x.example">Exhibit A</a> stay plain too. Open <span>unclosed.
+
+Later Exhibit A and Exhibit B still link.
+
+> **Next:** Replay traffic.
+
+| Timeout (ms) | Count |
+| --- | --- |
+| 30 | 2 |
+
+## Timeline
+
+| Time (UTC) | Event | Source |
+| --- | --- | --- |
+| 14:05 | Deploy | deploy.log |
+| 14:06 | Inferred: pool cold | lb.log |
+| 14:20 | Gap: no logs | app.log |
+
+### Exhibit A: First failure (observed)
+
+```text hl_lines="1"
+ERROR reset
+```
+
+## Q&amp;A &lt;hypotheses&gt;
+
+| Hypothesis | Status |
+| --- | --- |
+| DB lock | Contradicted |
+
+<details markdown="1">
+<summary>More</summary>
+
+### Exhibit B: Config diff
+
+body
+
+</details>
+"""
+        output = render(source, 'r.md')
+        tags = Elements(output).tags
+        classes = [a.get('class') for _, a in tags]
+        self.assertIn(('dt', {}), tags)
+        self.assertIn('tag open', classes)
+        self.assertIn(('a', {'href': '#finding', 'rel': 'noopener noreferrer'}), tags)
+        self.assertIn('§2', output)
+        self.assertIn('next', classes)
+        self.assertEqual([c for c in classes if c and c.startswith('tl-') and c[3:] in {'logged', 'inferred', 'gap'}],
+                         ['tl-logged', 'tl-inferred', 'tl-gap'])
+        self.assertNotIn('<th>Time (UTC)</th>', output)
+        self.assertIn(('figure', {'class': 'exhibit observed', 'id': 'exhibit-a'}), tags)
+        # body text, the later paragraph past an unclosed raw <span>, and the index
+        self.assertEqual(sum(1 for t, a in tags if t == 'a' and a.get('href') == '#exhibit-a'), 3)
+        self.assertIn(('figure', {'class': 'exhibit', 'id': 'exhibit-b'}), tags)  # inside <details>
+        self.assertEqual(sum(1 for t, a in tags if t == 'a' and a.get('href') == '#exhibit-b'), 2)
+        self.assertIn('</span>Q&amp;A &lt;hypotheses&gt;</a>', output)  # entities kept in the index
+        self.assertIn('<code>Exhibit A</code>', output)
+        self.assertIn('<kbd>Exhibit A</kbd> and <a href="https://x.example" rel="noopener noreferrer">Exhibit A</a>', output)
+        self.assertIn('<th>Timeout (ms)</th>', output)  # only a whole-word "Time" header makes a timeline
+        self.assertIn('hll', classes)
+        self.assertIn('status-contradicted', classes)
+
     def test_cli_preserves_source_and_rebuilds_sibling(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / 'report with spaces.md'
@@ -125,7 +195,6 @@ Next check.
                 main()
             output = source.with_suffix('.html')
             self.assertIn('<h1 id="first">First</h1>', output.read_text())
-            self.assertIn('uvx --from', output.read_text())
             self.assertEqual(source.read_text(), '# First\n\nEvidence.')
             source.write_text('# Revised\n\nNew evidence.', encoding='utf-8')
             with patch('sys.argv', ['triage-render', str(source)]), contextlib.redirect_stdout(io.StringIO()):
