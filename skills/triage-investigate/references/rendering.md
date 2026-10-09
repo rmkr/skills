@@ -14,10 +14,10 @@ The page is laid out as a case file: the title under a double rule, a case sheet
 
 All are optional and stay readable as plain Markdown; a report that uses none still renders.
 
-- **Facts:** a list directly after the title whose every item starts with `**Key:**` moves into the case sheet; evidence or handoff labels (`Observed:`, `Reproduce:`, …) do not count. A `Reproduced` or `Confidence` value whose text starts with the word No, Low, Unknown, Unresolved, Proposed, or Not yet is boxed as open.
+- **Facts:** a list directly after the title whose every item starts with `**Key:**` moves into the case sheet; a list using an evidence or handoff label (`Observed:`, `Reproduce:`, `Next:`, …) stays in place. A `Reproduced` or `Confidence` value whose first word is No, Not, None, Low, Unknown, Unresolved, or Proposed is boxed as open.
 - **Next action:** a blockquote starting `**Next:**` becomes the next-action panel.
 - **Sections:** every top-level `##` heading is numbered and indexed by its plain text.
-- **Timeline:** a table whose first header starts with the word `Time` (`Time`, `Time (UTC)`; not `Timeout`) becomes a vertical timeline (time, event, source). An event starting `Inferred:` gets a hollow ring and dashed line; `Unknown:` or `Gap:` gets a dashed no-data segment; anything else is logged. Put the time basis in the header, such as `Time (UTC)`.
+- **Timeline:** a table whose first header starts with the word `Time` or `Timestamp` (`Time (UTC)`, `Timestamp`; not `Timeout`) becomes a vertical timeline (time, event, source). An event starting `Inferred:` gets a hollow ring and dashed line; `Unknown:` or `Gap:` gets a dashed no-data segment; anything else is logged. Put the time basis in the header, such as `Time (UTC)`.
 - **Evidence:** list items starting `**Observed:**`, `**Supported explanation:**` / `**Inferred:**`, or `**Unresolved:**` / `**Unknown:**` get solid, dashed, or dotted rules beside the visible label.
 - **Exhibits:** `### Exhibit A: Title`, optionally ending `(observed)` or `(inferred)`, plus everything up to the next heading becomes a framed exhibit (solid or dashed border with a text label). End an exhibit with a heading. Exhibits work at top level and inside `<details markdown="1">`. Plain text "Exhibit A" elsewhere links to it, except inside code, links, or raw HTML.
 - **Hypotheses:** in a table with a `Status` column, cells `Supported`, `Contradicted`, or `Unresolved` get status labels; contradicted rows are struck through.

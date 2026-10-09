@@ -125,7 +125,9 @@ Next check.
 
 ## Finding
 See Exhibit A; `Exhibit A` in code stays plain.
-Raw <kbd>Exhibit A</kbd> and <a href="https://x.example">Exhibit A</a> stay plain too.
+Raw <kbd>Exhibit A</kbd> and <a href="https://x.example">Exhibit A</a> stay plain too. Open <span>unclosed.
+
+Later Exhibit A and Exhibit B still link.
 
 > **Next:** Replay traffic.
 
@@ -147,11 +149,20 @@ Raw <kbd>Exhibit A</kbd> and <a href="https://x.example">Exhibit A</a> stay plai
 ERROR reset
 ```
 
-## Hypotheses
+## Q&amp;A &lt;hypotheses&gt;
 
 | Hypothesis | Status |
 | --- | --- |
 | DB lock | Contradicted |
+
+<details markdown="1">
+<summary>More</summary>
+
+### Exhibit B: Config diff
+
+body
+
+</details>
 """
         output = render(source, 'r.md', 'cmd')
         tags = Elements(output).tags
@@ -165,7 +176,11 @@ ERROR reset
                          ['tl-logged', 'tl-inferred', 'tl-gap'])
         self.assertNotIn('<th>Time (UTC)</th>', output)
         self.assertIn(('figure', {'class': 'exhibit observed', 'id': 'exhibit-a'}), tags)
-        self.assertEqual(sum(1 for t, a in tags if t == 'a' and a.get('href') == '#exhibit-a'), 2)  # body text + index
+        # body text, the later paragraph past an unclosed raw <span>, and the index
+        self.assertEqual(sum(1 for t, a in tags if t == 'a' and a.get('href') == '#exhibit-a'), 3)
+        self.assertIn(('figure', {'class': 'exhibit', 'id': 'exhibit-b'}), tags)  # inside <details>
+        self.assertEqual(sum(1 for t, a in tags if t == 'a' and a.get('href') == '#exhibit-b'), 2)
+        self.assertIn('</span>Q&amp;A &lt;hypotheses&gt;</a>', output)  # entities kept in the index
         self.assertIn('<code>Exhibit A</code>', output)
         self.assertIn('<kbd>Exhibit A</kbd> and <a href="https://x.example" rel="noopener noreferrer">Exhibit A</a>', output)
         self.assertIn('<th>Timeout (ms)</th>', output)  # only a whole-word "Time" header makes a timeline

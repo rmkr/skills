@@ -268,19 +268,17 @@ svg.lucide { display: inline-block; width: 15px; height: 15px; color: inherit; }
 """
 EVIDENCE = {"observed:": "observed", "supported explanation:": "inferred", "inferred:": "inferred",
             "unresolved:": "unknown", "unknown:": "unknown"}
-NOT_FACTS = re.compile(r"(observed|supported explanation|inferred|unresolved|unknown|reproduce|inspect|resolve|verify|next)\b", re.I)
-OPEN = re.compile(r"(no|low|unknown|unresolved|proposed|not yet)\b", re.I)
+NOT_FACTS = {"observed", "supported explanation", "inferred", "unresolved", "unknown",
+             "reproduce", "inspect", "resolve", "verify", "verify a future fix", "next"}
+OPEN = re.compile(r"(no|not|none|low|unknown|unresolved|proposed)\b", re.I)
 STATUSES = {"supported", "contradicted", "unresolved"}
 EXHIBIT_HEADING = re.compile(r"Exhibit ([A-Z])\b[\s:.–—-]*(.*?)\s*(?:\(((?i:observed|inferred))\))?\s*$")
 EXHIBIT_REF = re.compile(r"\b(Exhibit ([A-Z]))\b")
 RAW_TAG = re.compile(r"<(/?)([a-zA-Z][\w-]*)[^>]*?(/?)>\s*$")
 VOID = {"br", "hr", "wbr", "img", "input", "col", "area", "source", "embed", "meta", "link"}
 HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
-
-
-def text(element) -> str:
-    """Plain text of an element, without stashed raw-HTML placeholders."""
-    return HTML_PLACEHOLDER_RE.sub("", "".join(element.itertext())).strip()
+BLOCKS = HEADINGS | {"p", "li", "td", "th", "dt", "dd", "summary", "figcaption"}
+ENTITY = re.compile(r"&#?\w+;")
 
 
 def sub(parent, tag: str, content: str | None = None, **attributes):
@@ -317,6 +315,13 @@ class Dossier(Treeprocessor):
         super().__init__(md)
         self.source_name = source_name
 
+    def text(self, element) -> str:
+        """Plain text of an element: entities decoded, raw-HTML tag placeholders dropped."""
+        def placeholder(match):
+            raw = self.md.htmlStash.rawHtmlBlocks[int(match[1])]
+            return html.unescape(raw) if isinstance(raw, str) and ENTITY.fullmatch(raw) else ""
+        return HTML_PLACEHOLDER_RE.sub(placeholder, "".join(element.itertext())).strip()
+
     def run(self, root):
         nodes = list(root)
         for node in nodes:
@@ -329,8 +334,8 @@ class Dossier(Treeprocessor):
             header = etree.Element("header", {"class": "masthead"})
             header.append(nodes.pop(0))
             labels = [lead(li) for li in nodes[0]] if nodes and nodes[0].tag == "ul" else []
-            if labels and all(label is not None and text(label).endswith(":")
-                              and not NOT_FACTS.match(text(label)) for label in labels):
+            if labels and all(label is not None and self.text(label).endswith(":")
+                              and self.text(label).rstrip(":").strip().casefold() not in NOT_FACTS for label in labels):
                 facts = self.facts(nodes.pop(0))
         nodes = self.group_exhibits(nodes)
         for details in [d for node in nodes for d in node.iter("details")]:
@@ -343,7 +348,7 @@ class Dossier(Treeprocessor):
                 number = len(sections) + 1
                 current = sub(main, "div", class_="section lead" if number == 1 else "section",
                               role="region", aria_labelledby=node.get("id"))
-                sections.append((current, node.get("id"), number, text(node)))
+                sections.append((current, node.get("id"), number, self.text(node)))
                 marker = etree.Element("span", {"class": "sec-no"})
                 marker.text, marker.tail, node.text = f"§{number}", node.text, None
                 node.insert(0, marker)
@@ -371,7 +376,7 @@ class Dossier(Treeprocessor):
         """Fold each `### Exhibit X` heading and the content up to the next heading into a figure."""
         grouped, figure = [], None
         for node in nodes:
-            match = node.tag == "h3" and EXHIBIT_HEADING.match(text(node))
+            match = node.tag == "h3" and EXHIBIT_HEADING.match(self.text(node))
             if match and match[1].lower() not in self.exhibits:
                 figure = self.exhibit(node, match)
                 grouped.append(figure)
@@ -387,12 +392,12 @@ class Dossier(Treeprocessor):
         for li in items:
             label = lead(li)
             container = li if len(li) and li[0] is label else li[0]
-            key = text(label).rstrip(":").strip()
+            key = self.text(label).rstrip(":").strip()
             sub(sheet, "dt", key)
             value = sub(sheet, "dd", (label.tail or "").lstrip())
             value.extend(list(container)[1:] + (list(li)[1:] if container is not li else []))
             if key.casefold() in {"reproduced", "confidence"}:
-                wrap(value, "span", "tag open" if OPEN.match(text(value)) else "tag")
+                wrap(value, "span", "tag open" if OPEN.match(self.text(value)) else "tag")
         return sheet
 
     def exhibit(self, heading, match):
@@ -423,7 +428,7 @@ class Dossier(Treeprocessor):
         parents = {child: parent for parent in main.iter() for child in parent}
         for li in main.iter("li"):
             label = lead(li)
-            kind = label is not None and EVIDENCE.get(text(label).casefold())
+            kind = label is not None and EVIDENCE.get(self.text(label).casefold())
             if kind:
                 self.marked = True
                 add_class(li, f"ev ev-{kind}")
@@ -432,13 +437,13 @@ class Dossier(Treeprocessor):
                     add_class(parents[li], "evidence")
         for quote_ in main.iter("blockquote"):
             label = lead(quote_)
-            if label is not None and text(label).casefold() == "next:":
+            if label is not None and self.text(label).casefold() == "next:":
                 quote_.set("class", "next")
                 label.set("class", "next-label")
         for table in list(main.iter("table")):
-            heads = [text(th) for th in table.iter("th")]
+            heads = [self.text(th) for th in table.iter("th")]
             rows = [tr for tr in table.iter("tr") if tr.find("td") is not None]
-            if heads and re.match(r"time\b", heads[0], re.I):
+            if heads and re.match(r"time(stamp)?\b", heads[0], re.I):
                 self.marked = True
                 parent = parents[table]
                 index = list(parent).index(table)
@@ -449,7 +454,7 @@ class Dossier(Treeprocessor):
                 column = lowered.index("status")
                 for tr in rows:
                     cells = tr.findall("td")
-                    if column < len(cells) and (status := text(cells[column]).casefold()) in STATUSES:
+                    if column < len(cells) and (status := self.text(cells[column]).casefold()) in STATUSES:
                         tr.set("class", f"status-{status}")
                         cells[column].set("class", "status")
                         wrap(cells[column], "span", "tag")
@@ -459,7 +464,7 @@ class Dossier(Treeprocessor):
         kinds = set()
         for tr in rows:
             cells = tr.findall("td")
-            event = text(cells[1]) if len(cells) > 1 else ""
+            event = self.text(cells[1]) if len(cells) > 1 else ""
             kind = ("inferred" if event.startswith("Inferred:")
                     else "gap" if event.startswith(("Unknown:", "Gap:")) else "logged")
             kinds.add(kind)
@@ -483,10 +488,13 @@ class Dossier(Treeprocessor):
         """Turn plain-text "Exhibit X" references into links, in document order.
 
         Inline raw HTML is stashed as one placeholder per tag; self.depth counts open raw
-        tags so text inside author markup such as <code> or <a> is never linked.
+        tags so text inside author markup such as <code> or <a> is never linked. The count
+        resets at block boundaries, so an unclosed tag affects only its own block.
         """
         if element.tag in {"code", "pre", "a"} or element.get("class") == "exhibit-head":
             return
+        if element.tag in BLOCKS:
+            self.depth = 0
         element.text, anchors = self.anchors(element.text)
         for offset, anchor in enumerate(anchors):
             element.insert(offset, anchor)
@@ -496,6 +504,8 @@ class Dossier(Treeprocessor):
             index = list(element).index(child)
             for offset, anchor in enumerate(anchors, 1):
                 element.insert(index + offset, anchor)
+        if element.tag in BLOCKS:
+            self.depth = 0
 
     def anchors(self, value):
         lead_text, anchors = "", []
