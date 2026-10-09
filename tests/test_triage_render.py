@@ -107,7 +107,7 @@ Next check.
         self.assertIn('A short explanation with uncertainty.', output)
         self.assertTrue(any(t == 'a' and a.get('href') == 'https://tickets.example/ISSUE-123' for t, a in tags))
         icons = [a for t, a in tags if t == 'svg' and a.get('class') == 'lucide']
-        self.assertEqual(len(icons), 6)
+        self.assertEqual(len(icons), 3)  # theme switch only; headings use section numbers
         self.assertTrue(all(a.get('aria-hidden') == 'true' and a.get('focusable') == 'false' for a in icons))
         radios = [a for t, a in tags if t == 'input' and a.get('type') == 'radio']
         self.assertEqual([a['aria-label'] for a in radios], ['Light', 'System', 'Dark'])
@@ -116,6 +116,54 @@ Next check.
         self.assertIn('Lucide Icons and Contributors', output)
         self.assertFalse(any(t == 'link' for t, _ in tags))
         self.assertNotIn('<script>', output)
+
+    def test_case_file_conventions(self):
+        source = """# Checkout 502s
+
+- **Build:** 2.41.0
+- **Reproduced:** No
+
+## Finding
+See Exhibit A; `Exhibit A` in code stays plain.
+
+> **Next:** Replay traffic.
+
+## Timeline
+
+| Time (UTC) | Event | Source |
+| --- | --- | --- |
+| 14:05 | Deploy | deploy.log |
+| 14:06 | Inferred: pool cold | lb.log |
+| 14:20 | Gap: no logs | app.log |
+
+### Exhibit A: First failure (observed)
+
+```text hl_lines="1"
+ERROR reset
+```
+
+## Hypotheses
+
+| Hypothesis | Status |
+| --- | --- |
+| DB lock | Contradicted |
+"""
+        output = render(source, 'r.md', 'cmd')
+        tags = Elements(output).tags
+        classes = [a.get('class') for _, a in tags]
+        self.assertIn(('dt', {}), tags)
+        self.assertIn('tag open', classes)
+        self.assertIn(('a', {'href': '#finding', 'rel': 'noopener noreferrer'}), tags)
+        self.assertIn('§2', output)
+        self.assertIn('next', classes)
+        self.assertEqual([c for c in classes if c and c.startswith('tl-') and c[3:] in {'logged', 'inferred', 'gap'}],
+                         ['tl-logged', 'tl-inferred', 'tl-gap'])
+        self.assertNotIn('<table>\n<thead>\n<tr>\n<th>Time', output)
+        self.assertIn(('figure', {'class': 'exhibit observed', 'id': 'exhibit-a'}), tags)
+        self.assertEqual(sum(1 for t, a in tags if t == 'a' and a.get('href') == '#exhibit-a'), 2)  # body text + index
+        self.assertIn('<code>Exhibit A</code>', output)
+        self.assertIn('hll', classes)
+        self.assertIn('status-contradicted', classes)
 
     def test_cli_preserves_source_and_rebuilds_sibling(self):
         with tempfile.TemporaryDirectory() as directory:
