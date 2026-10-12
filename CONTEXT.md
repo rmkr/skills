@@ -14,7 +14,7 @@ An independent assessment that challenges both a work product's underlying goal 
 An evidence-supported issue identified by a review. A premise finding challenges the goal or assumptions; a delivery finding identifies a failure to meet the agreed brief.
 
 **Review improvement loop**:
-A cycle of independent review, main-agent verification of findings, authorized corrections, and independent re-review. The reviewer inspects; the main agent owns corrections.
+A cycle of independent review, verification of findings by verifier subagents with the main agent's final call, authorized corrections, and independent re-review. The reviewer inspects; the main agent owns corrections.
 
 **Review level**:
 How far The Forge carries a review improvement loop: `review` stops at verified findings, `fix` corrects and re-reviews until clean, and `build` has workers implement before `fix` runs.
