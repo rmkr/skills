@@ -205,7 +205,7 @@ while (!status) try {
   const accepted = found.filter(f => f.disposition === 'accepted')
   // Unresolved findings from any round block a clean result until a later repeat settles them.
   const unresolved = ledger.some(f => f.disposition === 'unresolved' &&
-    !ledger.some(g => g.repeats === f.id && g.disposition !== 'unresolved'))
+    !ledger.some(g => g.round > f.round && root(g) === root(f) && g.disposition !== 'unresolved'))
   if (args.level === 'review') { status = accepted.length || unresolved ? 'findings' : 'clean'; break }
   if (!accepted.length) {
     if (unresolved) status = 'unresolved'
@@ -231,7 +231,7 @@ while (!status) try {
   if (!lastFix) { status = 'fixer-failed'; break }
   log(`round ${round}: fixed ${accepted.length} finding(s)`)
 } catch (error) {
-  if (!(budget.total && budget.remaining() < ROUND_RESERVE)) throw error
+  if (!(budget.total && budget.remaining() <= 0)) throw error
   status = 'budget'
 }
 

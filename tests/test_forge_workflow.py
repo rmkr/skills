@@ -20,6 +20,7 @@ let snaps = 0
 async function agent(prompt, opts) {
   calls.push({ label: opts.label, model: opts.model || null })
   if (opts.label === scenario.throw_at) { left = 0; throw new Error('budget spent') }
+  if (opts.label === scenario.error_at) { left = 100; throw new Error('schema rejected') }
   const [kind, n] = opts.label.split(':')
   if (['snapshot', 'recheck', 'after-review'].includes(kind)) {
     const fp = (scenario.fingerprints || [])[snaps++]
@@ -106,6 +107,22 @@ class ForgeWorkflowTests(unittest.TestCase):
             verdicts={"R1-2": "unresolved"},
         )
         self.assertEqual(result["status"], "clean")
+
+    def test_settled_repeat_chain_clears_an_unresolved_finding(self) -> None:
+        result, _ = self.run_workflow(
+            {"level": "fix"},
+            reviews=[
+                review(finding(), finding()),
+                review(finding("R1-2"), finding()),
+                review(finding("R2-1")),
+            ],
+            verdicts={"R1-2": "unresolved", "R2-1": "unresolved"},
+        )
+        self.assertEqual((result["status"], result["rounds"]), ("clean", 4))
+
+    def test_real_error_under_budget_is_not_a_budget_stop(self) -> None:
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.run_workflow({"level": "fix"}, budget_remaining=1e6, error_at="review:1")
 
     def test_strict_change_keeps_the_unverified_findings(self) -> None:
         result, _ = self.run_workflow(
