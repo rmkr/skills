@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Run any requested review loop (repair loops, review until clean) or adversarial review, and independently review substantial work, at three levels - review (verified findings only), fix (correct and re-review until clean), and build (on request, workers implement, then fix). Covers software, research, plans, documents, presentations, and spreadsheets. Add strict on request for a Git diff that needs a runtime-enforced read-only reviewer. Challenge assumptions and fulfillment of the brief, and verify every finding.
-argument-hint: "[review|fix|build] [strict]"
+argument-hint: "[review|fix|build] [strict] [dynamic] [workflow]"
 metadata:
   orchestration-contract: "1"
 ---
@@ -20,9 +20,11 @@ Keep the same main agent as orchestrator; it verifies findings and coordinates a
 | `fix` | Review, correct, and re-review | The latest state has a clean independent review |
 | `build` | Workers implement, then the `fix` loop runs | Acceptance criteria pass and the latest state has a clean independent review |
 
-Select a level only from a level word the user attaches to The Forge, such as `$forge build`, `/forge fix`, or "forge this at review". Elsewhere in a request, "build", "fix", and "strict" describe the task. When a level word could also be the task's verb, choose from the request's intent and ask if it stays unclear. Without a named level, read the intent: a review request without an edit request runs at `review`; it never authorizes edits, even when it names The Forge. A request to review and update, or to repeat until clean, runs at `fix` and authorizes in-scope corrections without asking again. When the user invokes The Forge for implementation work, run `build` and read [build](references/build.md). A delegation request that does not invoke The Forge stays with `subagent-delegation`.
+Select a level only from a level word the user attaches to The Forge, such as `$forge build`, `/forge fix`, or "forge this at review". Elsewhere in a request, "build", "fix", "strict", "dynamic", and "workflow" describe the task. When a level word could also be the task's verb, choose from the request's intent and ask if it stays unclear. Without a named level, read the intent: a review request without an edit request runs at `review`; it never authorizes edits, even when it names The Forge. A request to review and update, or to repeat until clean, runs at `fix` and authorizes in-scope corrections without asking again. When the user invokes The Forge for implementation work, run `build` and read [build](references/build.md). A delegation request that does not invoke The Forge stays with `subagent-delegation`.
 
 `strict` adds a runtime-enforced read-only reviewer and a fingerprinted, immutable snapshot to any level with a Git target. Run it only when the user attaches `strict` to The Forge, and then read [strict](references/strict.md).
+
+`workflow` runs the review, verification, and fix rounds as a Claude Code workflow script. Run it only when the user attaches `workflow` to The Forge, and then read [workflow](references/workflow.md).
 
 ## Load the coordination contract
 
@@ -40,6 +42,8 @@ Take model tiers, their settings, and effort agents from delegation's "Assign mo
 - That is the reviewer setting's default, `capped`. `architect` always uses architect, `inherit` always uses the session model, and a model, with optional effort, uses that model. A reviewer model the runtime does not offer falls back to the next settings scope, then to `capped`.
 - Set it in the Reviewer row of delegation's settings, resolved like a tier, or for one run with `reviewer=`, with or without a review level. Delegation's caller-preference limit applies to the reviewer cap.
 - Report the reviewer's resolved model and effort with the tiers.
+
+`dynamic` sets tiers per finding. Use it only when the user attaches `dynamic` to The Forge. Give the reviewers delegation's tiers with their typical work, and have them set each finding's tier: the lowest tier that can verify and fix it well. Verify each finding on a subagent at its tier, and give the accepted fixes to one worker at the highest of their tiers. Escalate a fix that fails under delegation's escalation rule. The reviewers keep the tiers above. Report each finding's tier and every escalation.
 
 ## Set the boundary
 
