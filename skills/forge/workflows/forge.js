@@ -41,18 +41,15 @@ const FINDINGS = {
           impact: { type: 'string' },
           correction: { type: 'string', description: 'Smallest defensible correction' },
           repeats: { type: 'string', description: 'ID of the earlier finding this one repeats, or empty' },
+          tier: { type: 'string', enum: tierNames },
         },
-        required: ['kind', 'severity', 'ref', 'trigger', 'impact', 'correction', 'repeats'],
+        required: ['kind', 'severity', 'ref', 'trigger', 'impact', 'correction', 'repeats', 'tier'],
       },
     },
     open_questions: { type: 'array', items: { type: 'string' } },
     coverage_gaps: { type: 'array', items: { type: 'string' } },
   },
   required: ['findings', 'open_questions', 'coverage_gaps'],
-}
-if (args.dynamic) {
-  FINDINGS.properties.findings.items.properties.tier = { type: 'string', enum: tierNames }
-  FINDINGS.properties.findings.items.required.push('tier')
 }
 const VERDICT = {
   type: 'object',
@@ -93,10 +90,8 @@ const effortOf = e => (e === 'ultra' ? 'max' : e)
 const modelOpts = ({ model, effort } = {}) => ({ ...(model && { model }), ...(effort && { effort: effortOf(effort) }) })
 const tierOpts = i => modelOpts(tiers[i])
 const reviewerOpts = args.strict ? modelOpts({ model: (args.reviewer || {}).model }) : modelOpts(args.reviewer)
-const tierGuide = args.dynamic
-  ? `\n\nSet each finding's \`tier\` to the lowest tier that can verify and fix it well. Tiers, lowest first:\n` +
-    tiers.map(t => `- ${t.name}: ${t.work || ''}`).join('\n')
-  : ''
+const tierGuide = `\n\nSet each finding's \`tier\` to the lowest tier that can verify and fix it well. Tiers, lowest first:\n` +
+  tiers.map(t => `- ${t.name}: ${t.work || ''}`).join('\n')
 
 const context = `## Brief\n${args.brief}\n\n## Target\n${args.target}`
 const line = f => `${f.id} [${f.kind}/${f.severity}${f.tier ? `/${f.tier}` : ''}] ${f.ref}: ${f.trigger} -> ${f.correction}` +
@@ -118,7 +113,7 @@ async function verify(found) {
     'check that writes files in an isolated copy. Use the smallest check that settles the claim. Accept it only ' +
     'with evidence. Reject unsupported, speculative, or preference-only claims. Mark it unresolved when settling ' +
     "it needs missing information, extra authority, or a change to the user's goal or intended position.",
-    { ...tierOpts(tierIndex(args.dynamic ? f.tier : 'engineer')), phase: 'Verify', label: `verify:${f.id}`, schema: VERDICT },
+    { ...tierOpts(tierIndex(f.tier)), phase: 'Verify', label: `verify:${f.id}`, schema: VERDICT },
   )))
   return found.map((f, i) => ({ ...f, ...(verdicts[i] || { disposition: 'unresolved', reason: 'verifier failed' }) }))
 }
@@ -218,8 +213,8 @@ while (!status) try {
   new Set(accepted.map(root)).forEach(r => { sightings[r] = (sightings[r] || 0) + 1 })
   if (accepted.some(f => sightings[root(f)] >= 3)) { status = 'stalled'; break }
 
-  const planned = Math.max(...accepted.map(f => tierIndex(args.dynamic ? f.tier : 'engineer')))
-  const chosen = Math.max(...accepted.map(f => tierIndex(args.dynamic ? f.tier : 'engineer', sightings[root(f)] - 1)))
+  const planned = Math.max(...accepted.map(f => tierIndex(f.tier)))
+  const chosen = Math.max(...accepted.map(f => tierIndex(f.tier, sightings[root(f)] - 1)))
   if (chosen > planned) escalations.push(`round ${round}: fixer ${tierNames[planned]} -> ${tierNames[chosen]}`)
   lastFix = await agent(
     `${context}\n\n## Accepted findings\n${accepted.map(line).join('\n')}\n\n` +

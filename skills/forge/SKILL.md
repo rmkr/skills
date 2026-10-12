@@ -1,7 +1,7 @@
 ---
 name: forge
 description: Run any requested review loop (repair loops, review until clean) or adversarial review, and independently review substantial work, at three levels - review (verified findings only), fix (correct and re-review until clean), and build (on request, workers implement, then fix). Covers software, research, plans, documents, presentations, and spreadsheets. Add strict on request for a Git diff that needs a runtime-enforced read-only reviewer. Challenge assumptions and fulfillment of the brief, and verify every finding.
-argument-hint: "[review|fix|build] [strict] [dynamic] [workflow]"
+argument-hint: "[review|fix|build] [strict] [workflow]"
 metadata:
   orchestration-contract: "1"
 ---
@@ -10,7 +10,7 @@ metadata:
 
 Use this loop for requested independent review or substantial review and improvement work across subjects. Handle small edits proportionately; automatic selection does not require independent review for every edit.
 
-Keep the same main agent as orchestrator; it verifies findings and coordinates authorized corrections while an independent reviewer challenges each completed state. Under `dynamic` or `workflow`, verifier subagents verify findings and the orchestrator audits their verdicts.
+Keep the same main agent as orchestrator. Verifier subagents check each finding and return verdicts; the orchestrator makes the final call on each and coordinates authorized corrections while an independent reviewer challenges each completed state.
 
 ## Choose the level
 
@@ -20,7 +20,7 @@ Keep the same main agent as orchestrator; it verifies findings and coordinates a
 | `fix` | Review, correct, and re-review | The latest state has a clean independent review |
 | `build` | Workers implement, then the `fix` loop runs | Acceptance criteria pass and the latest state has a clean independent review |
 
-Select a level only from a level word the user attaches to The Forge, such as `$forge build`, `/forge fix`, or "forge this at review". Elsewhere in a request, "build", "fix", "strict", "dynamic", and "workflow" describe the task. When a level word could also be the task's verb, choose from the request's intent and ask if it stays unclear. Without a named level, read the intent: a review request without an edit request runs at `review`; it never authorizes edits, even when it names The Forge. A request to review and update, or to repeat until clean, runs at `fix` and authorizes in-scope corrections without asking again. When the user invokes The Forge for implementation work, run `build` and read [build](references/build.md). A delegation request that does not invoke The Forge stays with `subagent-delegation`.
+Select a level only from a level word the user attaches to The Forge, such as `$forge build`, `/forge fix`, or "forge this at review". Elsewhere in a request, "build", "fix", "strict", and "workflow" describe the task. When a level word could also be the task's verb, choose from the request's intent and ask if it stays unclear. Without a named level, read the intent: a review request without an edit request runs at `review`; it never authorizes edits, even when it names The Forge. A request to review and update, or to repeat until clean, runs at `fix` and authorizes in-scope corrections without asking again. When the user invokes The Forge for implementation work, run `build` and read [build](references/build.md). A delegation request that does not invoke The Forge stays with `subagent-delegation`.
 
 `strict` adds a runtime-enforced read-only reviewer and a fingerprinted, immutable snapshot to any level with a Git target. Run it only when the user attaches `strict` to The Forge, and then read [strict](references/strict.md).
 
@@ -43,7 +43,7 @@ Take model tiers, their settings, and effort agents from delegation's "Assign mo
 - Set it in the Reviewer row of delegation's settings, resolved like a tier, or for one run with `reviewer=`, with or without a review level. Delegation's caller-preference limit applies to the reviewer cap.
 - Report the reviewer's resolved model and effort with the tiers.
 
-`dynamic` sets tiers per finding. Use it only when the user attaches `dynamic` to The Forge. Give the reviewers delegation's tiers with their typical work, and have them set each finding's tier: the lowest tier that can verify and fix it well. Verify each finding on a subagent at its tier, and audit each verdict before acting on it. At `fix`, give the accepted fixes to one worker at the highest of their tiers; at `build`, route them to their implementation owners as usual. Escalate a fix that fails under delegation's escalation rule; when the same issue survives two fixes, the diagnosis rule under "Re-review and finish" comes first. The reviewers keep the tiers above. Report each finding's tier and every escalation.
+Set tiers per finding. Give the reviewers delegation's tiers with their typical work, and have them set each finding's tier: the lowest tier that can verify and fix it well. Under delegation's planning rule, raise a tier you judge too low and report the raise. The reviewers keep the tiers above. Report each finding's tier and every escalation.
 
 ## Set the boundary
 
@@ -73,11 +73,11 @@ If independent review cannot run, disclose the gap. Continue authorized inspecti
 
 ## Verify and update
 
-Verify each claim against the target and its requirements. Use the smallest relevant check when inspection does not settle it. Record an accepted, rejected, or unresolved disposition with a reason.
+Have an inspection-only verifier subagent at each finding's tier verify its claim against the target and its requirements, using the smallest relevant check when inspection does not settle it. Give one verifier the findings of one tier that share context. Audit each verdict, re-verify any whose reason looks weak, and record an accepted, rejected, or unresolved disposition with a reason. Without native delegation, verify locally under delegation's fallback.
 
 Apply evidence-backed corrections within the authorized scope. Reject unsupported or preference-only suggestions. Investigate uncertainty before asking the user; ask when intent, missing information, or extra authority remains necessary. Correct factual errors within the agreed task, but bring proposed changes to the user's goal or intended position back to the user with evidence. Report material out-of-scope findings without silently expanding the work.
 
-At `fix`, the orchestrator can fix cohesive changes directly or assign them to a worker with explicit ownership. At `build`, or when an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
+At `fix`, give the accepted fixes to one worker with explicit ownership at the highest of their tiers, or fix a cohesive change directly. Escalate a fix that fails under delegation's escalation rule; when the same issue survives two fixes, the diagnosis rule under "Re-review and finish" comes first. At `build`, or when an enclosing workflow has implementation owners, route accepted fixes to those owners through the existing task records. Reassign only under delegation's ownership and stop-confirmation rules. Collect and integrate corrections before the next review.
 
 Run required validation using relevant existing domain skills and task requirements: source verification for research, capacity and dependency checks for plans, recalculation for spreadsheets, rendered inspection for documents or slides, and applicable software tests. Use only the checks the artifact needs, and add other specialist reviewers only when distinct expertise is needed. For materially changed skills, forward-test realistic requests against raw fixtures in a temporary workspace. Give the evaluator the request and candidate skill without the intended answer or prior findings. Judge its behavior and output, not only its explanation of the instructions.
 

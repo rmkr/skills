@@ -1,6 +1,6 @@
 # Workflow option
 
-`workflow` hands the review, verification, and fix rounds to [the workflow script](../workflows/forge.js), so the loop's control flow runs deterministically. The rest of The Forge still applies, and the main agent stays orchestrator around the run. The script's verifier subagents verify each finding, and the orchestrator audits their verdicts after the run.
+`workflow` hands the review, verification, and fix rounds to [the workflow script](../workflows/forge.js), so the loop's control flow runs deterministically. The rest of The Forge still applies, and the main agent stays orchestrator around the run. The script's verifiers return a verdict on each finding, and the script fixes accepted ones within the run; the orchestrator makes the final call on every verdict when the run ends.
 
 ## Check the runtime
 
@@ -22,15 +22,14 @@ Pass `args` as a JSON object:
 - `strict`: true at `strict`.
 - `complexity`: true when The Forge's complexity reviewer condition holds.
 - `reviewer`: `{model, effort}` from "Match models to roles", with the Agent-tool model alias. At `strict`, the script passes only the model, so the strict reviewer keeps the session effort.
-- `tiers`: every resolved tier, lowest first, as `{name, work, model, effort}`, added tiers included. Omit a field to inherit the session's. The script runs snapshots on apprentice and verification, fixes, and the complexity pass on engineer.
-- `dynamic`: true at `dynamic`. Verification and fixes then run at each finding's tier, and a failed fix escalates.
+- `tiers`: every resolved tier, lowest first, as `{name, work, model, effort}`, added tiers included. Omit a field to inherit the session's. The script runs snapshots on apprentice, the complexity pass on engineer, and verification and fixes at each finding's tier, escalating a failed fix.
 - `max_rounds`: only from a user budget.
 
 The script starts a fresh reviewer each round and runs the complexity pass once, after the first round with no accepted findings. Run another complexity pass yourself when later fixes change the source substantially. Effort `ultra` runs as `max`, the highest the Workflow tool accepts; report it.
 
 ## Act on the result
 
-The run returns `status`, `rounds`, the final `fingerprint`, a `ledger` of every finding with its disposition, `open_questions`, `coverage_gaps`, `escalations`, and `last_checks`. Audit the ledger: re-verify any disposition whose reason looks weak, then act on `status`:
+The run returns `status`, `rounds`, the final `fingerprint`, a `ledger` of every finding with its disposition, `open_questions`, `coverage_gaps`, `escalations`, and `last_checks`. Audit the ledger and make the final call on each disposition, re-verifying any whose reason looks weak; a reversed call goes into the next run. Then act on `status`:
 
 - `clean`: run the required checks and acceptance criteria on the final state, confirm its fingerprint, commit the worker worktree, and integrate it under delegation's worktree steps. A failure becomes a finding for another run.
 - `findings`: the `review` result; report the dispositions.

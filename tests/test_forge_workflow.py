@@ -78,9 +78,9 @@ class ForgeWorkflowTests(unittest.TestCase):
         result, _ = self.run_workflow({"level": "fix"}, reviews=[review(finding())])
         self.assertEqual((result["status"], result["rounds"]), ("clean", 2))
 
-    def test_dynamic_escalates_then_stalls(self) -> None:
+    def test_failed_fix_escalates_then_stalls(self) -> None:
         result, calls = self.run_workflow(
-            {"level": "fix", "dynamic": True},
+            {"level": "fix"},
             reviews=[review(finding()), review(finding("R1-1")), review(finding("R2-1"))],
         )
         fixers = [c["model"] for c in calls if c["label"].startswith("fix")]
