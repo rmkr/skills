@@ -43,7 +43,7 @@ Take model tiers, their settings, and effort agents from delegation's "Assign mo
 - Set it in the Reviewer row of delegation's settings, resolved like a tier, or for one run with `reviewer=`, with or without a review level. Delegation's caller-preference limit applies to the reviewer cap.
 - Report the reviewer's resolved model and effort with the tiers.
 
-Set tiers per finding. Give the reviewers delegation's tiers with their typical work, and have them set each finding's tier: the lowest tier that can verify and fix it well. Under delegation's planning rule, raise a tier you judge too low and report the raise. The reviewers keep the tiers above. Report each finding's tier and every escalation.
+Set tiers per finding. Give the reviewers delegation's tiers with their typical work, and have them set each finding's tier: the lowest tier that can verify and fix it well. At `strict`, follow [strict](references/strict.md) instead. Under delegation's planning rule, raise a tier you judge too low and report the raise. The reviewers keep the tiers above. Report each finding's tier and every escalation.
 
 ## Set the boundary
 
