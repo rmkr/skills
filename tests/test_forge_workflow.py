@@ -14,20 +14,25 @@ const fs = require('fs')
 const [scriptPath, scenarioJson] = process.argv.slice(1)
 const scenario = JSON.parse(scenarioJson)
 const body = fs.readFileSync(scriptPath, 'utf8').replace(/^export const meta/m, 'const meta')
-const run = new Function('args', 'agent', 'parallel', 'log', 'phase', `return (async () => {${body}\n})()`)
+const run = new Function('args', 'agent', 'parallel', 'log', 'phase', 'budget', `return (async () => {${body}\n})()`)
 const calls = []
 let snaps = 0
 async function agent(prompt, opts) {
   calls.push({ label: opts.label, model: opts.model || null })
   const [kind, n] = opts.label.split(':')
-  if (kind === 'snapshot' || kind === 'recheck') return { fingerprint: (scenario.fingerprints || [])[snaps++] || 'fp' }
-  if (kind === 'review') return scenario.reviews[Number(n) - 1] || { findings: [], open_questions: [], coverage_gaps: [] }
+  if (['snapshot', 'recheck', 'after-review'].includes(kind)) {
+    const fp = (scenario.fingerprints || [])[snaps++]
+    return fp === null ? null : { fingerprint: fp || 'fp' }
+  }
+  if (kind === 'review') return (scenario.reviews || [])[Number(n) - 1] || { findings: [], open_questions: [], coverage_gaps: [] }
   if (kind === 'verify') return { disposition: (scenario.verdicts || {})[n] || 'accepted', reason: 'checked' }
   if (kind === 'complexity') return { findings: [], open_questions: [], coverage_gaps: [] }
   if (kind === 'fix') return { changed: ['a.py'], checks: [], notes: '' }
 }
 const parallel = thunks => Promise.all(thunks.map(t => t().catch(() => null)))
-run(scenario.args, agent, parallel, () => {}, () => {})
+const left = scenario.budget_remaining
+const budget = { total: left === undefined ? null : 1e6, remaining: () => left }
+run(scenario.args, agent, parallel, () => {}, () => {}, budget)
   .then(result => console.log(JSON.stringify({ result, calls })))
 """
 
@@ -53,7 +58,7 @@ def review(*findings: dict) -> dict:
 @unittest.skipUnless(shutil.which("node"), "node is required to run the workflow script")
 class ForgeWorkflowTests(unittest.TestCase):
     def run_workflow(self, args: dict, **scenario) -> tuple[dict, list[dict]]:
-        base = {"brief": "b", "target": "t", "snapshot": "git diff | sha256sum"}
+        base = {"brief": "b", "target": "t", "snapshot": "sha256sum t", "tiers": TIERS}
         payload = json.dumps({"args": {**base, **args}, **scenario})
         out = subprocess.run(
             ["node", "-e", HARNESS, str(SCRIPT), payload],
@@ -73,7 +78,7 @@ class ForgeWorkflowTests(unittest.TestCase):
 
     def test_dynamic_escalates_then_stalls(self) -> None:
         result, calls = self.run_workflow(
-            {"level": "fix", "dynamic": True, "tiers": TIERS},
+            {"level": "fix", "dynamic": True},
             reviews=[review(finding()), review(finding("R1-1")), review(finding("R2-1"))],
         )
         fixers = [c["model"] for c in calls if c["label"].startswith("fix")]
@@ -86,6 +91,28 @@ class ForgeWorkflowTests(unittest.TestCase):
             {"level": "fix"}, reviews=[review(finding())], fingerprints=["one", "two"]
         )
         self.assertEqual(result["status"], "changed")
+
+    def test_unresolved_finding_blocks_a_later_clean_round(self) -> None:
+        result, _ = self.run_workflow(
+            {"level": "fix"}, reviews=[review(finding(), finding())], verdicts={"R1-2": "unresolved"}
+        )
+        self.assertEqual(result["status"], "unresolved")
+
+    def test_split_repeat_counts_once_per_round(self) -> None:
+        result, calls = self.run_workflow(
+            {"level": "fix"},
+            reviews=[review(finding()), review(finding("R1-1"), finding("R1-1"))],
+        )
+        self.assertEqual(result["status"], "clean")
+        self.assertEqual(sum(c["label"].startswith("fix") for c in calls), 2)
+
+    def test_failed_recheck_is_not_a_change(self) -> None:
+        result, _ = self.run_workflow({"level": "review"}, fingerprints=["fp", None])
+        self.assertEqual(result["status"], "snapshot-failed")
+
+    def test_spent_budget_returns_the_ledger(self) -> None:
+        result, _ = self.run_workflow({"level": "fix"}, budget_remaining=0)
+        self.assertEqual((result["status"], result["ledger"]), ("budget", []))
 
     def test_missing_brief_is_rejected(self) -> None:
         with self.assertRaises(subprocess.CalledProcessError):

@@ -10,7 +10,7 @@ metadata:
 
 Use this loop for requested independent review or substantial review and improvement work across subjects. Handle small edits proportionately; automatic selection does not require independent review for every edit.
 
-Keep the same main agent as orchestrator; it verifies findings and coordinates authorized corrections while an independent reviewer challenges each completed state.
+Keep the same main agent as orchestrator; it verifies findings and coordinates authorized corrections while an independent reviewer challenges each completed state. Under `dynamic` or `workflow`, verifier subagents verify findings and the orchestrator audits their verdicts.
 
 ## Choose the level
 
@@ -43,7 +43,7 @@ Take model tiers, their settings, and effort agents from delegation's "Assign mo
 - Set it in the Reviewer row of delegation's settings, resolved like a tier, or for one run with `reviewer=`, with or without a review level. Delegation's caller-preference limit applies to the reviewer cap.
 - Report the reviewer's resolved model and effort with the tiers.
 
-`dynamic` sets tiers per finding. Use it only when the user attaches `dynamic` to The Forge. Give the reviewers delegation's tiers with their typical work, and have them set each finding's tier: the lowest tier that can verify and fix it well. Verify each finding on a subagent at its tier, and give the accepted fixes to one worker at the highest of their tiers. Escalate a fix that fails under delegation's escalation rule. The reviewers keep the tiers above. Report each finding's tier and every escalation.
+`dynamic` sets tiers per finding. Use it only when the user attaches `dynamic` to The Forge. Give the reviewers delegation's tiers with their typical work, and have them set each finding's tier: the lowest tier that can verify and fix it well. Verify each finding on a subagent at its tier, and audit each verdict before acting on it. At `fix`, give the accepted fixes to one worker at the highest of their tiers; at `build`, route them to their implementation owners as usual. Escalate a fix that fails under delegation's escalation rule; when the same issue survives two fixes, the diagnosis rule under "Re-review and finish" comes first. The reviewers keep the tiers above. Report each finding's tier and every escalation.
 
 ## Set the boundary
 
