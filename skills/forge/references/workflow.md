@@ -29,7 +29,7 @@ The script starts a fresh reviewer each round, runs one verifier per finding in 
 
 ## Act on the result
 
-The run returns `status`, `rounds`, the final `fingerprint`, a `ledger` of every finding with its disposition, `open_questions`, `coverage_gaps`, `escalations`, and `last_checks`. Audit the ledger and make the final call on each disposition. During the run, tiers stay as the reviewer set them; re-verify any finding whose reason looks weak, or whose tier looks too low at the raised tier, and report each raise. When you reverse an accepted call, revert its fix in the worker worktree. Fix a call you newly accept, or a failed final check, in that worktree yourself or through a fixer, then run the script again for a clean re-review. Then act on `status`:
+The run returns `status`, `rounds`, the final `fingerprint`, a `ledger` of every finding with its disposition, `open_questions`, `coverage_gaps`, `escalations`, and `last_checks`. Audit the ledger and make the final call on each disposition. During the run, tiers stay as the reviewer set them; re-verify any finding whose reason looks weak, or whose tier looks too low at the raised tier, and report each raise. At `review`, report a reversed call with its evidence. At `fix`, when you reverse an accepted call, revert its fix in the worker worktree, and fix a call you newly accept, or a failed final check, in that worktree yourself or through a fixer, then run the script again for a clean re-review. Then act on `status`:
 
 - `clean`: run the required checks and acceptance criteria on the final state, confirm its fingerprint, commit the worker worktree, and integrate it under delegation's worktree steps.
 - `findings`: the `review` result; report the dispositions.
