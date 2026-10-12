@@ -19,6 +19,7 @@ const calls = []
 let snaps = 0
 async function agent(prompt, opts) {
   calls.push({ label: opts.label, model: opts.model || null })
+  if (opts.label === scenario.throw_at) { left = 0; throw new Error('budget spent') }
   const [kind, n] = opts.label.split(':')
   if (['snapshot', 'recheck', 'after-review'].includes(kind)) {
     const fp = (scenario.fingerprints || [])[snaps++]
@@ -30,7 +31,7 @@ async function agent(prompt, opts) {
   if (kind === 'fix') return { changed: ['a.py'], checks: [], notes: '' }
 }
 const parallel = thunks => Promise.all(thunks.map(t => t().catch(() => null)))
-const left = scenario.budget_remaining
+let left = scenario.budget_remaining
 const budget = { total: left === undefined ? null : 1e6, remaining: () => left }
 run(scenario.args, agent, parallel, () => {}, () => {}, budget)
   .then(result => console.log(JSON.stringify({ result, calls })))
@@ -97,6 +98,28 @@ class ForgeWorkflowTests(unittest.TestCase):
             {"level": "fix"}, reviews=[review(finding(), finding())], verdicts={"R1-2": "unresolved"}
         )
         self.assertEqual(result["status"], "unresolved")
+
+    def test_settled_repeat_clears_an_unresolved_finding(self) -> None:
+        result, _ = self.run_workflow(
+            {"level": "fix"},
+            reviews=[review(finding(), finding()), review(finding("R1-2"))],
+            verdicts={"R1-2": "unresolved"},
+        )
+        self.assertEqual(result["status"], "clean")
+
+    def test_strict_change_keeps_the_unverified_findings(self) -> None:
+        result, _ = self.run_workflow(
+            {"level": "fix", "strict": True}, reviews=[review(finding())], fingerprints=["fp", "other"]
+        )
+        self.assertEqual(result["status"], "changed")
+        self.assertEqual([f["disposition"] for f in result["ledger"]], ["unresolved"])
+
+    def test_budget_spent_mid_round_returns_the_ledger(self) -> None:
+        result, _ = self.run_workflow(
+            {"level": "fix"}, reviews=[review(finding())], budget_remaining=1e6, throw_at="fix:1"
+        )
+        self.assertEqual(result["status"], "budget")
+        self.assertEqual(len(result["ledger"]), 1)
 
     def test_split_repeat_counts_once_per_round(self) -> None:
         result, calls = self.run_workflow(

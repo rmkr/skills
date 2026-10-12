@@ -16,7 +16,7 @@ Pass `args` as a JSON object:
 
 - `level`: `review` or `fix`.
 - `brief`: the original request, governing requirements, acceptance criteria, and the review criteria and assumptions you derived. Keep proposed fixes, suspected bugs, and earlier conclusions out.
-- `target`: what to review, where it lives, and how to read it. For a Git target, compare the recorded base with the worker worktree's working tree, so the fixes stay in view. At `strict`, name the bundle and base tree from [strict](strict.md).
+- `target`: what to review, where it lives, and how to read it. At `fix` with a Git target, compare the recorded base with the worker worktree's working tree, so the fixes stay in view. At `strict`, name the bundle and base tree from [strict](strict.md).
 - `snapshot`: a shell command, run from the target checkout, that captures the target and prints its fingerprint. The same content must print the same output. At `strict`, it rebuilds the bundle and prints its digest.
 - `checks`: the required validation commands.
 - `strict`: true at `strict`.
@@ -38,5 +38,7 @@ The run returns `status`, `rounds`, the final `fingerprint`, a `ledger` of every
 - `stalled`: an issue survived two fixes. Diagnose it before another run.
 - `changed`: the target changed under review. Reconcile, then run again.
 - `checks-failed`, `budget`, or a `-failed` status: report it and the remaining findings. The loop is incomplete.
+
+On any status but `clean`, keep the worker worktree and report its path. Run the next attempt against the same worktree, or integrate its accepted fixes under delegation's worktree steps.
 
 To resume an interrupted run, first run `snapshot` and compare it with the last snapshot result in the run's `journal.jsonl`. Resume with `resumeFromRunId` only when they match; otherwise start a new run. Report the run ID with The Forge's report.

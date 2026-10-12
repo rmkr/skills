@@ -23,7 +23,7 @@ for (const name of ['apprentice', 'engineer']) {
 }
 const checks = args.checks || []
 const maxRounds = args.max_rounds || Infinity
-// Stop while a round still fits, so the ledger comes back instead of a throw.
+// Below this, skip starting another round.
 const ROUND_RESERVE = 20000
 
 const FINDINGS = {
@@ -136,7 +136,8 @@ let complexityDone = !args.complexity || args.strict
 let status = null
 let fingerprint = null
 
-while (!status) {
+// A spent budget makes agent() throw mid-round; end with `budget` so the ledger still comes back.
+while (!status) try {
   round++
   if (round > maxRounds || (budget.total && budget.remaining() < ROUND_RESERVE)) { status = 'budget'; break }
 
@@ -176,9 +177,13 @@ while (!status) {
   if (!review) { status = 'reviewer-failed'; break }
   review.open_questions.forEach(q => questions.add(q))
   review.coverage_gaps.forEach(g => gaps.add(g))
-  if (args.strict && !(await unchanged(`after-review:${round}`))) break
+  const raised = review.findings.map((f, i) => ({ ...f, id: `R${round}-${i + 1}`, round }))
+  if (args.strict && !(await unchanged(`after-review:${round}`))) {
+    ledger.push(...raised.map(f => ({ ...f, disposition: 'unresolved', reason: `unverified: reviewed bundle ${fingerprint}` })))
+    break
+  }
 
-  let found = await verify(review.findings.map((f, i) => ({ ...f, id: `R${round}-${i + 1}`, round })))
+  let found = await verify(raised)
   ledger.push(...found)
 
   if (!found.some(f => f.disposition === 'accepted') && !complexityDone) {
@@ -198,8 +203,9 @@ while (!status) {
   if (!(await unchanged(`recheck:${round}`))) break
 
   const accepted = found.filter(f => f.disposition === 'accepted')
-  // Unresolved findings from any round block a clean result until the orchestrator settles them.
-  const unresolved = ledger.some(f => f.disposition === 'unresolved')
+  // Unresolved findings from any round block a clean result until a later repeat settles them.
+  const unresolved = ledger.some(f => f.disposition === 'unresolved' &&
+    !ledger.some(g => g.repeats === f.id && g.disposition !== 'unresolved'))
   if (args.level === 'review') { status = accepted.length || unresolved ? 'findings' : 'clean'; break }
   if (!accepted.length) {
     if (unresolved) status = 'unresolved'
@@ -224,6 +230,9 @@ while (!status) {
   )
   if (!lastFix) { status = 'fixer-failed'; break }
   log(`round ${round}: fixed ${accepted.length} finding(s)`)
+} catch (error) {
+  if (!(budget.total && budget.remaining() < ROUND_RESERVE)) throw error
+  status = 'budget'
 }
 
 return {
