@@ -35,4 +35,6 @@ Before changing visibility, review the intended public tree and reachable histor
 
 The project uses the [MIT license](../LICENSE). Unslop retains its [original MIT notice](../skills/unslop/LICENSE), including Lauren Tan's attribution. Keep imported notices with their material.
 
+Unslop is adapted from [cursor/plugins pstack](https://github.com/cursor/plugins/blob/main/pstack/skills/unslop/SKILL.md) at `bc697d0`. Its rules are rewritten and renumbered for this repository, so port upstream changes by hand.
+
 Making the repository public, publishing a release, and pushing local commits are separate actions from preparing and committing these changes.

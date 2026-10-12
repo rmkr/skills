@@ -5,41 +5,59 @@ description: Remove formulaic AI phrasing from prose while preserving meaning an
 
 # Unslop
 
-Write direct, concrete prose in the user's intended voice. Apply this to prose already being drafted or edited; it does not authorize changes to other artifacts or turn a review request into a rewrite.
+Edit prose to remove AI patterns. Scan for the patterns below, then rewrite. Preserve the meaning, the stated confidence, and the author's register. A review request gets findings, not a rewrite; otherwise return the edited text.
 
-## Preserve meaning
+Leave quotations, code, commands, identifiers, URLs, error and log strings, and required or legal text exactly as written. Follow an explicit tone or house style over these patterns.
 
-Keep facts, uncertainty, technical terms, citations, requirements, and the author's position intact. Add opinions, first-person experience, or colorful details only when the source or user supplies them. For factual drafts, flag missing evidence instead of inventing a source or silently deleting a material claim.
+Use only facts you were given. Never invent a citation, mechanism, or number. When a checkable claim (a number, ranking, guarantee, or named capability) lacks support, keep the claim and tell the author about the gap outside the edited text.
 
-Preserve exact quotations, code, commands, identifiers, URLs, schemas, and required formatting. Apply style edits to surrounding prose. Follow explicit tone and house-style requests.
+## Patterns to detect and fix
 
-## Edit
+### Content
 
-1. Find passages that sound generic, inflated, repetitive, or unnecessarily indirect.
-2. Replace them with the concrete point already supported by the source. Cut wording that adds no meaning.
-3. Read the result for rhythm and clarity. Split dense sentences and vary sentence length where it helps, without manufacturing quirks or informality.
-4. Compare with the source to catch lost qualifications, changed claims, or damaged technical syntax.
+1. **Superficial -ing phrases.** "highlighting...", "ensuring...", "reflecting...", "showcasing...", "fostering...". Delete them, or expand with a source you were given.
+2. **Vague attributions.** "Experts believe", "Industry reports suggest", "Some critics argue". Name the source if you have it. Otherwise keep the claim with its hedge, as in "Adoption reportedly grew 40%," and tell the author the source is missing.
 
-## Patterns worth checking
+### Language
 
-- **Puffery and promotion.** Replace phrases such as "pivotal moment," "evolving landscape," and "groundbreaking" with what happened or what the product does.
-- **Vague attribution.** Use an available named source instead of "experts believe." When a material claim lacks support, flag the gap.
-- **Empty commentary.** Cut trailing "highlighting," "showcasing," or "underscoring" clauses when they merely praise or repeat the preceding fact.
-- **Fancy substitutes.** Prefer "use" to "utilize," "is" to "serves as," and "because" to "due to the fact that."
-- **Forced framing.** State the point directly instead of "not just X, but Y," generic challenge-and-triumph narratives, or unrelated "from X to Y" ranges.
-- **Repetition.** Keep terminology consistent. Avoid synonym cycling and forced groups of three.
-- **Vague metaphors.** Name the mechanism behind words such as "flywheel," "north star," or "scaffolding" when the metaphor hides what the reader needs to know. Keep established technical terms when they are precise.
-- **Hedging.** Remove redundant qualifiers while retaining the actual level of uncertainty.
-- **Canned conversation.** Cut reflexive praise, "Certainly!", "I hope this helps," and conclusions that add no information.
+3. **AI vocabulary.** Additionally, crucial, delve, enduring, enhance, fostering, garner, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore, vibrant. Replace with plain words. Keep a word when it is the field's established term.
+4. **Fancy ways to say "is".** "serves as", "stands as", "boasts", "features". Say "is" or "has".
+5. **"Not just X, but Y."** State the point directly instead.
+6. **Rule of three.** Don't force ideas into groups of three. Use the natural number.
+7. **Synonym cycling.** Protagonist, main character, central figure, hero all in one paragraph. Pick one, repeat it.
+8. **False ranges.** "from X to Y" where X and Y aren't on a meaningful scale. List topics directly.
 
-These are prompts to inspect meaning, not a word blacklist. A familiar word or ordinary grammatical form is not evidence of a defect by itself.
+### Style
 
-## Style
+9. **Em dashes.** Avoid them in original prose. End the sentence or use a comma. Don't swap in parentheses, an en dash, or a hyphen.
+10. **Colon overuse.** Colons are fine before a list or example, not as mid-sentence connectors. "If you're coming from traditional automation: instead of registering event handlers, you describe conditions" adds nothing with the colon. Rewrite to let the point stand on its own without comparison framing. "Describing when the scheduler should fire works best as plain English." Same meaning, no crutch punctuation.
+11. **Boldface overuse.** Don't bold every proper noun or acronym.
+12. **Inline-header lists.** The tell is a bold label and colon that restates the line: "**Performance:** Performance improved...". Convert those to prose. A bold lead-in that ends in a period, names the item, and is followed by genuinely new detail ("**Schema in TypeScript.** Tables live in one file.") is fine, not a tell.
+13. **Title case headings.** Use sentence case.
+14. **Decorative emojis.** Remove from headings and bullets.
+15. **Curly quotes.** Use straight quotes in original prose.
 
-Prefer active voice when the actor matters. Use passive voice when the actor is unknown or irrelevant. Replace weak verb-adverb pairs with a precise verb or a supported measurement.
+### Communication artifacts
 
-Avoid em dashes in original prose. Use sentence breaks or ordinary punctuation where they clarify the thought. Keep punctuation required by quotations, notation, and source formats.
+16. **Chatbot phrases.** "I hope this helps!", "Let me know if...", "Of course!", "Certainly!", "Found the smoking gun!" Remove reflexive ones. Keep a real request, such as asking readers to report a bug.
+17. **Sycophantic tone.** "Great question! You're absolutely right!" Respond directly.
 
-Use sentence-case headings, restrained emphasis, and lists when they help readers compare or follow steps. Remove decorative emojis unless they fit the requested voice. Prefer straight quotation marks in original plain-text prose; preserve source typography when fidelity matters.
+### Filler
 
-Finish when the prose reads naturally, conveys the same information, and fits its audience. Return the requested deliverable without an unsolicited inventory of edits.
+18. **Filler phrases.** "In order to" becomes "To". "Due to the fact that" becomes "Because". Delete "It is important to note that".
+19. **Excessive hedging.** "could potentially possibly be argued that it might" becomes "may". Cut stacked qualifiers but keep the stated confidence, so "likely" stays "likely".
+20. **Generic conclusions.** "The future looks bright." State specific plans or facts.
+
+### Jargon
+
+21. **Abstract metaphor nouns.** Substrate (base), wedge, wedge in (add), vector (way, method), locus, vantage, nexus, primitive as a noun, harness as a metaphor, surface as in "API surface", bedrock, scaffolding as a metaphor, modality, paradigm, gold-plating (more than the job needs), ratchet as a metaphor (the mechanism's real name, or a limit that only tightens), evacuate for moving code (move out), endgame (the last phase), north star, flywheel. These read as technical but usually have a plainer concrete word. Pick the concrete word. Keep the word when it is the field's established term, such as "test harness" or "attack vector".
+
+### Plain speech
+
+22. **Say what it does, not how it feels.** "the database stays close at hand", "SQL you can read", "types that follow your schema" name a feeling. The fix names the mechanism or a number: "`.toSQL()` returns the exact string sent to the database", "a column rename fails the build". Ask what the sentence tells the reader to do or know, then write that. If you can't restate it as a concrete instruction, fact, or number, cut it. One more check: if the sentence could appear unchanged in another project's docs, it says nothing about this one. Cut it. Never cut a checkable claim this way. Keep it and flag it, as the intro says.
+23. **Shorten or split dense sentences.** If the reader has to backtrack to parse a sentence, break it in two or drop clauses. One idea per sentence.
+24. **Active voice.** Prefer it. Catch "is/are/was/were + past participle" and name the actor: "queries are validated" becomes "the compiler validates queries", "the file is parsed by the loader" becomes "the loader parses the file". Passive is fine only when the actor is unknown or genuinely doesn't matter.
+25. **Cut adverbs, or use a stronger verb.** "runs quickly" becomes "is fast" or the number, and "significantly improves" becomes the measured delta. An adverb propping up a weak verb means the verb is wrong.
+26. **Prefer the plain word.** "utilize" and "leverage" become "use", "facilitate" becomes "help", "numerous" becomes "many", "in the event that" becomes "if". The fancier synonym is rarely clearer.
+27. **Mannered prose.** Metaphor or flourish where a literal phrase exists: aphorisms ("wire it or delete it"), rhetorical fragments for effect, personified code ("the plan holds it"), figurative verbs ("rides along", "stands on"), stock framing phrases. "A dial worth turning" becomes "a parameter worth varying". Say what you mean. Rule 21 covers the metaphor nouns.
+28. **Over-compression.** Dropped articles, verbless fragments, symbol-speak, and abbreviations that make the reader decode instead of read. "Parser rejects bad date → exit 2, no write" becomes "The parser rejects a bad date, exits with code 2, and writes nothing." Write whole sentences with their articles and verbs, and spell out arrows and abbreviations. In casual writing, keep the author's everyday abbreviations and fragments.
