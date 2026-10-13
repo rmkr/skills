@@ -112,7 +112,7 @@ CSS = f"""
 """ + r"""
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--ground); color: var(--ink); font: 17px/1.6 var(--serif); }
-.page { max-width: 1180px; margin: auto; padding: 36px 24px 72px; overflow-wrap: anywhere; }
+.page { max-width: 1600px; margin: auto; padding: 36px 48px 72px; overflow-wrap: anywhere; }
 a { color: var(--accent); text-underline-offset: 3px; }
 a:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
