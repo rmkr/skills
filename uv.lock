@@ -135,7 +135,7 @@ wheels = [
 
 [[package]]
 name = "rmkr-skills-tooling"
-version = "0.2.1"
+version = "0.2.2"
 source = { virtual = "." }
 dependencies = [
     { name = "pyyaml" },
@@ -158,7 +158,7 @@ dev = [{ name = "rmkr-triage-render", editable = "skills/triage-investigate" }]
 
 [[package]]
 name = "rmkr-triage-render"
-version = "0.2.1"
+version = "0.2.2"
 source = { editable = "skills/triage-investigate" }
 dependencies = [
     { name = "markdown" },
