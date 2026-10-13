@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=77"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
 
 [project]
 name = "rmkr-triage-render"
-version = "0.2.1"
+version = "0.2.2"
 description = "Render evidence-backed triage Markdown as standalone HTML"
 requires-python = ">=3.11"
 dependencies = ["Markdown>=3.7,<4", "nh3>=0.2.21,<0.4", "Pygments>=2.18,<3"]
@@ -12,9 +12,12 @@ dependencies = ["Markdown>=3.7,<4", "nh3>=0.2.21,<0.4", "Pygments>=2.18,<3"]
 [project.scripts]
 triage-render = "triage_render:main"
 
-[tool.setuptools]
-py-modules = ["triage_render"]
-package-dir = {"" = "scripts"}
+[tool.hatch.build.targets.wheel]
+only-include = ["scripts/triage_render.py"]
+sources = ["scripts"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["pyproject.toml", "scripts/triage_render.py"]
 
 [tool.uv]
 cache-keys = [{file = "pyproject.toml"}, {file = "scripts/triage_render.py"}]
