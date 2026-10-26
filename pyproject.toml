@@ -1,6 +1,6 @@
 [project]
 name = "rmkr-skills-tooling"
-version = "0.2.2"
+version = "0.3.0"
 description = "Validation tooling for a cross-agent skill collection"
 requires-python = ">=3.11"
 dependencies = [

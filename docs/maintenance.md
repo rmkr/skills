@@ -15,6 +15,8 @@ Before tagging a release:
 
 There is no fixed release schedule. Until the first tagged release exists, users can explicitly choose the development installation route.
 
+The [skill evaluation guide](skill-evaluation.md) describes reusable verifier cases and fresh-context comparisons. Keep raw trial artifacts outside the tracked tree.
+
 ## Merge enforcement
 
 Require maintainer approval for contributed pull requests, and require the `validate` status check on `main` with an up-to-date branch whenever the `Validate` workflow is enabled. The repository's code owner is `@rmkr`. Protect against force pushes and branch deletion. Keep existing protections when adjusting settings.

@@ -1,0 +1,4 @@
+# Tier overrides
+
+The user can override for one run with `apprentice=`, `technician=`, `engineer=`, `architect=`, or an added tier's name followed by `=` (a model with optional effort, or `inherit`), with an active workflow's own keys, or in plain words that direct the delegated agents. After `<tier>=`, a bare effort name sets that tier's effort and keeps its resolved model, such as `engineer=high`. Informal names map to tiers: basic, low, or light to technician; intermediate, middle, or mid to engineer; advanced, high, or top to architect. Elsewhere, a `low` or `high` beside "effort" or after `@` is effort; beside "tier" or with a tier name it is a tier; ask about any other bare one in one line. Plain words naming only an effort, such as "use high effort for the workers", keep the tier's resolved model. Model names that describe the task do not override.
+

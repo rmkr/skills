@@ -6,6 +6,8 @@
 
 Run the script through the Workflow tool, available in Claude Code, with `scriptPath` set to the script's absolute path. Attaching `workflow` to The Forge is the user's opt-in to run it. When the runtime has no Workflow tool or refuses the script, report that `workflow` is unavailable here and run the same level without it.
 
+[Workflow scripts have no direct shell access](https://code.claude.com/docs/en/workflows#behavior-and-limits). Snapshot commands therefore run through apprentice agents under the session's permission checks.
+
 ## Prepare the run
 
 Complete The Forge's steps through "Set the boundary" first: the coordination contract, tiers and reviewer, the boundary, and the reviewer preflight. At `build`, implement and integrate through [build](build.md), then run the script at `fix` on the integrated snapshot; its fixer takes the place of the implementation owners for the loop.
@@ -25,7 +27,7 @@ Pass `args` as a JSON object:
 - `tiers`: every resolved tier, lowest first, as `{name, work, model, effort}`, added tiers included. Omit a field to inherit the session's. The script runs snapshots on apprentice, the complexity pass on engineer, and verification and fixes at each finding's tier, escalating a failed fix.
 - `max_rounds`: only from a user budget.
 
-The script starts a fresh reviewer each round, runs one verifier per finding in parallel rather than one per tier group, and runs the complexity pass once, after the first round with no accepted findings. Run another complexity pass yourself when later fixes change the source substantially. Effort `ultra` runs as `max`, the highest the Workflow tool accepts; report it.
+The script starts a fresh reviewer each round, groups findings with the same non-empty `verification_group` and model tier into one verifier, with groups running in parallel, and runs the complexity pass once, after the first round with no accepted findings. Run another complexity pass yourself when later fixes change the source substantially. The reviewer sets `verification_group` only when findings need the same source context; empty or absent keys keep findings separate. Each finding keeps its own ID, evidence, and disposition. Missing, duplicate, or invalid verdicts stay unresolved. Effort `ultra` runs as `max`, the highest the Workflow tool accepts; report it.
 
 ## Act on the result
 

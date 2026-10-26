@@ -5,7 +5,7 @@ export const meta = {
   phases: [
     { title: 'Snapshot', detail: 'capture the target and its fingerprint' },
     { title: 'Review', detail: 'fresh adversarial reviewer each round' },
-    { title: 'Verify', detail: 'one verifier per finding' },
+    { title: 'Verify', detail: 'group related findings at the same tier' },
     { title: 'Complexity', detail: 'one cut pass after the first clean review' },
     { title: 'Fix', detail: 'apply accepted findings and run checks' },
   ],
@@ -42,8 +42,9 @@ const FINDINGS = {
           correction: { type: 'string', description: 'Smallest defensible correction' },
           repeats: { type: 'string', description: 'ID of the earlier finding this one repeats, or empty' },
           tier: { type: 'string', enum: tierNames },
+          verification_group: { type: 'string', description: 'Shared key for findings needing the same source context; empty keeps a finding separate' },
         },
-        required: ['kind', 'severity', 'ref', 'trigger', 'impact', 'correction', 'repeats', 'tier'],
+        required: ['kind', 'severity', 'ref', 'trigger', 'impact', 'correction', 'repeats', 'tier', 'verification_group'],
       },
     },
     open_questions: { type: 'array', items: { type: 'string' } },
@@ -51,14 +52,24 @@ const FINDINGS = {
   },
   required: ['findings', 'open_questions', 'coverage_gaps'],
 }
-const VERDICT = {
+const verdictSchema = found => ({
   type: 'object',
   properties: {
-    disposition: { type: 'string', enum: ['accepted', 'rejected', 'unresolved'] },
-    reason: { type: 'string' },
+    verdicts: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', enum: found.map(f => f.id) },
+          disposition: { type: 'string', enum: ['accepted', 'rejected', 'unresolved'] },
+          reason: { type: 'string' },
+        },
+        required: ['id', 'disposition', 'reason'],
+      },
+    },
   },
-  required: ['disposition', 'reason'],
-}
+  required: ['verdicts'],
+})
 const SNAPSHOT = {
   type: 'object',
   properties: { fingerprint: { type: 'string' } },
@@ -107,15 +118,36 @@ async function snapshot(label) {
 }
 
 async function verify(found) {
-  const verdicts = await parallel(found.map(f => () => agent(
-    `${context}\n\n## Finding ${f.id}\n${JSON.stringify(f, null, 2)}\n\n` +
-    'Verify this finding against the target and the brief. Inspect only: leave the target unchanged, and run any ' +
-    'check that writes files in an isolated copy. Use the smallest check that settles the claim. Accept it only ' +
-    'with evidence. Reject unsupported, speculative, or preference-only claims. Mark it unresolved when settling ' +
-    "it needs missing information, extra authority, or a change to the user's goal or intended position.",
-    { ...tierOpts(tierIndex(f.tier)), phase: 'Verify', label: `verify:${f.id}`, schema: VERDICT },
+  const groups = new Map()
+  for (const f of found) {
+    const shared = typeof f.verification_group === 'string' && f.verification_group.trim()
+    const key = JSON.stringify([tierIndex(f.tier), shared ? ['group', shared] : ['finding', f.id]])
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key).push(f)
+  }
+  const batches = [...groups.values()]
+  const results = await parallel(batches.map(batch => () => agent(
+    `${context}\n\n## Findings\n${JSON.stringify(batch, null, 2)}\n\n` +
+    'Verify each finding against the target and the brief. Share inspection across related findings, but return ' +
+    'one verdict with its original id and evidence for each finding. Inspect only: leave the target unchanged, ' +
+    'and run any check that writes files in an isolated copy. Use the smallest check that settles each claim. ' +
+    'Accept only with evidence. Reject unsupported, speculative, or preference-only claims. Mark a finding ' +
+    "unresolved when settling it needs missing information, extra authority, or a change to the user's goal or intended position.",
+    { ...tierOpts(tierIndex(batch[0].tier)), phase: 'Verify', label: `verify:${batch[0].id}`, schema: verdictSchema(batch) },
   )))
-  return found.map((f, i) => ({ ...f, ...(verdicts[i] || { disposition: 'unresolved', reason: 'verifier failed' }) }))
+  const checked = new Map()
+  batches.forEach((batch, i) => {
+    const verdicts = results[i] && results[i].verdicts
+    for (const f of batch) {
+      const matches = Array.isArray(verdicts) ? verdicts.filter(v => v && v.id === f.id) : []
+      const v = matches.length === 1 && matches[0]
+      checked.set(f.id, v && ['accepted', 'rejected', 'unresolved'].includes(v.disposition) &&
+        typeof v.reason === 'string' && v.reason.trim()
+        ? { ...f, disposition: v.disposition, reason: v.reason }
+        : { ...f, disposition: 'unresolved', reason: 'verifier failed or returned a missing, duplicate, or invalid verdict' })
+    }
+  })
+  return found.map(f => checked.get(f.id))
 }
 
 const ledger = []
