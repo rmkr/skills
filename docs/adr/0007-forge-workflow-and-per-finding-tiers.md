@@ -1,12 +1,16 @@
 ---
-status: accepted
+status: partly superseded
 ---
 
 # Forge workflow script and per-finding tiers
 
 On 2026-10-12 the maintainer asked for The Forge to run as a Claude Code workflow, invoked from the skill as `/forge fix workflow`, and for models to be picked per agent, like Claude Code's ultracode. A `dynamic` option word was built first; the maintainer then made it the default, since choosing among the tiers is how The Forge should already work.
 
-## Settled design
+## Current status
+
+On 2026-10-26, the maintainer removed the Claude Code `workflow` option, its script, and its dedicated tests. The Forge uses its normal native-subagent process for review, verification, fixes, and re-review. This removes the separate runtime-specific execution path. The decisions about per-finding tiers, verifier subagents, and the stall rule still apply. Writer commits and correction ownership follow the normal delegation and build rules; the script-specific exceptions below are retired.
+
+## Original design
 
 - `workflow` is an option word like `strict`. The skill does the setup that needs the user, then runs the bundled `skills/forge/workflows/forge.js` through the Workflow tool. The script ships inside the skill, so the skills CLI installs it without extra tooling. Runtimes without the Workflow tool run the same level without it.
 - Tiers are set per finding by default, with no option word. The reviewer sets each finding's tier under delegation's planning rule, verification and fixes run at that tier, and failed fixes escalate. The reviewer and complexity reviewer keep the tiers ADR 0003 set.

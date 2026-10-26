@@ -45,8 +45,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "mean"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "accepted",
@@ -65,8 +64,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "mean"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "rejected",
@@ -85,8 +83,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "password"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "accepted",
@@ -105,8 +102,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "password"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "rejected",
@@ -125,8 +121,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "page"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "accepted",
@@ -145,8 +140,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "page"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "rejected",
@@ -165,8 +159,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "report"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "accepted",
@@ -185,8 +178,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "report"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "rejected",
@@ -205,8 +197,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "incident"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "unresolved",
@@ -225,8 +216,7 @@
         "impact": "The claim affects whether the brief is satisfied.",
         "correction": "Apply the smallest correction only if the claim is established.",
         "repeats": "",
-        "tier": "engineer",
-        "verification_group": "incident"
+        "tier": "engineer"
       },
       "expected": {
         "disposition": "unresolved",
