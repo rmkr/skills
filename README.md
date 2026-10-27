@@ -15,15 +15,20 @@ My agent skills for planning, execution, review, and communication across subjec
 
 A review request does not authorize edits. Reviewers inspect; verifier subagents check findings, and the main agent makes the final call on each verdict and owns any separately authorized corrections. The Forge's `strict` mode requires runtime-enforced read-only and no-delegation controls. Routine independent review uses ordinary native subagents with inspection-only assignments.
 
-## Install
+## Installation
 
-Use [Bun](https://bun.sh) and the [skills CLI](https://github.com/vercel-labs/skills). This installs one standalone skill from the development branch:
+Choose one command to install this collection globally from the development branch:
 
-```bash
-bunx skills@latest add rmkr/skills --global --agent codex --skill unslop
-```
+| Tool | Command |
+| --- | --- |
+| npm | `npx skills@latest add rmkr/skills --global` |
+| Bun | `bunx skills@latest add rmkr/skills --global` |
 
-Tagged collection releases are the stable channel; the default branch is development. No release tag is published yet. See [installation](docs/installation.md) for selecting a release, installing companion skills, configuring the strict reviewer, updates, and removal. Use `npx` instead of `bunx` if you prefer npm.
+Choose the skills and agents when prompted. Keep **Symlink** selected if asked for an installation method. This lets agents share one installed copy of each skill.
+
+Install `subagent-delegation` with `forge`. Start a fresh agent session after installation.
+
+See [installation](docs/installation.md#strict-reviewer-setup) for The Forge's optional `strict` reviewer setup, [skills CLI documentation](https://github.com/vercel-labs/skills) for other commands, and [the changelog](CHANGELOG.md) for collection changes.
 
 In Codex, invoke a skill with `$skill-name`, for example `$unslop`. See [compatibility](docs/compatibility.md) for other runtimes, invocation policies, and verification limits.
 
@@ -33,6 +38,6 @@ Contributions are welcome, including new skills within the collection's scope. S
 
 ## Recommendations and license
 
-[Personal recommendations](docs/recommendations.md) cover third-party skills, plugins, MCPs, and the optional installation picker. Those projects retain their own maintainers and support channels.
+[Personal recommendations](docs/recommendations.md) cover third-party skills, plugins, and MCPs. Those projects retain their own maintainers and support channels.
 
 Project-authored material is available under the [MIT license](LICENSE). Existing third-party license notices and attribution remain applicable to their material.

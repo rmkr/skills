@@ -10,7 +10,7 @@ Before tagging a release:
 
 1. Run the repository validator and full tooling suite, and resolve independent-review findings. For changed instructions, retain representative fresh-session evidence and describe unverified runtime behavior.
 2. Exercise the [installation instructions](installation.md) in a disposable project for a standalone skill and the integrated workflow set. Check required agent configuration against the same release. Preserve live installations and customizations.
-3. Write release notes covering behavior changes, dependency changes, renames, removals, and migration or manual setup steps. State what was tested and any support limitations.
+3. Update [CHANGELOG.md](../CHANGELOG.md) and use its version entry as the basis for release notes. Cover behavior changes, dependency changes, renames, removals, and migration or manual setup steps. State what was tested and any support limitations.
 4. Publish only the reviewed commit when release publication is authorized. After tagging, verify installation from the actual published tag before presenting it as stable.
 
 There is no fixed release schedule. Until the first tagged release exists, users can explicitly choose the development installation route.
