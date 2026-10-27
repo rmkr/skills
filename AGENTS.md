@@ -22,10 +22,9 @@ Routine independent audits and The Forge use ordinary native subagents with expl
 ## Safety and verification
 
 - Preserve pre-existing user changes and keep writes within the requested scope.
-- Installation tooling must preflight all targets and refuse unmanaged conflicts.
-- Uninstallation tooling may remove only repository-managed links or files.
 - Reject absolute user-specific paths from portable agent definitions.
 - Bump the version whenever a change touches code. Before you bump, ask the user which version to change and the new value. The collection version is in `pyproject.toml`; `skills/triage-investigate/pyproject.toml` has its own package version.
+- Record user-visible changes in `CHANGELOG.md` under the version being prepared.
 - Run `uv run python scripts/validate.py` and `uv run python -m unittest discover -s tests -v` after repository changes.
 - Review the final combined state with an independent subagent created through the active coding tool's native subagent facility, and apply accepted findings before declaring completion. Keep the review in that tool; do not launch another coding agent CLI or external review service. If a suitable native reviewer is unavailable, report the unmet review requirement and continue authorized local checks.
 

@@ -25,7 +25,7 @@ For installation changes, use a disposable project and the [documented installat
 
 ## Review and merge
 
-Explain the problem, resulting behavior, checks performed, and remaining limitations in the pull request. Include dependency, invocation, installation, or migration implications when relevant. Preserve existing license notices and attribution; contributions must be material you are entitled to contribute under the project's [MIT license](LICENSE).
+Explain the problem, resulting behavior, checks performed, and remaining limitations in the pull request. Include dependency, invocation, installation, or migration implications when relevant. Record user-visible changes in [CHANGELOG.md](CHANGELOG.md) under the version being prepared. Preserve existing license notices and attribution; contributions must be material you are entitled to contribute under the project's [MIT license](LICENSE).
 
 Merges require maintainer approval and passing validation and tooling tests; run the commands above locally and report the results in the pull request. Substantial instruction changes also require independent behavioral review. Review findings need evidence; the author addresses accepted findings and reviewers check the resulting combined state. See [AGENTS.md](AGENTS.md) for the repository's independent-review requirement.
 
