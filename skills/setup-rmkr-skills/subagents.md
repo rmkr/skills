@@ -7,9 +7,11 @@ These are suggestions; the user may choose any model the runtime offers.
 | Runtime | Apprentice | Technician | Engineer | Architect |
 | --- | --- | --- | --- | --- |
 | Claude Code | `haiku@high` | `sonnet@medium` | `opus@medium` | `opus@high` |
-| Codex | latest Luna `@high` | latest Sol `@low` | latest Sol `@medium` | latest Sol `@xhigh` |
+| Codex | latest Terra `@high` | latest Sol `@medium` | latest Sol `@high` | latest Sol `@xhigh` |
 
-In Claude Code, write tier models only as the Agent tool's per-call aliases, `sonnet`, `opus`, `haiku`, or `fable`, or as `inherit`. Resolve "latest Sol" and "latest Luna" to the newest plain release of that family in Codex's live model list, such as `gpt-6.1-sol`, ignoring variants such as `-mini`, and write that exact id. Offer `haiku@xhigh` too when the live model list shows Haiku supports it.
+In Claude Code, write tier models only as the Agent tool's per-call aliases, `sonnet`, `opus`, `haiku`, or `fable`, or as `inherit`. Resolve "latest Terra" and "latest Sol" to the newest plain release of that family in Codex's live model list, ignoring variants such as `-mini`, and write that exact id. Offer `haiku@xhigh` too when the live model list shows Haiku supports it.
+
+[Artificial Analysis results checked on 2026-10-27](https://artificialanalysis.ai/providers/openai/) show GPT-6.1 Terra at `high` scoring 44 versus Sol at `low` scoring 42, both for about $0.13 per Intelligence Index task. Sol at `medium`, `high`, and `xhigh` scores 48, 50, and 51, at about $0.21, $0.32, and $0.39 per task. These are benchmark costs, not Codex usage charges.
 
 ## Repository settings
 

@@ -6,6 +6,7 @@ This log starts at version 0.3.0. Earlier changes are in the Git history.
 
 ### Changed
 
+- Suggest the latest Terra at high effort for Codex's Apprentice tier, followed by the latest Sol at medium, high, and xhigh effort for Technician, Engineer, and Architect, based on Artificial Analysis results.
 - Use the skills CLI directly for installation and removal.
 - Use matching quick-install tables in the README and installation guide, with `npx` and `bunx` commands, interactive skill and agent selection, and Symlink as the default installation choice.
 - Keep the installation guide focused on this collection's setup and link to the skills CLI documentation for other commands.
