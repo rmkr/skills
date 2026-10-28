@@ -16,8 +16,11 @@ An evidence-supported issue identified by a review. A premise finding challenges
 **Review improvement loop**:
 A cycle of independent review, verification of findings by verifier subagents with the main agent's final call, authorized corrections, and independent re-review. The reviewer inspects; the main agent owns corrections.
 
+**Review round**:
+An independent assessment of one stable target state, including required specialist reviews and verification of findings. A replacement assessment is another round, even when the target stays unchanged.
+
 **Review level**:
-How far The Forge carries a review improvement loop: `review` stops at verified findings, `fix` corrects and re-reviews until clean, and `build` has workers implement before `fix` runs.
+How far The Forge carries a review improvement loop: `review` stops at verified findings, `fix` corrects and re-reviews within a shared round budget, and `build` has workers implement before `fix` runs. A budget stop leaves unfinished work explicit.
 
 **Strict review**:
 A review on a Git target by a runtime-enforced read-only reviewer against an immutable, fingerprinted bundle. It is an option on any review level.

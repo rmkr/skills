@@ -1,7 +1,7 @@
 interface:
   display_name: "Setup rmkr skills"
-  short_description: "Configure rmkr skill settings globally or per repository"
-  default_prompt: "Use $setup-rmkr-skills to configure subagent model tiers and The Forge's reviewer policy for me or this repository."
+  short_description: "Set subagent models and Forge review policy and limits"
+  default_prompt: "Use $setup-rmkr-skills to configure subagent model tiers, The Forge's reviewer policy, and its review-round limit for me or this repository."
 
 policy:
   allow_implicit_invocation: false

@@ -2,7 +2,7 @@
 status: accepted
 ---
 
-Partly superseded by [ADR 0002](0002-one-forge-with-levels.md): this workflow is now The Forge's `review` and `fix` levels. Partly superseded by [ADR 0007](0007-forge-workflow-and-per-finding-tiers.md): verifier subagents verify findings, and the main agent makes the final call.
+Partly superseded by [ADR 0002](0002-one-forge-with-levels.md): this workflow is now The Forge's `review` and `fix` levels. Partly superseded by [ADR 0007](0007-forge-workflow-and-per-finding-tiers.md): verifier subagents verify findings, and the main agent makes the final call. [ADR 0008](0008-bounded-review-loops.md) replaces the decision to avoid a fixed round limit.
 
 # Extend adversarial review beyond software
 

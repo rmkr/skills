@@ -12,7 +12,7 @@ Check implementation delegation alongside the reviewer preflight. If a required 
 
 Workers normally perform their own task-specific research. Use a researcher only when shared unknowns, consequential choices, or task boundaries justify it under the delegation contract.
 
-When existing work needs an initial assessment, run one `review` round first and return its verified findings to implementation in the same records.
+When existing work needs an initial assessment, run one `review` round first and return its verified findings to implementation in the same records. Count it against the shared round budget; reserve a round to review the integrated implementation.
 
 Assign one worker for a cohesive implementation, including a small task that explicitly invokes The Forge. Use multiple workers for independent slices. The ordinary-delegation shortcut for local work cannot skip this level's implementation worker. Apply the shared ownership and scheduling rules; validate prerequisites before dependent work starts. The orchestrator may investigate, integrate, validate, and make cohesive integration fixes within existing authority.
 
@@ -20,7 +20,7 @@ Assign one worker for a cohesive implementation, including a small task that exp
 
 Collect worker results, audit actual changes against ownership and the protected baseline, integrate the combined result into the staging branch through the delegation contract's worker worktrees, and run acceptance checks. A worker's completion message is evidence for verification, not acceptance by itself.
 
-Run the `fix` loop against the complete integrated snapshot with the original requirements and raw validation evidence. Route accepted corrections to the existing implementation owner unless ownership has been explicitly reassigned under the delegation contract.
+Run the `fix` loop against the complete integrated snapshot with the original requirements and raw validation evidence. Carry forward the same round counter rather than starting a new budget. Route accepted corrections to the existing implementation owner unless ownership has been explicitly reassigned under the delegation contract.
 
 ## Finish
 

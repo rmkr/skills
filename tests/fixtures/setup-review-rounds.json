@@ -1,0 +1,41 @@
+{
+  "description": "Draft-only setup trials. Materialize files, keep expected with the grader, and provide the recorded runtime and choices as scenario context.",
+  "cases": [
+    {
+      "id": "repository-change-preserves-columns",
+      "files": {
+        "request.txt": "Update only The Forge's saved round limit for this repository to 5. Keep the existing tiers and reviewer policy. Scope and value are already chosen. Prepare the complete proposed edits for approval; do not apply them. Treat the supplied filesystem mirror and state.json as the recorded setup environment, not your actual home or repository.\n",
+        "repo/AGENTS.md": "# Project instructions\n\nKeep these project rules.\n\n## Agent skills\n\n### Subagent delegation\n\nModel tiers and The Forge's reviewer policy: see `docs/agents/subagents.md`.\n",
+        "repo/docs/agents/subagents.md": "# Subagent delegation settings\n\n| Tier | Claude Code | Codex |\n| --- | --- | --- |\n| Apprentice | haiku@high | inherit |\n| Technician | sonnet@medium | inherit |\n| Engineer | opus@medium | inherit |\n| Architect | opus@high | inherit |\n| Reviewer | capped | inherit |\n\nForge settings:\n\n| Setting | Claude Code | Codex |\n| --- | --- | --- |\n| Review rounds | 7 | 3 |\n| Keep this setting | yes | unchanged |\n\nKeep this project note.\n",
+        "global/AGENTS.md": "# User instructions\n\nKeep this introduction.\n\n## Agent skills\n\n### Unslop\n\nKeep this writing rule.\n\n### Subagent delegation\n\n| Tier | Codex |\n| --- | --- |\n| Apprentice | inherit |\n| Technician | inherit |\n| Engineer | inherit |\n| Architect | inherit |\n| Reviewer | capped |\n",
+        "state.json": "{\n  \"runtime\": \"Codex\",\n  \"installed_skills\": [\n    \"setup-rmkr-skills\",\n    \"forge\",\n    \"subagent-delegation\"\n  ],\n  \"global_instructions\": \"global/AGENTS.md\",\n  \"repository\": \"repo\",\n  \"scope\": \"repository\",\n  \"selected_rounds\": 5,\n  \"existing_model_and_reviewer_choices\": \"Keep all as saved.\",\n  \"confirmation\": \"Draft approval still pending.\",\n  \"effort_agents\": \"No explicit effort selected for the active runtime.\"\n}\n"
+      },
+      "expected": {
+        "checks": [
+          "Draft the Codex Review rounds cell as 5 while retaining Claude Code 7.",
+          "Keep both runtime model columns, the extra setting row, project note, and unrelated instructions.",
+          "Include the chosen round limit in the draft and wait for approval.",
+          "Leave global instructions, effort agents, and subagent-model settings untouched."
+        ]
+      }
+    },
+    {
+      "id": "global-default-round-limit",
+      "files": {
+        "request.txt": "Set up the saved Forge round limit globally. I choose the recommended three total rounds. Keep my current model tiers and reviewer policy. Prepare the complete proposed edits for approval; do not apply them. Treat the supplied filesystem mirror and state.json as the recorded setup environment, not your actual home or repository.\n",
+        "global/AGENTS.md": "# User instructions\n\nKeep this introduction.\n\n## Agent skills\n\n### Unslop\n\nKeep this writing rule.\n\n### Subagent delegation\n\n| Tier | Codex |\n| --- | --- |\n| Apprentice | inherit |\n| Technician | inherit |\n| Engineer | inherit |\n| Architect | inherit |\n| Reviewer | capped |\n",
+        "repo/AGENTS.md": "# Project instructions\n\nKeep these project instructions unchanged.\n",
+        "state.json": "{\n  \"runtime\": \"Codex\",\n  \"installed_skills\": [\n    \"setup-rmkr-skills\",\n    \"forge\",\n    \"subagent-delegation\"\n  ],\n  \"global_instructions\": \"global/AGENTS.md\",\n  \"repository\": \"repo\",\n  \"scope\": \"global\",\n  \"selected_rounds\": 3,\n  \"existing_model_and_reviewer_choices\": \"Keep all as saved.\",\n  \"confirmation\": \"Draft approval still pending.\",\n  \"effort_agents\": \"No explicit effort selected.\"\n}\n"
+      },
+      "expected": {
+        "checks": [
+          "Add a separate Forge settings table inside the global Subagent delegation block with Codex Review rounds 3.",
+          "Preserve the existing model and reviewer table and Unslop block.",
+          "Leave repository settings and instruction files untouched.",
+          "Produce a draft for approval without asking again for the already selected scope or round value.",
+          "Create no effort agents or subagent-model changes."
+        ]
+      }
+    }
+  ]
+}

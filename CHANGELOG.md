@@ -2,6 +2,19 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.3.2 (unreleased)
+
+### Changed
+
+- Let Setup rmkr skills save The Forge's round limit globally or per repository; resolve explicit run choices before saved preferences.
+- Limit The Forge's review loops to a shared round budget, with incomplete work reported at the limit.
+- Focus later reviews on fixes and affected behavior, group repeated findings, and keep optional suggestions from extending the loop.
+- Load applicable baseline `REVIEW.md` rules explicitly and preserve the agreed review scope.
+
+### Added
+
+- Reusable review-loop replay cases and a grading guide for native agent behavior trials.
+
 ## 0.3.1 (unreleased)
 
 ### Changed

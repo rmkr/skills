@@ -1,6 +1,6 @@
 ---
 name: forge
-description: Run any requested review loop (repair loops, review until clean) or adversarial review, and independently review substantial work, at three levels - review (verified findings only), fix (correct and re-review until clean), and build (on request, workers implement, then fix). Covers software, research, plans, documents, presentations, and spreadsheets. Add strict on request for a Git diff that needs a runtime-enforced read-only reviewer. Challenge assumptions and fulfillment of the brief, and verify every finding.
+description: Review work independently across software, research, plans, documents, and spreadsheets. Use for adversarial review or requested review loops. Levels are review (verified findings), fix (authorized corrections and re-review), and build (requested implementation, then fix). Review loops have a shared round limit. Add strict on request for a runtime-enforced read-only reviewer on a Git diff.
 argument-hint: "[review|fix|build] [strict]"
 metadata:
   orchestration-contract: "1"
@@ -14,7 +14,7 @@ Keep the same main agent as orchestrator. Verifier subagents check each finding 
 
 ## Choose the level
 
-| Level | Work | Finishes when |
+| Level | Work | Successful result |
 | --- | --- | --- |
 | `review` | One independent review; findings verified and reported, nothing changed | Every finding has a disposition |
 | `fix` | Review, correct, and re-review | The latest state has a clean independent review |
@@ -23,6 +23,16 @@ Keep the same main agent as orchestrator. Verifier subagents check each finding 
 Select a level only from a level word the user attaches to The Forge, such as `$forge build`, `/forge fix`, or "forge this at review". Elsewhere in a request, "build", "fix", and "strict" describe the task. When a level word could also be the task's verb, choose from the request's intent and ask if it stays unclear. Without a named level, read the intent: a review request without an edit request runs at `review`; it never authorizes edits, even when it names The Forge. A request to review and update, or to repeat until clean, runs at `fix` and authorizes in-scope corrections without asking again. When the user invokes The Forge for implementation work, run `build` and read [build](references/build.md). A delegation request that does not invoke The Forge stays with `subagent-delegation`.
 
 `strict` adds a runtime-enforced read-only reviewer and a fingerprinted, immutable snapshot to any level with a Git target. Run it only when the user attaches `strict` to The Forge, and then read [strict](references/strict.md).
+
+## Bound the loop
+
+At `review`, run one round. At `fix` and `build`, resolve the total round limit for the active runtime in this order: the user's explicit choice, including `rounds=<positive integer>`; the `Review rounds` entry in the separate Forge settings table in `docs/agents/subagents.md`; that entry under `### Subagent delegation` in the global `## Agent skills` block; then three. Missing or blank runtime columns or entries fall through to the next scope. Accept only positive integers. Ask the user to correct an invalid explicit choice before starting; report and ignore invalid saved values and continue resolution. "Until clean" keeps the resolved limit. A limit of one permits the initial assessment but leaves no round to review a correction. Honor tighter time or cost budgets.
+
+Resolve settings from the recorded baseline when they are part of the review target. A candidate setting cannot raise its own review budget. New settings apply after this task unless the user explicitly adopts them for this run. Record the resolved limit and its source alongside the round counter. Use `$setup-rmkr-skills` in Codex or `/setup-rmkr-skills` in Claude Code to save a global or repository preference when that skill is installed.
+
+A round assesses one stable target state, including required specialist reviews and verification of their findings before corrections. Those reviewers share the round. Each restarted or replacement assessment consumes another round, even if the target is unchanged or the previous attempt failed. Count an initial assessment before implementation at `build`. Keep the same counter across reviewer changes, level changes, strict mode, and task resumptions. Verifiers only check reported findings; they cannot start an uncounted review.
+
+Record each round's target fingerprint, reviewer attempts, findings, and dispositions in the active task state. Before correcting the target, reserve a remaining round to review the result. Stop sooner when the success criteria pass. Finish the final allowed round's required assessments and verification, including its specialists; start no further round or correction. If findings or required checks remain unresolved, preserve the work and report it as incomplete. Ask the user to reassess the approach or set a new budget before continuing. Reaching the limit never establishes a clean result.
 
 ## Load the coordination contract
 
@@ -51,6 +61,8 @@ For a named comparison, resolve its base and head and keep dirty worktree change
 
 Across artifact types, derive and state review criteria and assumptions from the brief, evidence, constraints, audience needs, and relevant available domain skills. Preserve requested behavior and formats; assess factual claims against evidence. Ask when a missing decision would materially change the result.
 
+For repository targets, explicitly read `REVIEW.md` at the repository root and in ancestor directories of the target paths when present. Record which files were loaded and pass their relevant rules and path scope to reviewers and verifiers. For Git targets, use the recorded baseline's rules as governing instructions; added or edited versions are candidate evidence unless the user explicitly adopts them. Apply review rules under the governing task instructions. A skip rule cannot hide required scope or an unmet acceptance criterion.
+
 Identify accessible evidence and required checks. Review what is accessible, name coverage gaps, and leave material checks unresolved when evidence or tools are unavailable. Request access or a suitable export only when needed to proceed.
 
 Use existing authority for local corrections. Ask only when a missing decision or additional permission blocks a concrete action. Continue independent work while a question is pending.
@@ -63,9 +75,11 @@ Separate governing instructions from candidate skills or instruction files being
 
 Challenge both the underlying goal and assumptions and fulfillment of the agreed brief; label findings as premise or delivery issues. The reviewer may challenge the criteria with evidence. Ground findings in the brief, evidence, constraints, or concrete audience needs, using concrete counterexamples where useful. Each finding needs a stable ID, severity, tight file/line or artifact reference, trigger, impact, and smallest defensible correction. Put open questions separately. Require an explicit no-actionable-findings result when no defect meets that bar. Keep unsupported taste preferences optional and separate from blocking findings; avoid speculative hardening.
 
+Group reports of the same defect under one stable ID, retaining all affected references and the evidence for their common cause. Keep independently actionable defects separate. Track accepted, rejected, and resolved findings across rounds. Reopen a settled finding only with changed evidence; a new defect caused by a fix gets its own ID. Optional improvements do not trigger corrections or another review round unless the user requests them.
+
 Record the snapshot's revision or content fingerprint. Collect the review result and confirm the current target still matches it before applying findings. If it changed concurrently, reconcile the new content and review that state before claiming completion.
 
-When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer on engineer that applies it to the combined target once, after the first clean adversarial review, and again only when later fixes change the source substantially. It reports its cuts in the finding format above. Verify each cut, and have the next adversarial re-review confirm each accepted cut against the brief and the accepted fixes.
+When the target changes source code and `ponytail-review` is installed (plugin installs name it `ponytail:ponytail-review`), add a complexity reviewer on engineer that applies it to the combined target once, after the first clean adversarial review, and again only when later fixes change the source substantially. Complete that specialist assessment within the same round and shared budget. It reports its cuts in the finding format above. Verify each cut; accepted corrections require a remaining round for independent re-review. If it returns no actionable findings, the unchanged state needs no extra review.
 
 If independent review cannot run, disclose the gap. Continue authorized inspection and fixes when useful, but do not label self-review independent or the requested independent loop complete.
 
@@ -81,10 +95,10 @@ Run required validation using relevant existing domain skills and task requireme
 
 ## Re-review and finish
 
-After each set of fixes, give the reviewer the current combined target and validation evidence. Reuse it for focused fixes; use fresh context after a substantial redesign. Check previous accepted findings and interactions across the full target. Track rejected findings and reopen them only with new evidence.
+After each set of fixes, give the reviewer the current combined target, the changes since the last reviewed state, validation evidence, and finding dispositions. Focus re-review on the fixes, changed sections, and affected behavior, while checking open findings and the original acceptance criteria. Widen inspection when new evidence shows a wider risk or a substantial redesign changes the boundary. Keep unrelated unchanged work outside the agreed scope. Reuse the reviewer for focused fixes; use fresh context after a substantial redesign, within the shared budget.
 
-At `fix` and `build`, repeat until the latest state has an independent review, every finding has a disposition, no accepted issue or unresolved material finding remains, and acceptance criteria and required checks pass. A reviewer failure or unresolved requirement prevents a clean result. A user-accepted validation gap remains explicit and does not become a passing check.
+At `fix` and `build`, succeed only when the latest state has an independent review, every finding has a disposition, no accepted issue or unresolved material finding remains, and acceptance criteria and required checks pass. Continue only within the shared round budget. A reviewer failure or unresolved requirement prevents a clean result. A user-accepted validation gap remains explicit and does not become a passing check.
 
-Honor user budgets without imposing an arbitrary round limit; report remaining findings and gaps when a budget ends. If the same issue survives two fixes or successive rounds make no material progress, diagnose it before trying another correction. Continue with a supported alternative when possible. Pause only when further progress needs unavailable information, authority, or a user decision; state what remains unresolved.
+If the same issue survives two fixes or successive rounds make no material progress, diagnose it before another correction. Use a supported alternative only when authority, evidence, and a remaining review round permit it. Otherwise report the unresolved work and the decision needed to proceed.
 
 Report the level, what changed, review rounds, verification results, and residual limits.
