@@ -15,7 +15,7 @@ See [skills CLI documentation](https://github.com/vercel-labs/skills) for other 
 
 ## Strict reviewer setup
 
-The Forge's optional `strict` mode requires a separate reviewer. Copy the matching file from the same collection revision to your runtime's agent directory. Preserve existing custom settings. Use your configured directory if it differs from the default below.
+forge's optional `strict` mode requires a separate reviewer. Copy the matching file from the same collection revision to your runtime's agent directory. Preserve existing custom settings. Use your configured directory if it differs from the default below.
 
 | Runtime | Source in checkout | Default destination |
 | --- | --- | --- |

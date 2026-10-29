@@ -6,7 +6,7 @@ Codex is the primary runtime. Keep the shared skill instructions portable where 
 
 | Runtime | Invocation | Support and evidence |
 | --- | --- | --- |
-| Codex | `$skill-name` | Primary target. The repository includes OpenAI invocation metadata and a strict reviewer definition for The Forge. Runtime discovery, delegation, and effective permissions still need verification in the installed client. |
+| Codex | `$skill-name` | Primary target. The repository includes OpenAI invocation metadata and a strict reviewer definition for forge. Runtime discovery, delegation, and effective permissions still need verification in the installed client. |
 | Claude Code | `/skill-name` | Best effort. A separate strict reviewer adapter is included; repository validation checks its configuration. No current release-wide live-runtime qualification is claimed. |
 | OhMyPi | `/skill:skill-name` | Best effort; skill commands must be enabled. Historical OMP 17.2.9 checks covered reviewer discovery and its tool surface, not attempted-write rejection or the current collection's full behavior. |
 
@@ -16,19 +16,19 @@ The [installation guide](installation.md) lists the matching reviewer files and 
 
 Concise Write-up and Setup rmkr skills require explicit invocation. Their entrypoints declare `disable-model-invocation: true`; OpenAI metadata also declares `allow_implicit_invocation: false`. These are client-specific policies, not universal Agent Skills guarantees. Other skills permit automatic selection when relevant.
 
-The Forge declares `argument-hint: "[review|fix|build] [strict]"`, which Claude Code shows beside `/forge` in slash-command autocomplete. It is a second deliberate client extension, display-only. Codex and OhMyPi ignore it; strict Agent Skills consumers such as claude.ai uploads and the Skills API may reject it. Removing it loses only the hint.
+forge declares `argument-hint: "[review|fix|build] [strict]"`, which Claude Code shows beside `/forge` in slash-command autocomplete. It is a second deliberate client extension, display-only. Codex and OhMyPi ignore it; strict Agent Skills consumers such as claude.ai uploads and the Skills API may reject it. Removing it loses only the hint.
 
 The former Claude Code `workflow` option has been removed. Invoke the same level directly; for example, use `/forge fix` instead of `/forge fix workflow`. Review, verification, and authorized corrections use the active runtime's native subagents. Per-finding tiers need a runtime that chooses a model per subagent; elsewhere, verifiers and fixers inherit the session model under delegation's rules.
 
 Clients that do not enforce an explicit-invocation policy cannot satisfy that requirement merely by loading the Markdown. Historical OhMyPi behavior hides explicit-only skills from the model's catalog but still permits direct skill-path access; do not treat that as the same hard restriction. Strict Agent Skills consumers may reject the extension. Removing it changes behavior and is not a supported workaround for preserving explicit-only use.
 
-The Forge requires Subagent Delegation. Both declare orchestration contract version `1`; install compatible copies together and make them discoverable through the runtime's skill catalog. Missing or incompatible dependencies leave the integrated workflow unavailable.
+forge requires Subagent Delegation. Both declare orchestration contract version `1`; install compatible copies together and make them discoverable through the runtime's skill catalog. Missing or incompatible dependencies leave the integrated workflow unavailable.
 
 ## Reviewer boundaries
 
-Subagent Delegation and The Forge use the active runtime's native subagent facility. Ordinary review needs an inspection-only assignment; stronger isolation applies when the task requires it. A missing native reviewer must be reported, not replaced with a claim that local inspection was independent review.
+Subagent Delegation and forge use the active runtime's native subagent facility. Ordinary review needs an inspection-only assignment; stronger isolation applies when the task requires it. A missing native reviewer must be reported, not replaced with a claim that local inspection was independent review.
 
-The Forge's `strict` mode additionally requires its matching custom reviewer and verified runtime enforcement against filesystem writes, external mutations, and further delegation. A read-only filesystem alone does not constrain connected services. Profile declarations, tool allowlists, and copied configuration are inputs to that verification, not proof of the effective boundary. If enforcement cannot be confirmed, the strict review remains incomplete.
+forge's `strict` mode additionally requires its matching custom reviewer and verified runtime enforcement against filesystem writes, external mutations, and further delegation. A read-only filesystem alone does not constrain connected services. Profile declarations, tool allowlists, and copied configuration are inputs to that verification, not proof of the effective boundary. If enforcement cannot be confirmed, the strict review remains incomplete.
 
 ## What checks establish
 

@@ -1,5 +1,5 @@
 interface:
-  display_name: "The Forge"
+  display_name: "forge"
   short_description: "Review, fix, or build work within a shared round limit"
   default_prompt: "Use $forge with the shared delegation contract to review this work through native subagents at the requested level. Resolve the saved or explicit round limit, load applicable REVIEW.md rules, challenge assumptions and delivery, group related findings, and verify authorized corrections within that budget. Report unfinished work when the limit is reached."
 
