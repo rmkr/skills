@@ -67,10 +67,10 @@ def write_orchestration_skills(
 ) -> dict[str, Path]:
     fixtures = {
         "subagent-delegation": "Subagent Delegation",
-        "forge": "The Forge",
+        "forge": "forge",
     }
     if "forge" in names:
-        # The Forge requires its strict reviewer definitions.
+        # forge requires its strict reviewer definitions.
         (repo_root / "agents").symlink_to(REPO_ROOT / "agents", target_is_directory=True)
     skills: dict[str, Path] = {}
     for name in names:
@@ -423,13 +423,13 @@ class ToolingTests(unittest.TestCase):
             metadata_file = skill_dir / "agents" / "openai.yaml"
             metadata_file.write_text(
                 metadata_file.read_text(encoding="utf-8")
-                .replace('display_name: "The Forge"', 'display_name: "Old Forge"'),
+                .replace('display_name: "forge"', 'display_name: "The Forge"'),
                 encoding="utf-8",
             )
 
             result = run_script("validate.py", "--repo-root", repo_root)
             self.assertEqual(result.returncode, 1)
-            self.assertIn("interface.display_name must be 'The Forge'", result.stderr)
+            self.assertIn("interface.display_name must be 'forge'", result.stderr)
 
     def test_validator_requires_forge_strict_reviewer(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

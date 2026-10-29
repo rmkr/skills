@@ -2,6 +2,12 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.3.3 (unreleased)
+
+### Changed
+
+- Rename The Forge to `forge` in skill titles, Codex display metadata, current documentation, and validation. Keep `$forge` and `/forge` as the commands.
+
 ## 0.3.2 (unreleased)
 
 ### Changed

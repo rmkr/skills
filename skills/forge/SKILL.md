@@ -6,7 +6,7 @@ metadata:
   orchestration-contract: "1"
 ---
 
-# The Forge
+# forge
 
 Use this loop for requested independent review or substantial review and improvement work across subjects. Handle small edits proportionately; automatic selection does not require independent review for every edit.
 
@@ -20,9 +20,9 @@ Keep the same main agent as orchestrator. Verifier subagents check each finding 
 | `fix` | Review, correct, and re-review | The latest state has a clean independent review |
 | `build` | Workers implement, then the `fix` loop runs | Acceptance criteria pass and the latest state has a clean independent review |
 
-Select a level only from a level word the user attaches to The Forge, such as `$forge build`, `/forge fix`, or "forge this at review". Elsewhere in a request, "build", "fix", and "strict" describe the task. When a level word could also be the task's verb, choose from the request's intent and ask if it stays unclear. Without a named level, read the intent: a review request without an edit request runs at `review`; it never authorizes edits, even when it names The Forge. A request to review and update, or to repeat until clean, runs at `fix` and authorizes in-scope corrections without asking again. When the user invokes The Forge for implementation work, run `build` and read [build](references/build.md). A delegation request that does not invoke The Forge stays with `subagent-delegation`.
+Select a level only from a level word the user attaches to forge, such as `$forge build`, `/forge fix`, or "forge this at review". Elsewhere in a request, "build", "fix", and "strict" describe the task. When a level word could also be the task's verb, choose from the request's intent and ask if it stays unclear. Without a named level, read the intent: a review request without an edit request runs at `review`; it never authorizes edits, even when it names forge. A request to review and update, or to repeat until clean, runs at `fix` and authorizes in-scope corrections without asking again. When the user invokes forge for implementation work, run `build` and read [build](references/build.md). A delegation request that does not invoke forge stays with `subagent-delegation`.
 
-`strict` adds a runtime-enforced read-only reviewer and a fingerprinted, immutable snapshot to any level with a Git target. Run it only when the user attaches `strict` to The Forge, and then read [strict](references/strict.md).
+`strict` adds a runtime-enforced read-only reviewer and a fingerprinted, immutable snapshot to any level with a Git target. Run it only when the user attaches `strict` to forge, and then read [strict](references/strict.md).
 
 ## Bound the loop
 

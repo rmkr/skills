@@ -42,7 +42,7 @@ SKILL_CONTRACTS = {
         "orchestration_contract": "1",
     },
     "forge": {
-        "display_name": "The Forge",
+        "display_name": "forge",
         "allow_implicit_invocation": True,
         "disable_model_invocation": False,
         "skill_dependencies": ("subagent-delegation",),

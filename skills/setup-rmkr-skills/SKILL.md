@@ -1,6 +1,6 @@
 ---
 name: setup-rmkr-skills
-description: Configure rmkr skills globally or for this repository, including subagent model tiers and The Forge's reviewer policy and review-round limit. Run once before relying on them, or again to change settings.
+description: Configure rmkr skills globally or for this repository, including subagent model tiers and forge's reviewer policy and review-round limit. Run once before relying on them, or again to change settings.
 disable-model-invocation: true
 compatibility: Explicit-only invocation requires a client that honors disable-model-invocation or the OpenAI allow_implicit_invocation policy.
 ---
@@ -17,8 +17,8 @@ Read what exists instead of assuming:
 - In Claude Code, the `env` block of the user settings file (`settings.json` in that same directory) and, in a repository, of `.claude/settings.json`: the current `CLAUDE_CODE_SUBAGENT_MODEL`, and whether `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is set.
 - In a repository: root `CLAUDE.md` and `AGENTS.md`, and `docs/agents/subagents.md`.
 - Existing `## Agent skills` blocks and `### Subagent delegation` sub-blocks in all of these, and existing effort agents. Only a `delegate-<effort>` or `delegate_<effort>` name whose suffix is an effort level delegation's "Assign model tiers" accepts is an effort agent.
-- Which rmkr skills are installed. Configure only installed skills: subagent delegation has the tiers, and The Forge adds the reviewer policy and review-round limit. Read existing Forge settings tables as well as the model-tier tables.
-- When The Forge is installed, resolve its entrypoint through the runtime's skill catalog and read "Bound the loop" for the settings contract. Reading it for setup does not start a review.
+- Which rmkr skills are installed. Configure only installed skills: subagent delegation has the tiers, and forge adds the reviewer policy and review-round limit. Read existing Forge settings tables as well as the model-tier tables.
+- When forge is installed, resolve its entrypoint through the runtime's skill catalog and read "Bound the loop" for the settings contract. Reading it for setup does not start a review.
 - The model ids and effort levels the active runtime offers, from its live model list rather than a local cache.
 
 ## 2. Ask
@@ -30,8 +30,8 @@ Ask through the runtime's multiple-choice question tool when it has one, such as
 1. **Scope:** global, recommended when no global settings exist, or this repository. Repository settings override global ones, so use them for exceptions.
 2. **Tiers:** offer the active runtime's suggested apprentice, technician, engineer, and architect tiers from [subagents.md](subagents.md), resolved against its live model list (recommended), and **Inherit session** (`inherit` for every tier). Explain that `inherit` follows the session model and effort on each run. Any tier may use `inherit` independently, `inherit@<effort>` for a fixed effort, or any model and effort the runtime offers. Write `inherit` literally, preserving any chosen effort suffix. In Claude Code, map a chosen full id to the alias that currently resolves to that exact id, or ask the user to pick an alias, before writing.
 3. **Added tiers:** ask whether to add a tier, recommending no. For each added tier, ask its name, its place relative to the current tiers, including tiers already added, the work it takes in one line, and its model and effort. Its name must be one lowercase word that is not another tier's name, `reviewer`, `inherit`, `capped`, an effort level, or an informal tier name from delegation's tier overrides reference. Before checking a proposed name, load that reference through delegation's entrypoint. Ask again until the user is done.
-4. **Reviewer**, when The Forge is installed: offer `capped` (recommended), `architect`, and `inherit`, explained from The Forge's "Match models to roles".
-5. **Review rounds**, when The Forge is installed: ask whether to keep the current valid limit, or choose another positive whole number. When none is configured, recommend three. Explain that this is the total `fix` or `build` budget, including the initial review; specialists share a round, and replacement assessments consume another. One allows an assessment but no correction that needs re-review. A standalone `review` still uses one round. Ask this even when a saved limit exists, unless the user already chose the desired value. Reject zero, negative, fractional, or unbounded values before writing. Store the choice in the separate Forge settings table from [subagents.md](subagents.md).
+4. **Reviewer**, when forge is installed: offer `capped` (recommended), `architect`, and `inherit`, explained from forge's "Match models to roles".
+5. **Review rounds**, when forge is installed: ask whether to keep the current valid limit, or choose another positive whole number. When none is configured, recommend three. Explain that this is the total `fix` or `build` budget, including the initial review; specialists share a round, and replacement assessments consume another. One allows an assessment but no correction that needs re-review. A standalone `review` still uses one round. Ask this even when a saved limit exists, unless the user already chose the desired value. Reject zero, negative, fractional, or unbounded values before writing. Store the choice in the separate Forge settings table from [subagents.md](subagents.md).
 
 ## 3. Confirm and write
 
@@ -43,7 +43,7 @@ Show the draft and let the user edit it. Then write:
   ```markdown
   ### Subagent delegation
 
-  Model tiers and The Forge's reviewer policy and round limit: see `docs/agents/subagents.md`.
+  Model tiers and forge's reviewer policy and round limit: see `docs/agents/subagents.md`.
   ```
 
   Edit `CLAUDE.md` if it exists, else `AGENTS.md`. If neither exists, ask which to create.
@@ -55,4 +55,4 @@ Update existing blocks, both settings tables, and effort agents in place. Preser
 
 ## 4. Done
 
-Report the files written, the settings in effect, the saved review-round limit, and the `CLAUDE_CODE_SUBAGENT_MODEL` value set or skipped. If `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is already set, report that it overrides the tiers until the user removes it. Repository settings govern delegation once written, and Forge runs once they are in the baseline of the reviewed change, for example committed to the base branch; global settings, effort agents, and `CLAUDE_CODE_SUBAGENT_MODEL` apply in new sessions. Mention that `<tier>=` for any tier, such as `engineer=opus@high`, and The Forge's `reviewer=` and `rounds=<positive integer>` override saved settings for one run. Edit settings directly in `docs/agents/subagents.md` or the global block later; rerun this skill to add a scope or a newly installed skill, or when a newer model ships.
+Report the files written, the settings in effect, the saved review-round limit, and the `CLAUDE_CODE_SUBAGENT_MODEL` value set or skipped. If `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is already set, report that it overrides the tiers until the user removes it. Repository settings govern delegation once written, and Forge runs once they are in the baseline of the reviewed change, for example committed to the base branch; global settings, effort agents, and `CLAUDE_CODE_SUBAGENT_MODEL` apply in new sessions. Mention that `<tier>=` for any tier, such as `engineer=opus@high`, and forge's `reviewer=` and `rounds=<positive integer>` override saved settings for one run. Edit settings directly in `docs/agents/subagents.md` or the global block later; rerun this skill to add a scope or a newly installed skill, or when a newer model ships.

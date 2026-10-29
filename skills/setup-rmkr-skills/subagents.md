@@ -15,12 +15,12 @@ In Claude Code, write tier models only as the Agent tool's per-call aliases, `so
 
 ## Repository settings
 
-Write this as `docs/agents/subagents.md` with the active runtime's column only. Include the Reviewer row and separate Forge settings table only when The Forge is installed. List tiers lowest first, with each added tier's row in its chosen place, and include the added tiers list only when the user added a tier. In an existing file, add or update the active runtime's column in each table and keep the others. The global `### Subagent delegation` block uses the same format.
+Write this as `docs/agents/subagents.md` with the active runtime's column only. Include the Reviewer row and separate Forge settings table only when forge is installed. List tiers lowest first, with each added tier's row in its chosen place, and include the added tiers list only when the user added a tier. In an existing file, add or update the active runtime's column in each table and keep the others. The global `### Subagent delegation` block uses the same format.
 
 ```markdown
 # Subagent delegation settings
 
-Model and effort for subagent delegation's model tiers and The Forge's reviewer, one column per runtime. Write each tier as `model@effort`, with effort optional, and the reviewer as `capped`, `architect`, `inherit`, or a model; `inherit` follows the session model and effort on each run, `inherit@<effort>` fixes only the effort, and a missing column or entry falls back to the next settings scope.
+Model and effort for subagent delegation's model tiers and forge's reviewer, one column per runtime. Write each tier as `model@effort`, with effort optional, and the reviewer as `capped`, `architect`, `inherit`, or a model; `inherit` follows the session model and effort on each run, `inherit@<effort>` fixes only the effort, and a missing column or entry falls back to the next settings scope.
 
 | Tier | <runtime> |
 | --- | --- |
@@ -41,7 +41,7 @@ Added tiers:
 - **<name>**: <the work it takes>
 ```
 
-`Review rounds` is a positive integer, not a model tier. Write the confirmed choice; recommend the existing valid value, or three when no choice exists. Preserve absent values for other runtimes so they can fall back to their global settings. Resolve The Forge through the runtime's skill catalog; its "Bound the loop" rules own resolution and validation.
+`Review rounds` is a positive integer, not a model tier. Write the confirmed choice; recommend the existing valid value, or three when no choice exists. Preserve absent values for other runtimes so they can fall back to their global settings. Resolve forge through the runtime's skill catalog; its "Bound the loop" rules own resolution and validation.
 
 ## Effort agents
 
