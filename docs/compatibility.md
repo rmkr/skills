@@ -24,6 +24,8 @@ Clients that do not enforce an explicit-invocation policy cannot satisfy that re
 
 forge requires Subagent Delegation. Both declare orchestration contract version `1`; install compatible copies together and make them discoverable through the runtime's skill catalog. Missing or incompatible dependencies leave the integrated workflow unavailable.
 
+The Codex plugin ships both together. Codex CLI `0.166.0` exposes its skills as `rmkr:<skill-name>`, for example `$rmkr:forge`. Individual installations keep their unprefixed names. Plugin installation does not register the custom strict reviewer in Codex's agent directory; use the [separate setup](installation.md#strict-reviewer-setup) and keep that reviewer aligned with the installed collection revision.
+
 ## Reviewer boundaries
 
 Subagent Delegation and forge use the active runtime's native subagent facility. Ordinary review needs an inspection-only assignment; stronger isolation applies when the task requires it. A missing native reviewer must be reported, not replaced with a claim that local inspection was independent review.

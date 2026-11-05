@@ -1,0 +1,20 @@
+{
+  "name": "rmkr-skills",
+  "interface": {
+    "displayName": "rmkr skills"
+  },
+  "plugins": [
+    {
+      "name": "rmkr",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

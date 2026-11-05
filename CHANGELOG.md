@@ -2,6 +2,14 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.3.4 (unreleased)
+
+### Added
+
+- Package all six skills as the `rmkr` Codex plugin with a Git marketplace catalog.
+- Document native plugin installation and updates, an optional daily macOS task, and migration from individual skill copies. Plugin skills use the `rmkr:` prefix; the strict reviewer still needs separate setup.
+- Check that the plugin version matches the collection and its marketplace uses the canonical skill folders.
+
 ## 0.3.3 (unreleased)
 
 ### Changed

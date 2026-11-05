@@ -6,6 +6,8 @@ Austin ([@rmkr](https://github.com/rmkr)) owns scope, merge decisions, and relea
 
 Release the collection together under one version tag. Tagged releases are the stable installation source; `main` is development. Do not move an existing release tag to new content. Skills with companion requirements must ship compatible versions together.
 
+Keep the root `plugin.json` version equal to the collection version in `pyproject.toml`. The Codex marketplace points at the repository root, so the plugin uses the same skills as individual installations. The development plugin tracks `main`; its scheduled updates take effect after reviewed changes reach that branch.
+
 Before tagging a release:
 
 1. Run the repository validator and full tooling suite, and resolve independent-review findings. For changed instructions, retain representative fresh-session evidence and describe unverified runtime behavior.
