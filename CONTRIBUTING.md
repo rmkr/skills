@@ -29,4 +29,4 @@ Explain the problem, resulting behavior, checks performed, and remaining limitat
 
 Merges require maintainer approval and passing validation and tooling tests; run the commands above locally and report the results in the pull request. Substantial instruction changes also require independent behavioral review. Review findings need evidence; the author addresses accepted findings and reviewers check the resulting combined state. See [AGENTS.md](AGENTS.md) for the repository's independent-review requirement.
 
-The `Validate` workflow is disabled while GitHub Actions is unavailable for this private repository, so no check runs on pull requests; see [release and maintenance guidance](docs/maintenance.md) for enforcement and publication checks.
+The `Validate` workflow runs on pull requests and `main`. After validation succeeds on `main`, its release job publishes any new collection version. Choose the version and complete review before merging; see [release and maintenance guidance](docs/maintenance.md) for the publication rules and retry steps.
