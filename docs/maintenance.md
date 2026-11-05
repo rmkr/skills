@@ -6,7 +6,7 @@ Austin ([@rmkr](https://github.com/rmkr)) owns scope, merge decisions, and relea
 
 Release the collection together under one version tag. Tagged releases are the stable installation source. Merging a new collection version to `main` authorizes publication after its checks pass. Do not move an existing release tag to new content. Skills with companion requirements must ship compatible versions together.
 
-Keep the root `plugin.json` version equal to the collection version in `pyproject.toml`. The Codex marketplace points at the repository root, so the plugin uses the same skills as individual installations. The development plugin tracks `main`; its scheduled updates take effect after reviewed changes reach that branch.
+Keep the root `plugin.json` and `.claude-plugin/plugin.json` versions equal to the collection version in `pyproject.toml`. Both marketplaces point at the repository root, so the plugins use the same skills as individual installations. Development installations track `main`; updates take effect after reviewed changes reach that branch. Bump both plugin versions for each collection release so Claude Code refreshes its versioned cache.
 
 Before merging a release:
 
