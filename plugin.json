@@ -1,6 +1,6 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
-  "name": "rmkr-skills",
+  "name": "rmkr",
   "version": "0.3.4",
   "description": "Skills for planning, execution, review, and communication.",
   "repository": "https://github.com/rmkr/skills",

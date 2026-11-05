@@ -2,17 +2,17 @@
 
 ## Codex plugin
 
-Use Codex CLI `0.166.0` or a compatible newer version. The plugin packages all six skills together, including Forge and Subagent Delegation. It uses this repository's `skills/` files directly, with no second copy to maintain.
+Use Codex CLI `0.166.0` or a compatible newer version. The `rmkr` plugin packages all six skills together, including Forge and Subagent Delegation. It uses this repository's `skills/` files directly, with no second copy to maintain.
 
 After the plugin files reach `main`, install from the development branch:
 
 ```bash
 codex plugin marketplace add rmkr/skills --ref main
-codex plugin add rmkr-skills@rmkr-skills
+codex plugin add rmkr@rmkr-skills
 codex plugin list --marketplace rmkr-skills --json
 ```
 
-Start a fresh session after installation or an update. Codex gives plugin skills a prefix, such as `$rmkr-skills:forge` and `$rmkr-skills:unslop`. The two explicit-only skills retain their invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
+Start a fresh session after installation or an update. Codex gives plugin skills a prefix, such as `$rmkr:forge` and `$rmkr:unslop`. The two explicit-only skills retain their invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
 
 ### Existing installations
 
@@ -83,7 +83,7 @@ Keep tests outside your real Codex profile. From the checkout:
 ```bash
 trial_profile="$(mktemp -d)"
 CODEX_HOME="$trial_profile" codex plugin marketplace add "$PWD"
-CODEX_HOME="$trial_profile" codex plugin add rmkr-skills@rmkr-skills --json
+CODEX_HOME="$trial_profile" codex plugin add rmkr@rmkr-skills --json
 CODEX_HOME="$trial_profile" codex plugin list --marketplace rmkr-skills --json
 ```
 

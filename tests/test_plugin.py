@@ -12,6 +12,7 @@ class PluginTests(unittest.TestCase):
     def test_plugin_tracks_collection_version_and_skill_root(self) -> None:
         manifest = json.loads((REPO_ROOT / "plugin.json").read_text())
         project = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text())
+        self.assertEqual(manifest["name"], "rmkr")
         self.assertEqual(manifest["version"], project["project"]["version"])
         self.assertEqual(
             manifest["$schema"],

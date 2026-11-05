@@ -5,7 +5,7 @@
   },
   "plugins": [
     {
-      "name": "rmkr-skills",
+      "name": "rmkr",
       "source": {
         "source": "local",
         "path": "./"
