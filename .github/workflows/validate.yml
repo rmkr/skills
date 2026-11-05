@@ -29,3 +29,28 @@ jobs:
 
       - name: Run tooling tests
         run: python -m unittest discover -s tests -v
+
+  release:
+    needs: validate
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: release-main
+      cancel-in-progress: false
+    steps:
+      - name: Check out validated commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Publish collection release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/release.py
