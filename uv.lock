@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 
 [[package]]
@@ -111,7 +111,7 @@ wheels = [
 
 [[package]]
 name = "rmkr-skills-tooling"
-version = "0.3.3"
+version = "0.3.4"
 source = { virtual = "." }
 dependencies = [
     { name = "pyyaml" },
@@ -123,9 +123,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "pyyaml", specifier = ">=6.0,<7" },
-]
+requires-dist = [{ name = "pyyaml", specifier = ">=6.0,<7" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "rmkr-triage-render", editable = "skills/triage-investigate" }]

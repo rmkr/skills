@@ -17,7 +17,16 @@ A review request does not authorize edits. Reviewers inspect; verifier subagents
 
 ## Installation
 
-Choose one command to install this collection globally from the development branch:
+For Codex CLI, install all six skills as one plugin from the development branch:
+
+```bash
+codex plugin marketplace add rmkr/skills --ref main
+codex plugin add rmkr-skills@rmkr-skills
+```
+
+Start a fresh session. Plugin skills use a prefix, for example `$rmkr-skills:forge`. See [installation](docs/installation.md) for updates, a daily macOS update task, and migration from an existing skill installation. These commands require the plugin files on `main`; until this change is merged, use the local test instructions in that guide.
+
+For individual skills, Claude Code, or OhMyPi, choose one command:
 
 | Tool | Command |
 | --- | --- |
@@ -30,7 +39,7 @@ Install `subagent-delegation` with `forge`. Start a fresh agent session after in
 
 See [installation](docs/installation.md#strict-reviewer-setup) for forge's optional `strict` reviewer setup, [skills CLI documentation](https://github.com/vercel-labs/skills) for other commands, and [the changelog](CHANGELOG.md) for collection changes.
 
-In Codex, invoke a skill with `$skill-name`, for example `$unslop`. See [compatibility](docs/compatibility.md) for other runtimes, invocation policies, and verification limits.
+Skills installed through the skills CLI use `$skill-name` in Codex, for example `$unslop`. See [compatibility](docs/compatibility.md) for other runtimes, invocation policies, and verification limits.
 
 ## Contribute and maintain
 
