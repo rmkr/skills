@@ -2,6 +2,14 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.3.5
+
+### Added
+
+- Package all six skills as the `rmkr` Claude Code plugin with its own marketplace catalog, using the existing skill folders.
+- Document Claude plugin installation, updates, and local checks. Plugin commands use the `/rmkr:` prefix; the strict reviewer still needs separate setup.
+- Check that Claude plugin metadata matches the collection and its marketplace uses the canonical skill folders. Keep other runtimes' agents out of Claude's plugin discovery.
+
 ## 0.3.4
 
 ### Added

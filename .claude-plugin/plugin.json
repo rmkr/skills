@@ -1,0 +1,11 @@
+{
+  "name": "rmkr",
+  "version": "0.3.5",
+  "description": "Skills for planning, execution, review, and communication.",
+  "author": {
+    "name": "rmkr"
+  },
+  "repository": "https://github.com/rmkr/skills",
+  "license": "MIT",
+  "agents": []
+}

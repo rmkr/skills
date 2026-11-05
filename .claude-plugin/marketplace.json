@@ -1,0 +1,13 @@
+{
+  "name": "rmkr-skills",
+  "description": "Skills for planning, execution, review, and communication.",
+  "owner": {
+    "name": "rmkr"
+  },
+  "plugins": [
+    {
+      "name": "rmkr",
+      "source": "./"
+    }
+  ]
+}

@@ -89,6 +89,49 @@ CODEX_HOME="$trial_profile" codex plugin list --marketplace rmkr-skills --json
 
 This checks a local source. It does not exercise Git fetching or daily updates. `CODEX_HOME` separates plugin configuration and caches, but Codex can still discover shared skills from `~/.agents/skills`. Keep the trial profile until you finish inspecting it. Repository checks and an offline Git trial do not prove access to the published repository or behavior in the desktop app.
 
+## Claude Code plugin
+
+The `rmkr` Claude Code plugin loads the same six skill folders as the Codex plugin. Custom agents remain a separate installation, so Claude does not scan the other runtimes' reviewer files.
+
+After the Claude plugin files reach `main`, install from the development branch:
+
+```bash
+claude plugin marketplace add rmkr/skills#main
+claude plugin install rmkr@rmkr-skills
+claude plugin list --json
+```
+
+Start a fresh session. Plugin skills use commands such as `/rmkr:forge` and `/rmkr:unslop`. Concise Write-up and Setup rmkr skills keep their explicit-only invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
+
+If you already use individual skills in Claude Code, choose one installation route per skill. Remove only the old Claude links after checking them. Preserve shared skill folders used by other agents and any custom reviewer settings. Update saved prompts to use the plugin's prefixed commands where needed.
+
+### Updates
+
+Refresh the marketplace and the installed plugin:
+
+```bash
+claude plugin marketplace update rmkr-skills
+claude plugin update rmkr@rmkr-skills
+```
+
+Start a fresh session after an update. For automatic updates, run `/plugin` in Claude Code, open **Marketplaces**, select `rmkr-skills`, and select **Enable auto-update**. Third-party marketplaces have auto-update off by default. See [Claude Code's plugin guide](https://code.claude.com/docs/en/discover-plugins) for update behavior.
+
+### Local test before merging
+
+From the checkout, validate both files and install into a disposable Claude profile:
+
+```bash
+claude plugin validate .claude-plugin/plugin.json
+claude plugin validate .claude-plugin/marketplace.json
+trial_profile="$(mktemp -d)"
+CLAUDE_CONFIG_DIR="$trial_profile" claude plugin marketplace add "$PWD"
+CLAUDE_CONFIG_DIR="$trial_profile" claude plugin install rmkr@rmkr-skills
+CLAUDE_CONFIG_DIR="$trial_profile" claude plugin list --json
+CLAUDE_CONFIG_DIR="$trial_profile" claude plugin details rmkr@rmkr-skills
+```
+
+This checks local installation and the component list. It does not prove GitHub fetching, skill behavior, or strict-reviewer permission enforcement. See [Claude Code's manifest reference](https://code.claude.com/docs/en/plugins-reference) for the package format. Keep the trial profile until you finish inspecting it.
+
 ## Skills CLI
 
 Choose one command to install individual skills from the development branch:
@@ -106,7 +149,7 @@ See [skills CLI documentation](https://github.com/vercel-labs/skills) for other 
 
 ## Strict reviewer setup
 
-forge's optional `strict` mode requires a separate reviewer. Copy the matching file from the same collection revision to your runtime's agent directory. Preserve existing custom settings. Use your configured directory if it differs from the default below.
+forge's optional `strict` mode requires a separate reviewer, including for plugin installations. Copy the matching file from the same collection revision to your runtime's agent directory. Preserve existing custom settings. Use your configured directory if it differs from the default below.
 
 | Runtime | Source in checkout | Default destination |
 | --- | --- | --- |

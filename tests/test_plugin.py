@@ -29,6 +29,27 @@ class PluginTests(unittest.TestCase):
         self.assertEqual(plugin["policy"]["installation"], "AVAILABLE")
         self.assertTrue((REPO_ROOT / plugin["source"]["path"] / "skills").is_dir())
 
+    def test_claude_plugin_shares_metadata_and_skill_root(self) -> None:
+        manifest = json.loads((REPO_ROOT / ".claude-plugin/plugin.json").read_text())
+        shared = json.loads((REPO_ROOT / "plugin.json").read_text())
+        for field in ("name", "version", "description", "repository", "license"):
+            with self.subTest(field=field):
+                self.assertEqual(manifest[field], shared[field])
+        self.assertNotIn("$schema", manifest)
+        self.assertNotIn("skills", manifest)
+        self.assertEqual(manifest["agents"], [])
+
+        catalog = json.loads(
+            (REPO_ROOT / ".claude-plugin/marketplace.json").read_text()
+        )
+        self.assertEqual(catalog["name"], "rmkr-skills")
+        self.assertEqual(catalog["owner"]["name"], manifest["author"]["name"])
+        self.assertEqual(
+            catalog["plugins"], [{"name": manifest["name"], "source": "./"}]
+        )
+        plugin_root = REPO_ROOT / catalog["plugins"][0]["source"]
+        self.assertTrue((plugin_root / "skills").is_dir())
+
 
 if __name__ == "__main__":
     unittest.main()
