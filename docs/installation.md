@@ -2,7 +2,7 @@
 
 ## Codex plugin
 
-Use Codex CLI `0.166.0` or a compatible newer version. The `rmkr` plugin packages all six skills together, including Forge and Subagent Delegation. It uses this repository's `skills/` files directly, with no second copy to maintain.
+Use Codex CLI `0.166.0` or a compatible newer version. The `rmkr` plugin packages all four skills together, including Forge and Subagent Delegation. It uses this repository's `skills/` files directly, with no second copy to maintain.
 
 After the plugin files reach `main`, install from the development branch:
 
@@ -91,7 +91,7 @@ This checks a local source. It does not exercise Git fetching or daily updates. 
 
 ## Claude Code plugin
 
-The `rmkr` Claude Code plugin loads the same six skill folders as the Codex plugin. Custom agents remain a separate installation, so Claude does not scan the other runtimes' reviewer files.
+The `rmkr` Claude Code plugin loads the same four skill folders as the Codex plugin. Custom agents remain a separate installation, so Claude does not scan the other runtimes' reviewer files.
 
 After the Claude plugin files reach `main`, install from the development branch:
 
@@ -101,7 +101,7 @@ claude plugin install rmkr@rmkr-skills
 claude plugin list --json
 ```
 
-Start a fresh session. Plugin skills use commands such as `/rmkr:forge` and `/rmkr:unslop`. Concise Write-up and Setup rmkr skills keep their explicit-only invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
+Start a fresh session. Plugin skills use commands such as `/rmkr:forge` and `/rmkr:unslop`. Setup rmkr skills keeps its explicit-only invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
 
 If you already use individual skills in Claude Code, choose one installation route per skill. Remove only the old Claude links after checking them. Preserve shared skill folders used by other agents and any custom reviewer settings. Update saved prompts to use the plugin's prefixed commands where needed.
 
