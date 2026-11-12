@@ -4,9 +4,6 @@ Shared language for the writing and review capabilities in this collection.
 
 ## Language
 
-**Concise write-up**:
-A brief, evidence-supported summary of existing findings for a mixed technical audience. For an issue, it explains the problem, impact, known or suspected causes, and any available next steps with their actual status.
-
 **Adversarial review**:
 An independent assessment that challenges both a work product's underlying goal and assumptions and its fulfillment of the agreed brief.
 

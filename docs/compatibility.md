@@ -14,7 +14,7 @@ The [installation guide](installation.md) lists the matching reviewer files and 
 
 ## Invocation and dependencies
 
-Concise Write-up and Setup rmkr skills require explicit invocation. Their entrypoints declare `disable-model-invocation: true`; OpenAI metadata also declares `allow_implicit_invocation: false`. These are client-specific policies, not universal Agent Skills guarantees. Other skills permit automatic selection when relevant.
+Setup rmkr skills requires explicit invocation. Its entrypoint declares `disable-model-invocation: true`; OpenAI metadata also declares `allow_implicit_invocation: false`. These are client-specific policies, not universal Agent Skills guarantees. Other skills permit automatic selection when relevant.
 
 forge declares `argument-hint: "[review|fix|build] [strict]"`, which Claude Code shows beside `/forge` in slash-command autocomplete. It is a second deliberate client extension, display-only. Codex and OhMyPi ignore it; strict Agent Skills consumers such as claude.ai uploads and the Skills API may reject it. Removing it loses only the hint.
 
@@ -26,7 +26,7 @@ forge requires Subagent Delegation. Both declare orchestration contract version 
 
 The Codex plugin ships both together. Codex CLI `0.166.0` exposes its skills as `rmkr:<skill-name>`, for example `$rmkr:forge`. Individual installations keep their unprefixed names. Plugin installation does not register the custom strict reviewer in Codex's agent directory; use the [separate setup](installation.md#strict-reviewer-setup) and keep that reviewer aligned with the installed collection revision.
 
-The Claude Code plugin also ships all six skills together, with commands such as `/rmkr:forge`. Its manifest leaves custom agents out to avoid loading other runtimes' adapters. Use the same separate strict-reviewer setup as individual Claude installations.
+The Claude Code plugin also ships all four skills together, with commands such as `/rmkr:forge`. Its manifest leaves custom agents out to avoid loading other runtimes' adapters. Use the same separate strict-reviewer setup as individual Claude installations.
 
 ## Reviewer boundaries
 

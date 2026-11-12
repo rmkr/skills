@@ -9,15 +9,13 @@ My agent skills for planning, execution, review, and communication across subjec
 | [Subagent Delegation](skills/subagent-delegation/SKILL.md) | Parts of a task benefit from separate agents, with one main agent coordinating the results. No formal plan or implementation worker is required. | Optionally Setup rmkr skills to configure model tiers | Automatic or explicit |
 | [forge](skills/forge/SKILL.md) | Work needs independent scrutiny of its assumptions and delivery, across software, research, plans, documents, and other subjects. Levels: `review` returns verified findings, `fix` corrects and re-reviews, and `build` has workers implement software first. Loops stop when clean or at the shared round limit; unfinished work stays explicit. Each finding is checked and fixed on the lowest model tier that fits it. Add `strict` for a runtime-enforced read-only reviewer on a Git diff. | Subagent Delegation; the strict reviewer for `strict`; optionally Setup rmkr skills to configure its reviewer policy | Automatic or explicit |
 | [Unslop](skills/unslop/SKILL.md) | Prose needs formulaic phrasing removed while preserving meaning and evidence. | None | Automatic or explicit |
-| [Triage Investigate](skills/triage-investigate/SKILL.md) | A reported bug needs investigation using logs and source, with an evidence-backed HTML report and Markdown handoff. | uv and Python 3.11+ for rendering | Automatic or explicit |
-| [Concise Write-up](skills/concise-writeup/SKILL.md) | Existing findings need a concise summary with evidence and known next steps. | None | Explicit only |
 | [Setup rmkr skills](skills/setup-rmkr-skills/SKILL.md) | You want global or per-repository settings for subagent model tiers, forge's reviewer policy, and its review-round limit. | None | Explicit only |
 
 A review request does not authorize edits. Reviewers inspect; verifier subagents check findings, and the main agent makes the final call on each verdict and owns any separately authorized corrections. forge's `strict` mode requires runtime-enforced read-only and no-delegation controls. Routine independent review uses ordinary native subagents with inspection-only assignments.
 
 ## Installation
 
-For Codex CLI, install all six skills as one plugin from the development branch:
+For Codex CLI, install all four skills as one plugin from the development branch:
 
 ```bash
 codex plugin marketplace add rmkr/skills --ref main
@@ -26,7 +24,7 @@ codex plugin add rmkr@rmkr-skills
 
 Start a fresh session. Plugin skills use a prefix, for example `$rmkr:forge`. See [installation](docs/installation.md) for updates, a daily macOS update task, and migration from an existing skill installation. These commands require the plugin files on `main`; until this change is merged, use the local test instructions in that guide.
 
-For Claude Code, install the same six skills as a plugin:
+For Claude Code, install the same four skills as a plugin:
 
 ```bash
 claude plugin marketplace add rmkr/skills#main

@@ -2,6 +2,18 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.4.0
+
+### Removed
+
+- Move `concise-writeup` and `triage-investigate` to the private `rmkr/skills-private` repository, including the renderer, its tests, and its dependencies.
+- Remove both skills from the public Codex and Claude Code plugins. The public collection now contains four skills.
+
+### Migration
+
+- Update the public plugin to remove its old copies. Users with access can install the moved skills from `rmkr/skills-private`; its plugin uses the `rmkr-private:` prefix. Individual skill names stay unchanged.
+- Earlier releases and Git history still contain both skills. This change removes them from the current public source only.
+
 ## 0.3.5
 
 ### Added
