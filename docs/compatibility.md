@@ -7,7 +7,7 @@ Codex is the primary runtime. Keep the shared skill instructions portable where 
 | Runtime | Invocation | Support and evidence |
 | --- | --- | --- |
 | Codex | `$skill-name` | Primary target. The repository includes OpenAI invocation metadata and a strict reviewer definition for forge. Runtime discovery, delegation, and effective permissions still need verification in the installed client. |
-| Claude Code | `/rmkr:skill-name` in the plugin; `/skill-name` for individual skills | Best effort. A separate strict reviewer adapter is included; repository validation checks its configuration. No current release-wide live-runtime qualification is claimed. |
+| Claude Code | `/rmkr-skills:skill-name` in the plugin; `/skill-name` for individual skills | Best effort. A separate strict reviewer adapter is included; repository validation checks its configuration. No current release-wide live-runtime qualification is claimed. |
 | OhMyPi | `/skill:skill-name` | Best effort; skill commands must be enabled. Historical OMP 17.2.9 checks covered reviewer discovery and its tool surface, not attempted-write rejection or the current collection's full behavior. |
 
 The [installation guide](installation.md) lists the matching reviewer files and default destinations. Relocated runtime profiles may use different directories.
@@ -24,9 +24,9 @@ Clients that do not enforce an explicit-invocation policy cannot satisfy that re
 
 forge requires Subagent Delegation. Both declare orchestration contract version `1`; install compatible copies together and make them discoverable through the runtime's skill catalog. Missing or incompatible dependencies leave the integrated workflow unavailable.
 
-The Codex plugin ships both together. Codex CLI `0.166.0` exposes its skills as `rmkr:<skill-name>`, for example `$rmkr:forge`. Individual installations keep their unprefixed names. Plugin installation does not register the custom strict reviewer in Codex's agent directory; use the [separate setup](installation.md#strict-reviewer-setup) and keep that reviewer aligned with the installed collection revision.
+The Codex plugin ships both together. Its plugin name gives skills the `rmkr-skills:<skill-name>` prefix, for example `$rmkr-skills:forge`. Individual installations keep their unprefixed names. Plugin installation does not register the custom strict reviewer in Codex's agent directory; use the [separate setup](installation.md#strict-reviewer-setup) and keep that reviewer aligned with the installed collection revision.
 
-The Claude Code plugin also ships all four skills together, with commands such as `/rmkr:forge`. Its manifest leaves custom agents out to avoid loading other runtimes' adapters. Use the same separate strict-reviewer setup as individual Claude installations.
+The Claude Code plugin also ships all four skills together, with commands such as `/rmkr-skills:forge`. Its manifest leaves custom agents out to avoid loading other runtimes' adapters. Use the same separate strict-reviewer setup as individual Claude installations.
 
 ## Reviewer boundaries
 

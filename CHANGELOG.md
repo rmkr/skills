@@ -2,6 +2,17 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.4.1
+
+### Changed
+
+- Rename the Codex and Claude Code plugin to `rmkr-skills` to match the marketplace name.
+
+### Migration
+
+- Reinstall the plugin as `rmkr-skills@rmkr-skills`. The installation guide includes commands to remove the previous `rmkr` plugin.
+- Update saved skill commands to use the new prefix, such as `$rmkr-skills:forge` in Codex and `/rmkr-skills:forge` in Claude Code.
+
 ## 0.4.0
 
 ### Removed

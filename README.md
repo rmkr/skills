@@ -19,19 +19,19 @@ For Codex CLI, install all four skills as one plugin from the development branch
 
 ```bash
 codex plugin marketplace add rmkr/skills --ref main
-codex plugin add rmkr@rmkr-skills
+codex plugin add rmkr-skills@rmkr-skills
 ```
 
-Start a fresh session. Plugin skills use a prefix, for example `$rmkr:forge`. See [installation](docs/installation.md) for updates, a daily macOS update task, and migration from an existing skill installation. These commands require the plugin files on `main`; until this change is merged, use the local test instructions in that guide.
+Start a fresh session. Plugin skills use a prefix, for example `$rmkr-skills:forge`. See [installation](docs/installation.md) for updates, a daily macOS update task, and migration from an existing skill installation. These commands require the plugin files on `main`; until this change is merged, use the local test instructions in that guide.
 
 For Claude Code, install the same four skills as a plugin:
 
 ```bash
 claude plugin marketplace add rmkr/skills#main
-claude plugin install rmkr@rmkr-skills
+claude plugin install rmkr-skills@rmkr-skills
 ```
 
-Start a fresh session and use commands such as `/rmkr:forge`. The strict reviewer still needs separate setup. These commands require the Claude plugin files on `main`; until merged, use the [local test instructions](docs/installation.md#claude-code-plugin).
+Start a fresh session and use commands such as `/rmkr-skills:forge`. The strict reviewer still needs separate setup. These commands require the Claude plugin files on `main`; until merged, use the [local test instructions](docs/installation.md#claude-code-plugin).
 
 For individual skills or OhMyPi, choose one command:
 
