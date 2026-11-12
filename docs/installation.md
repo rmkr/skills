@@ -2,19 +2,29 @@
 
 ## Codex plugin
 
-Use Codex CLI `0.166.0` or a compatible newer version. The `rmkr` plugin packages all four skills together, including Forge and Subagent Delegation. It uses this repository's `skills/` files directly, with no second copy to maintain.
+Use Codex CLI `0.166.0` or a compatible newer version. The `rmkr-skills` plugin packages all four skills together, including Forge and Subagent Delegation. It uses this repository's `skills/` files directly, with no second copy to maintain.
 
 After the plugin files reach `main`, install from the development branch:
 
 ```bash
 codex plugin marketplace add rmkr/skills --ref main
-codex plugin add rmkr@rmkr-skills
+codex plugin add rmkr-skills@rmkr-skills
 codex plugin list --marketplace rmkr-skills --json
 ```
 
-Start a fresh session after installation or an update. Codex gives plugin skills a prefix, such as `$rmkr:forge` and `$rmkr:unslop`. The two explicit-only skills retain their invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
+Start a fresh session after installation or an update. Codex gives plugin skills a prefix, such as `$rmkr-skills:forge` and `$rmkr-skills:unslop`. Setup rmkr skills keeps its explicit-only invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
 
 ### Existing installations
+
+After version `0.4.1` reaches `main`, migrate an installed `rmkr` plugin with:
+
+```bash
+codex plugin remove rmkr@rmkr-skills
+codex plugin marketplace upgrade rmkr-skills --json
+codex plugin add rmkr-skills@rmkr-skills
+```
+
+Update saved `$rmkr:` commands to `$rmkr-skills:` and start a fresh session.
 
 Choose one installation route per skill in Codex. Before using the plugin, disable the old copies in Codex's skill settings. Preserve shared files used by Claude Code or OhMyPi. Update saved prompts or global instructions to use the plugin's prefixed skill names where needed.
 
@@ -83,7 +93,7 @@ Keep tests outside your real Codex profile. From the checkout:
 ```bash
 trial_profile="$(mktemp -d)"
 CODEX_HOME="$trial_profile" codex plugin marketplace add "$PWD"
-CODEX_HOME="$trial_profile" codex plugin add rmkr@rmkr-skills --json
+CODEX_HOME="$trial_profile" codex plugin add rmkr-skills@rmkr-skills --json
 CODEX_HOME="$trial_profile" codex plugin list --marketplace rmkr-skills --json
 ```
 
@@ -91,17 +101,29 @@ This checks a local source. It does not exercise Git fetching or daily updates. 
 
 ## Claude Code plugin
 
-The `rmkr` Claude Code plugin loads the same four skill folders as the Codex plugin. Custom agents remain a separate installation, so Claude does not scan the other runtimes' reviewer files.
+The `rmkr-skills` Claude Code plugin loads the same four skill folders as the Codex plugin. Custom agents remain a separate installation, so Claude does not scan the other runtimes' reviewer files.
 
 After the Claude plugin files reach `main`, install from the development branch:
 
 ```bash
 claude plugin marketplace add rmkr/skills#main
-claude plugin install rmkr@rmkr-skills
+claude plugin install rmkr-skills@rmkr-skills
 claude plugin list --json
 ```
 
-Start a fresh session. Plugin skills use commands such as `/rmkr:forge` and `/rmkr:unslop`. Setup rmkr skills keeps its explicit-only invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
+Start a fresh session. Plugin skills use commands such as `/rmkr-skills:forge` and `/rmkr-skills:unslop`. Setup rmkr skills keeps its explicit-only invocation policy. Forge's strict reviewer still needs the [separate setup below](#strict-reviewer-setup).
+
+### Existing installations
+
+After version `0.4.1` reaches `main`, migrate an installed `rmkr` plugin with:
+
+```bash
+claude plugin uninstall rmkr@rmkr-skills --keep-data
+claude plugin marketplace update rmkr-skills
+claude plugin install rmkr-skills@rmkr-skills
+```
+
+Use the same installation scope for both plugin commands. Update saved `/rmkr:` commands to `/rmkr-skills:` and start a fresh session.
 
 If you already use individual skills in Claude Code, choose one installation route per skill. Remove only the old Claude links after checking them. Preserve shared skill folders used by other agents and any custom reviewer settings. Update saved prompts to use the plugin's prefixed commands where needed.
 
@@ -111,7 +133,7 @@ Refresh the marketplace and the installed plugin:
 
 ```bash
 claude plugin marketplace update rmkr-skills
-claude plugin update rmkr@rmkr-skills
+claude plugin update rmkr-skills@rmkr-skills
 ```
 
 Start a fresh session after an update. For automatic updates, run `/plugin` in Claude Code, open **Marketplaces**, select `rmkr-skills`, and select **Enable auto-update**. Third-party marketplaces have auto-update off by default. See [Claude Code's plugin guide](https://code.claude.com/docs/en/discover-plugins) for update behavior.
@@ -125,9 +147,9 @@ claude plugin validate .claude-plugin/plugin.json
 claude plugin validate .claude-plugin/marketplace.json
 trial_profile="$(mktemp -d)"
 CLAUDE_CONFIG_DIR="$trial_profile" claude plugin marketplace add "$PWD"
-CLAUDE_CONFIG_DIR="$trial_profile" claude plugin install rmkr@rmkr-skills
+CLAUDE_CONFIG_DIR="$trial_profile" claude plugin install rmkr-skills@rmkr-skills
 CLAUDE_CONFIG_DIR="$trial_profile" claude plugin list --json
-CLAUDE_CONFIG_DIR="$trial_profile" claude plugin details rmkr@rmkr-skills
+CLAUDE_CONFIG_DIR="$trial_profile" claude plugin details rmkr-skills@rmkr-skills
 ```
 
 This checks local installation and the component list. It does not prove GitHub fetching, skill behavior, or strict-reviewer permission enforcement. See [Claude Code's manifest reference](https://code.claude.com/docs/en/plugins-reference) for the package format. Keep the trial profile until you finish inspecting it.

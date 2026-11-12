@@ -23,11 +23,11 @@ No package build or custom release asset is needed for this Git-based plugin. Gi
 
 ```bash
 trial_profile="$(mktemp -d)"
-CODEX_HOME="$trial_profile" codex plugin marketplace add rmkr/skills --ref v0.3.4
-CODEX_HOME="$trial_profile" codex plugin add rmkr@rmkr-skills --json
+CODEX_HOME="$trial_profile" codex plugin marketplace add rmkr/skills --ref v0.4.1
+CODEX_HOME="$trial_profile" codex plugin add rmkr-skills@rmkr-skills --json
 ```
 
-Replace `v0.3.4` with the published version being checked. Fixed tags stay pinned; the daily development updater continues to follow `main`.
+Replace `v0.4.1` with the published version being checked. Fixed tags stay pinned; the daily development updater continues to follow `main`.
 
 If publication fails, inspect the failed job and rerun the `Validate` workflow on `main`. A rerun cannot replace a published version or move its tag. Fix a version or tag mismatch through a reviewed change. No personal access token or separate release secret is required; the job uses GitHub's built-in token.
 

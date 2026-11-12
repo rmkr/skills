@@ -1,11 +1,11 @@
 {
   "name": "rmkr-skills",
   "interface": {
-    "displayName": "rmkr skills"
+    "displayName": "rmkr-skills"
   },
   "plugins": [
     {
-      "name": "rmkr",
+      "name": "rmkr-skills",
       "source": {
         "source": "local",
         "path": "./"

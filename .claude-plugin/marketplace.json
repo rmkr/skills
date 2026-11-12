@@ -6,7 +6,7 @@
   },
   "plugins": [
     {
-      "name": "rmkr",
+      "name": "rmkr-skills",
       "source": "./"
     }
   ]
