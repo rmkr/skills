@@ -2,6 +2,12 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.4.3
+
+### Changed
+
+- Codex setup now recommends Sol at xhigh effort for Engineer.
+
 ## 0.4.2
 
 ### Changed
