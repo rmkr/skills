@@ -2,7 +2,7 @@
 
 ## Codex plugin
 
-Use Codex CLI `0.166.0` or a compatible newer version. The `rmkr-skills` plugin packages all four skills together, including Forge and Subagent Delegation. It uses this repository's `skills/` files directly, with no second copy to maintain.
+Use Codex CLI `0.166.0` or a compatible newer version. The `rmkr-skills` plugin packages the collection’s skills together, including Forge and Subagent Delegation. It uses this repository's `skills/` files directly, with no second copy to maintain.
 
 After the plugin files reach `main`, install from the development branch:
 
@@ -26,7 +26,7 @@ codex plugin add rmkr-skills@rmkr-skills
 
 Update saved `$rmkr:` commands to `$rmkr-skills:` and start a fresh session.
 
-Choose one installation route per skill in Codex. Before using the plugin, disable the old copies in Codex's skill settings. Preserve shared files used by Claude Code or OhMyPi. Update saved prompts or global instructions to use the plugin's prefixed skill names where needed.
+Choose one installation route per skill in Codex. Before using the plugin, disable the old copies in Codex's skill settings. Preserve skill folders shared with other clients. Update saved prompts or global instructions to use the plugin's prefixed skill names where needed.
 
 ### Updates
 
@@ -101,7 +101,7 @@ This checks a local source. It does not exercise Git fetching or daily updates. 
 
 ## Claude Code plugin
 
-The `rmkr-skills` Claude Code plugin loads the same four skill folders as the Codex plugin. Custom agents remain a separate installation, so Claude does not scan the other runtimes' reviewer files.
+The `rmkr-skills` Claude Code plugin loads the same skill folders as the Codex plugin. Custom agents remain a separate installation, so Claude does not scan the other runtimes' reviewer files.
 
 After the Claude plugin files reach `main`, install from the development branch:
 
@@ -164,6 +164,8 @@ Choose one command to install individual skills from the development branch:
 | Bun | `bunx skills@latest add rmkr/skills --global` |
 
 Choose the skills and agents when prompted. Keep **Symlink** selected if asked for an installation method. This lets agents share one installed copy of each skill.
+
+To install ArtCraft alone with Bun, run `bunx skills@latest add rmkr/skills --skill artcraft --global` once the skill reaches `main`. The skill uses the ArtCraft app interfaces available on the machine.
 
 Install `subagent-delegation` with `forge`. Start a fresh agent session after installation.
 

@@ -1,0 +1,25 @@
+# Choose an ArtCraft app
+
+Choose by what needs to remain editable. Use the table's executable name with `--help` and inspect the listed commands for that build. Arguments and save flags differ across apps. Each linked app page leads to its documentation, source, and available downloads. A desktop app and its headless CLI may be installed separately. For a connected app, inspect the exposed MCP tools and their schemas.
+
+| Requested result | App and executable | Discover, produce, verify |
+| --- | --- | --- |
+| Retouch pixels, composite layers, preserve a layered image | [PhotoCraft](https://getartcraft.com/apps/photocraft) · `photocraft-cli` | Discover with `commands`, edit with `run --out`, check the saved layer tree with `info`. |
+| Edit paths, named shapes or artboards | [VectorCraft](https://getartcraft.com/apps/vectorcraft) · `vectorcraft-cli` | Inspect `commands`, use `run --export` or MCP, reopen the native file to check object geometry. |
+| Cut clips on a timeline and export a movie | [FilmCraft](https://getartcraft.com/apps/filmcraft) · `filmcraft-cli` | Look up operations with `commands` and `describe`. Save the timeline with `--save-as`. Check export status for offline media. |
+| Develop RAW photos, apply exposure settings, manage a library | [LightCraft](https://getartcraft.com/apps/lightcraft) · `lightcraft-cli` | Inspect `controls`, use `run --library` to persist develop edits or `render` for an image output. |
+| Combine, extract, rotate or reorder existing PDF pages | [PdfCraft](https://getartcraft.com/apps/pdfcraft) · `pdfcraft-cli` | Use `combine`, `extract` or `edit`. Inspect `tools` for additional operations. Check the saved pages with `info`, `text` or `render`. |
+| Composite footage, animate effects or render motion graphics | [EffectCraft](https://getartcraft.com/apps/effectcraft) · `effectcraft-cli` | Inspect `commands`, save the project with `--save-as`, inspect a representative frame with `render-frame`. |
+| Animate vector characters or drawings on a 2D timeline | [AniCraft](https://getartcraft.com/apps/anicraft) · `anicraft-cli` | Inspect `commands`, use `run` or `exec` with `--save`, then `render` a frame or export with `gif`. CLI frames start at 1. |
+| Lay out a multipage booklet or publication for print | [DesignCraft](https://getartcraft.com/apps/designcraft) · `designcraft-cli` | Use `script` with `--save` for the layout and `--export` for the PDF. Check the exported page count and rendered layout. For a PDF/X delivery, also run `validate-pdf` against the requested standard. |
+| Design interface screens, components or prototypes | [FigCraft](https://getartcraft.com/apps/figcraft) · `figcraft-cli` | Inspect `commands`, use `run --in ... --out ...`, check the imported structure with `info`, then export the requested view. |
+| Paint textures directly on a 3D model | [TextureCraft](https://getartcraft.com/apps/texturecraft) · `texturecraft-cli` | Use `commands` to find the edit. Persist it with `run … -o edited.tcraft`, then write maps from that saved project with `export edited.tcraft textures/`. |
+| Build a procedural material from a node graph | [MaterialCraft](https://getartcraft.com/apps/materialcraft) · `materialcraft-cli` | Inspect `nodes` and `commands`. Save the graph with its linked resources. Use `cook` for timings and errors and `export <package> <directory>` to write the texture maps. |
+| Record, edit or mix audio tracks | [SoundCraft](https://getartcraft.com/apps/soundcraft) · `soundcraft-cli` | Inspect `commands` and `describe`, use `run --save` for the session and `--bounce` for the mix. Check with `info`. |
+| Edit flowing text, styles or tracked changes in a document | [WordCraft](https://getartcraft.com/apps/wordcraft) · `wordcraft-cli` | Inspect `commands`, use `run --file ... --save ...`, check structure with `inspect` or render the affected page. |
+| Create or revise editable slides, themes or transitions | [DeckCraft](https://getartcraft.com/apps/deckcraft) · `deckcraft-cli` | Inspect `commands` and `describe`, use `run --save`, then check slide count with `info` and appearance with `render`. |
+| Draft a dimensioned technical drawing or exchange CAD geometry | [CADCraft](https://getartcraft.com/apps/cadcraft) · `cadcraft-cli` | Inspect `commands`, use `run --save` for a drawing or `convert` for exchange, then inspect the output with `info`. |
+| Edit workbook cells, formulas or sheet structure | [GridCraft](https://getartcraft.com/apps/gridcraft) · `gridcraft-cli` | Inspect `commands` or `functions`, use `run --in ... --out ...`, verify the affected cells with `cat`. |
+| Explore how software works and document findings | [Craft Anything](https://getartcraft.com/apps/craft-anything) · `craft-anything-cli` | Inspect `capabilities` and `commands`; keep evidence in the selected `.cany` project and produce a `report` when requested. |
+
+Use the [upstream catalog](https://getartcraft.com/apps) for current availability. When an app page offers a separate command-line download, that is the component needed to run the examples from a shell.
