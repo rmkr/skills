@@ -7,7 +7,7 @@ These are suggestions; the user may choose any model the runtime offers.
 | Runtime | Apprentice | Technician | Engineer | Architect |
 | --- | --- | --- | --- | --- |
 | Claude Code | `haiku@high` | `sonnet@medium` | `opus@medium` | `opus@high` |
-| Codex | latest Sol `@low` | latest Sol `@medium` | latest Sol `@high` | latest Astra `@xhigh` |
+| Codex | latest Sol `@low` | latest Sol `@medium` | latest Sol `@xhigh` | latest Astra `@xhigh` |
 
 In Claude Code, write tier models only as the Agent tool's per-call aliases, `sonnet`, `opus`, `haiku`, or `fable`, or as `inherit`. Offer `haiku@xhigh` too when the live model list shows Haiku supports it.
 
