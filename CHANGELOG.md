@@ -2,6 +2,12 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.5.0
+
+### Added
+
+- Add ArtCraft to the Codex and Claude Code plugins and the standalone skill catalog. It selects among 17 apps and includes workflows for combining PDFs in order and editing named vector objects.
+
 ## 0.4.3
 
 ### Changed

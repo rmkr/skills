@@ -6,6 +6,7 @@ My agent skills for planning, execution, review, and communication across subjec
 
 | Skill | Use it when | Required companions | Invocation |
 | --- | --- | --- | --- |
+| [ArtCraft](skills/artcraft/SKILL.md) | Create or edit a file with an ArtCraft app, such as combining PDFs or editing a named vector object. | The selected app’s CLI or connected interface | Automatic or explicit |
 | [Subagent Delegation](skills/subagent-delegation/SKILL.md) | Parts of a task benefit from separate agents, with one main agent coordinating the results. No formal plan or implementation worker is required. | Optionally Setup rmkr skills to configure model tiers | Automatic or explicit |
 | [forge](skills/forge/SKILL.md) | Work needs independent scrutiny of its assumptions and delivery, across software, research, plans, documents, and other subjects. Levels: `review` returns verified findings, `fix` corrects and re-reviews, and `build` has workers implement software first. Loops stop when clean or at the shared round limit; unfinished work stays explicit. Each finding is checked and fixed on the lowest model tier that fits it. Add `strict` for a runtime-enforced read-only reviewer on a Git diff. | Subagent Delegation; the strict reviewer for `strict`; optionally Setup rmkr skills to configure its reviewer policy | Automatic or explicit |
 | [Unslop](skills/unslop/SKILL.md) | Prose needs formulaic phrasing removed while preserving meaning and evidence. | None | Automatic or explicit |
@@ -15,25 +16,25 @@ A review request does not authorize edits. Reviewers inspect; verifier subagents
 
 ## Installation
 
-For Codex CLI, install all four skills as one plugin from the development branch:
+For Codex CLI, install the collection as one plugin from the development branch:
 
 ```bash
 codex plugin marketplace add rmkr/skills --ref main
 codex plugin add rmkr-skills@rmkr-skills
 ```
 
-Start a fresh session. Plugin skills use a prefix, for example `$rmkr-skills:forge`. See [installation](docs/installation.md) for updates, a daily macOS update task, and migration from an existing skill installation. These commands require the plugin files on `main`; until this change is merged, use the local test instructions in that guide.
+Start a fresh session. Plugin skills use a prefix, for example `$rmkr-skills:artcraft`. See [installation](docs/installation.md) for updates, a daily macOS update task, and migration from an existing skill installation. These commands require the plugin files on `main`; until this change is merged, use the local test instructions in that guide.
 
-For Claude Code, install the same four skills as a plugin:
+For Claude Code, install the same collection as a plugin:
 
 ```bash
 claude plugin marketplace add rmkr/skills#main
 claude plugin install rmkr-skills@rmkr-skills
 ```
 
-Start a fresh session and use commands such as `/rmkr-skills:forge`. The strict reviewer still needs separate setup. These commands require the Claude plugin files on `main`; until merged, use the [local test instructions](docs/installation.md#claude-code-plugin).
+Start a fresh session and use commands such as `/rmkr-skills:artcraft`. The strict reviewer still needs separate setup. These commands require the Claude plugin files on `main`; until merged, use the [local test instructions](docs/installation.md#claude-code-plugin).
 
-For individual skills or OhMyPi, choose one command:
+For individual skills, choose one command:
 
 | Tool | Command |
 | --- | --- |

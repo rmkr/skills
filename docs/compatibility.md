@@ -26,7 +26,7 @@ forge requires Subagent Delegation. Both declare orchestration contract version 
 
 The Codex plugin ships both together. Its plugin name gives skills the `rmkr-skills:<skill-name>` prefix, for example `$rmkr-skills:forge`. Individual installations keep their unprefixed names. Plugin installation does not register the custom strict reviewer in Codex's agent directory; use the [separate setup](installation.md#strict-reviewer-setup) and keep that reviewer aligned with the installed collection revision.
 
-The Claude Code plugin also ships all four skills together, with commands such as `/rmkr-skills:forge`. Its manifest leaves custom agents out to avoid loading other runtimes' adapters. Use the same separate strict-reviewer setup as individual Claude installations.
+The Claude Code plugin also ships the collection’s skills together, with commands such as `/rmkr-skills:forge`. Its manifest leaves custom agents out to avoid loading other runtimes' adapters. Use the same separate strict-reviewer setup as individual Claude installations.
 
 ## Reviewer boundaries
 

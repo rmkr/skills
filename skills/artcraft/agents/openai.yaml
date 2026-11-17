@@ -1,0 +1,7 @@
+interface:
+  display_name: "ArtCraft"
+  short_description: "Choose and operate ArtCraft apps for file edits and exports"
+  default_prompt: "Use $artcraft to combine these PDFs in the supplied order and verify the saved pages."
+
+policy:
+  allow_implicit_invocation: true
