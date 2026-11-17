@@ -2,6 +2,12 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.4.2
+
+### Changed
+
+- Codex setup now recommends Sol at low effort for Apprentice, medium for Technician, and high for Engineer. It recommends Astra at xhigh effort for Architect.
+
 ## 0.4.1
 
 ### Changed
