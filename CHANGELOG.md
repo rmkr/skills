@@ -2,6 +2,12 @@
 
 This log starts at version 0.3.0. Earlier changes are in the Git history.
 
+## 0.5.1
+
+### Added
+
+- Forge flags changes to installed model recommendations before starting agents. Setup lets users keep or update their saved tiers and records the recommendations they reviewed.
+
 ## 0.5.0
 
 ### Added
