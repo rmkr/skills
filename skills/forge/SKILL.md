@@ -67,6 +67,8 @@ Identify accessible evidence and required checks. Review what is accessible, nam
 
 Use existing authority for local corrections. Ask only when a missing decision or additional permission blocks a concrete action. Continue independent work while a question is pending.
 
+Once the baseline is known, use `references/recommended-models.md` from the installed `subagent-delegation` skill to check for changed model recommendations before dispatch.
+
 ## Review independently
 
 After the coordination preflight passes, give a reviewer the original request, governing requirements, a stable snapshot of the target, and enough surrounding context to evaluate behavior. Use fresh context when supported and disclose inherited-context limits; an explicit fresh-context requirement remains unmet if it cannot run. Its inspection-only assignment and tools must satisfy the shared permission boundary.

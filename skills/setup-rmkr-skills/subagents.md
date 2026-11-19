@@ -1,18 +1,5 @@
 # Subagent delegation settings
 
-## Suggested tiers
-
-These are suggestions; the user may choose any model the runtime offers.
-
-| Runtime | Apprentice | Technician | Engineer | Architect |
-| --- | --- | --- | --- | --- |
-| Claude Code | `haiku@high` | `sonnet@medium` | `opus@medium` | `opus@high` |
-| Codex | latest Sol `@low` | latest Sol `@medium` | latest Sol `@xhigh` | latest Astra `@xhigh` |
-
-In Claude Code, write tier models only as the Agent tool's per-call aliases, `sonnet`, `opus`, `haiku`, or `fable`, or as `inherit`. Offer `haiku@xhigh` too when the live model list shows Haiku supports it.
-
-In Codex, resolve "latest Sol" and "latest Astra" to the newest plain release of each family in the live model list. Skip variants such as `-mini` and write the exact model ID.
-
 ## Repository settings
 
 Write this as `docs/agents/subagents.md` with the active runtime's column only. Include the Reviewer row and separate Forge settings table only when forge is installed. List tiers lowest first, with each added tier's row in its chosen place, and include the added tiers list only when the user added a tier. In an existing file, add or update the active runtime's column in each table and keep the others. The global `### Subagent delegation` block uses the same format.
@@ -35,6 +22,7 @@ Forge settings:
 | Setting | <runtime> |
 | --- | --- |
 | Review rounds | <positive integer> |
+| Reviewed model recommendations | <reviewed recommendations> |
 
 Added tiers:
 
@@ -42,6 +30,8 @@ Added tiers:
 ```
 
 `Review rounds` is a positive integer, not a model tier. Write the confirmed choice; recommend the existing valid value, or three when no choice exists. Preserve absent values for other runtimes so they can fall back to their global settings. Resolve forge through the runtime's skill catalog; its "Bound the loop" rules own resolution and validation.
+
+Include `Reviewed model recommendations` after the user confirms a review of the recommendations. If the installed `subagent-delegation` skill lacks the recommendation reference, report that recommendations are unavailable and preserve any existing reviewed values.
 
 ## Effort agents
 
